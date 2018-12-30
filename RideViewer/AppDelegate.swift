@@ -43,10 +43,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		
 		// Add basic app info, version info etc, to the start of the logs
 		appLog.logAppDetails()
-		
-		// MARK: temp for authorisation
-		let strava = StravaAuthorise()
-		strava.authorise()
 
 		return true
 	}

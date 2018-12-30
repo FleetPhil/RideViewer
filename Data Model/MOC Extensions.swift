@@ -98,10 +98,16 @@ extension NSManagedObjectContext {
 		let predicateFormat = "\(key) = \"\(keyValue)\""
 		let predicate = NSPredicate(format: predicateFormat, argumentArray: nil)
 		let results = self.fetchObjectsForEntityName(entityName, withPredicate: predicate, withSortDescriptor: nil)
-		
 		return results?.last
 	}
-	
+	// Overloaded for entities with Int key
+	func fetchObjectForEntityName (_ entityName: String, withKeyValue keyValue: Int,forKey key: String) -> AnyObject? {
+		let predicateFormat = "\(key) = \(keyValue)"
+		let predicate = NSPredicate(format: predicateFormat, argumentArray: nil)
+		let results = self.fetchObjectsForEntityName(entityName, withPredicate: predicate, withSortDescriptor: nil)
+		return results?.last
+	}
+
 	// Generic retrieve function
 	func fetchObjectsForEntityName (_ entityName: String, withPredicate predicate: NSPredicate? = nil, withSortDescriptor sortDescriptor: NSSortDescriptor? = nil) -> [AnyObject]? {
 		
