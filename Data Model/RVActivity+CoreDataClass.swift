@@ -44,6 +44,7 @@ public class RVActivity: NSManagedObject {
 		self.id						= Int64(activity.id!)
 		self.name					= activity.name ?? "No name"
 		self.activityDescription	= activity.description
+		self.activityType			= activity.type?.rawValue ?? "workout"
 		self.distance				= activity.distance!
 		self.movingTime				= activity.movingTime!
 		self.elapsedTime			= activity.elapsedTime!
@@ -59,6 +60,15 @@ public class RVActivity: NSManagedObject {
 		self.calories				= activity.calories ?? 0.0
 		self.achievementCount		= Int16(activity.achievementCount ?? 0)
 		self.kudosCount				= Int16(activity.kudosCount ?? 0)
+		self.kiloJoules				= activity.kiloJoules ?? 0.0
+		self.deviceWatts			= activity.deviceWatts ?? false
+		self.trainer				= activity.trainer ?? false
+		
+		if let activityMap = activity.map {
+			self.map					= RVMap.create(map: activityMap, context: self.managedObjectContext!)
+		} else {
+			self.map = nil
+		}
 		
 		let resourceStateValue 		= Int16(activity.resourceState != nil ? activity.resourceState!.rawValue : 0)
 		self.resourceState			= ResourceState(rawValue: resourceStateValue) ?? .undefined
@@ -70,6 +80,10 @@ public class RVActivity: NSManagedObject {
 		}
 		
 		return self
+	}
+	
+	var type : ActivityType {
+		return ActivityType.init(rawValue: self.activityType)!
 	}
 	
 	func timeZoneNameFromActivity(_ tz : String) -> String {
@@ -109,9 +123,9 @@ class ActivityListTableViewCell : UITableViewCell {
 	func configure(withModel: NSManagedObject) {
 		if let activity = withModel as? RVActivity {
 			
-			appLog.debug("Activity state is \(activity.resourceState.rawValue)")
+//			appLog.debug("Activity state is \(activity.resourceState.rawValue)")
 
-			nameLabel.text		= activity.name
+			nameLabel.text		= activity.type.emoji + " " + activity.name
 			dateLabel.text		= (activity.startDate as Date).displayString(displayType: .dateTime)
 			distanceLabel.text	= activity.distance.distanceDisplayString
 			timeLabel.text		= activity.elapsedTime.durationDisplayString

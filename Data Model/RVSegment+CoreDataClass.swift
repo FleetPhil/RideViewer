@@ -30,6 +30,7 @@ public class RVSegment: NSManagedObject {
 	func update(segment : Segment) -> RVSegment {
 		self.id				= Int64(segment.id!)
 		self.name			= segment.name ?? "No name"
+        self.distance       = segment.distance ?? 0.0
 		self.averageGrade	= segment.averageGrade ?? 0.0
 		self.maxGrade		= segment.maximumGrade ?? 0.0
 		self.maxElevation	= segment.elevationHigh	?? 0.0
@@ -40,9 +41,16 @@ public class RVSegment: NSManagedObject {
 		self.endLong		= segment.endLatLng?.lng ?? 0.0
 		self.climbCategory	= Int16(segment.climbCategory ?? 0)
 		self.starred		= segment.starred ?? false
-		self.elevationGain	= segment.totalElevationGain ?? 0.0
+		self.elevationGain	= segment.totalElevationGain ?? ((segment.elevationHigh ?? 0.0) - (segment.elevationLow ?? 0.0))
 		self.effortCount	= Int64(segment.effortCount ?? 0)
 		self.athleteCount	= Int64(segment.athleteCount ?? 0)
+		
+		if let _ = segment.map?.id {
+			self.map		= RVMap.create(map: segment.map!, context: self.managedObjectContext!)
+		} else {
+			self.map = nil
+		}
+
 		
 		let resourceStateValue 		= Int16(segment.resourceState != nil ? segment.resourceState!.rawValue : 0)
 		self.resourceState			= ResourceState(rawValue: resourceStateValue) ?? .undefined
@@ -74,17 +82,18 @@ extension RVSegment : TableViewCompatible {
 class SegmentListTableViewCell : UITableViewCell {
 	
 	@IBOutlet weak var nameLabel: UILabel!
-	@IBOutlet weak var effortLabel: UILabel!
 	@IBOutlet weak var distanceLabel: UILabel!
 	@IBOutlet weak var elevationLabel: UILabel!
+    @IBOutlet weak var gradeLabel: UILabel!
+    
 	
 	func configure(withModel: NSManagedObject) {
 		if let segment = withModel as? RVSegment {
-			appLog.debug("Segment state is \(segment.resourceState.rawValue)")
+//			appLog.debug("Segment state is \(segment.resourceState.rawValue)")
 			
 			nameLabel.text		= segment.name
 			distanceLabel.text	= segment.distance.distanceDisplayString
-			effortLabel.text	= "\(segment.effortCount)"
+			gradeLabel.text	= segment.averageGrade.fixedFraction(digits: 1) + "%"
 			elevationLabel.text	= segment.elevationGain.heightDisplayString
 			
 			self.separatorInset = .zero

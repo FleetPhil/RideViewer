@@ -19,6 +19,7 @@ extension RVActivity {
 
     @NSManaged public var achievementCount: Int16
     @NSManaged public var activityDescription: String?
+	@NSManaged public var activityType: String
     @NSManaged public var averageSpeed: Speed
     @NSManaged public var calories: Double
     @NSManaged public var distance: Distance
@@ -36,7 +37,13 @@ extension RVActivity {
     @NSManaged public var startLong: Double
     @NSManaged public var timeZone: String
     @NSManaged public var resourceState: ResourceState
+	@NSManaged public var kiloJoules : Double
+	@NSManaged public var deviceWatts : Bool
+	@NSManaged public var trainer : Bool
+	@NSManaged public var map : RVMap?
+
     @NSManaged public var efforts: NSSet
+	
 
 }
 

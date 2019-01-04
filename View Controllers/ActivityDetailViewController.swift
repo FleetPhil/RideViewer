@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 class ActivityDetailViewController: ListViewMaster, UITableViewDelegate {
 	
@@ -30,14 +31,16 @@ class ActivityDetailViewController: ListViewMaster, UITableViewDelegate {
 	@IBOutlet weak var mapView: RideMapView! {
 		didSet {
 			mapView.mapType = .standard
+			mapView.delegate = mapView
 		}
 	}
 	
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		
-		updateView()
+		if activity != nil {
+			updateView()
+		}
     }
 	
 	func updateView() {
@@ -51,16 +54,22 @@ class ActivityDetailViewController: ListViewMaster, UITableViewDelegate {
 		startLocation.text					= String(activity.startLocation.latitude) + " " + String(activity.startLocation.longitude)
 		endLocation.text					= String(activity.endLocation.latitude) + " " + String(activity.endLocation.longitude)
 		averageSpeed.text					= activity.averageSpeed.speedDisplayString
-		calories.text						= String(activity.calories)
+		calories.text						= String(activity.kiloJoules) + "kJ"
 
 		mapView!.showForActivity(activity)
 		
-		StravaManager.sharedInstance.updateActivity(activity, context: CoreDataManager.sharedManager().viewContext, completionHandler: {
-			appLog.debug("Got activity details")
-		})
-		
+		switch activity.resourceState {
+		case .detailed:
+			break
+		default:
+			StravaManager.sharedInstance.updateActivity(activity,
+                context: CoreDataManager.sharedManager().viewContext, completionHandler: {
+				appLog.debug("Got detailed activity")
+			})
+		}
 		setupEfforts(activity)
 	}
+	
 	
     /*
     // MARK: - Navigation
@@ -85,7 +94,8 @@ extension ActivityDetailViewController {
 		dataManager.delegate = self
 		
 		let sortDescriptor = NSSortDescriptor(key: "startDate", ascending: false)
-		let filterPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: [NSPredicate(format: "activity.id == %@", argumentArray: [forActivity.id])])
+		let settingsPredicate = Settings.sharedInstance.segmentSettingsPredicate
+		let filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "activity.id == %@", argumentArray: [forActivity.id]), settingsPredicate])
 		_ = dataManager.fetchObjects(sortDescriptor: sortDescriptor, filterPredicate: filterPredicate)
 	}
 

@@ -34,6 +34,7 @@ extension RVSegment {
     @NSManaged public var starred: Bool
     @NSManaged public var effortCount: Int64
     @NSManaged public var athleteCount: Int64
+	@NSManaged public var map : RVMap?
     @NSManaged public var efforts: NSSet
 
 }

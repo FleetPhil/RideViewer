@@ -57,7 +57,7 @@ class StravaManager : TokenDelegate {
 		}
 	}
 	
-	func updateActivities(page : Int, context : NSManagedObjectContext) {
+	func getAthleteActivities(page : Int, context : NSManagedObjectContext) {
 		try? StravaClient.sharedInstance.request(Router.athleteActivities(params: ["per_page":100, "page":page]), result: { [weak self] (activities: [Activity]?) in
 			guard let `self` = self, let activities = activities else { return }
 			
@@ -67,39 +67,21 @@ class StravaManager : TokenDelegate {
 					let _ = RVActivity.create(activity: $0, context: context)
 				}
 				context.saveContext()
-				self.updateActivities(page: page + 1, context: context)		// get next page
+				self.getAthleteActivities(page: page + 1, context: context)		// get next page
 			}
 			}, failure: { (error: NSError) in
 				debugPrint(error)
 		})
 	}
 	
-	func updateEfforts(page : Int, context : NSManagedObjectContext) {
-		guard token != nil else { return }
-
-		try? StravaClient.sharedInstance.request(Router.athleteActivities(params: ["per_page":100, "page":page]), result: { [weak self] (activities: [Activity]?) in
-			guard let `self` = self, let activities = activities else { return }
-			
-			appLog.debug("Retrieved \(activities.count) activities for page \(page)")
-			if activities.count > 0 {
-				activities.forEach {
-					let _ = RVActivity.create(activity: $0, context: context)
-				}
-				context.saveContext()
-				self.updateActivities(page: page + 1, context: context)		// get next page
-			}
-			}, failure: { (error: NSError) in
-				debugPrint(error)
-		})
-	}
-	
+    // Get details for specified activity
 	func updateActivity(_ activity : RVActivity, context : NSManagedObjectContext, completionHandler : @escaping (()->Void)) {
 		guard token != nil else { return }
 
 		try? StravaClient.sharedInstance.request(Router.activities(id: Router.Id(activity.id), params: ["include_all_efforts":false]), result: { (activities: Activity?) in
 			guard let activity = activities else { return }
 			
-			appLog.debug("Retrieved activity details for \(activity.name ?? "None?")")
+//			appLog.debug("Retrieved activity details for \(activity.name ?? "None?")")
 			let _ = RVActivity.create(activity: activity, context: context)
 			context.saveContext()
 			completionHandler()
@@ -114,7 +96,7 @@ class StravaManager : TokenDelegate {
 		try? StravaClient.sharedInstance.request(Router.segments(id: Router.Id(segment.id), params: [:]), result: { (newSegment: Segment?) in
 			guard let segment = newSegment else { return }
 			
-			appLog.debug("Retrieved segment details for \(segment.name ?? "None?")")
+//			appLog.debug("Retrieved segment details for \(segment.name ?? "None?")")
 			let _ = RVSegment.create(segment: segment, context: context)
 			context.saveContext()
 			completionHandler()

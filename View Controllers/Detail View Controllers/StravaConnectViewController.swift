@@ -8,6 +8,7 @@
 
 import UIKit
 import StravaSwift
+import CoreData
 
 class StravaConnectViewController: UIViewController {
 
@@ -32,7 +33,7 @@ class StravaConnectViewController: UIViewController {
 			let _ = StravaManager.sharedInstance.getToken(code: code) { success in
 				if success {
 					appLog.debug("Have token")
-//					StravaAuthorise.sharedInstance.updateActivities(page: 1)
+                    StravaManager.sharedInstance.getAthleteActivities(page: 1, context: CoreDataManager.sharedManager().viewContext)
 				} else {
 					appLog.debug("getToken failed")
 				}

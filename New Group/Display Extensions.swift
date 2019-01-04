@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import StravaSwift
 
 // Date formats for display
 enum timeDateContent {
@@ -51,3 +52,25 @@ extension Date {
 	}
 }
 
+extension FloatingPoint {
+    func fixedFraction(digits: Int) -> String {
+        return String(format: "%.\(digits)f", self as! CVarArg)
+    }
+}
+
+extension ActivityType {
+	var emoji : String {
+		switch self {
+		case .ride: return "🚴‍♂️"
+		case .run: return  "🏃‍♂️"
+		case .swim: return  "🏊‍♂️"
+		case .virtualRide: return  "🚲"
+		case .walk: return "🚶‍♂️"
+		case .rowing: return "🚣‍♀️"
+		case .alpineSki, .nordicSki: return  "⛷"
+		case .snowboard: return  "🏂"
+		case .weightTraining: return "🏋️‍♀️"
+		default: return "❤️"
+		}
+	}
+}

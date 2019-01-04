@@ -43,6 +43,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		
 		// Add basic app info, version info etc, to the start of the logs
 		appLog.logAppDetails()
+		
+		// Initialise settings
+		let _ = Settings.sharedInstance
 
 		return true
 	}

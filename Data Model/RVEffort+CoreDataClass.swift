@@ -46,33 +46,44 @@ public class RVEffort: NSManagedObject {
 		self.resourceState			= ResourceState(rawValue: resourceStateValue) ?? .undefined
 
 		self.activity				= activity
+        
+        // Get or create the related segment
+        if let segmentID = effort.segment?.id {
+            if let rvSegment = RVSegment.get(identifier: segmentID, inContext: self.managedObjectContext!) {
+                self.segment = rvSegment
+            } else {            // Segment does not exist
+                let newSegment = RVSegment.create(segment: effort.segment!, context: self.managedObjectContext!)
+                self.segment = newSegment
+            }
+        }
 		
-		if let effortSegment = effort.segment {
-			if let segmentID = effortSegment.id {
-				if let rvSegment = RVSegment.get(identifier: segmentID, inContext: self.managedObjectContext!) {
-					self.segment = rvSegment
-					appLog.debug("Got seg '\(effortSegment.name ?? "?")' for act '\(activity.name)', state \(rvSegment.resourceState.rawValue)")
-					// Check the resource state and request details if not there already
-					switch rvSegment.resourceState {
-					case .detailed:
-						break
-					default:
-						appLog.debug("Updating seg \(rvSegment.name ?? "")")
-						StravaManager.sharedInstance.updateSegment(rvSegment, context: self.managedObjectContext!) {
-							appLog.debug("Seg \(rvSegment.name ?? "") details updated")
-						}
-					}
-				} else {			// Segment does not exist
-					appLog.debug("Create seg '\(effortSegment.name ?? "?")' for act \(activity.name)")
-					let newSegment = RVSegment.create(segment: effortSegment, context: self.managedObjectContext!)
-					self.segment = newSegment
-					StravaManager.sharedInstance.updateSegment(newSegment, context: self.managedObjectContext!) {
-						appLog.debug("New seg \(newSegment.name ?? "") details updated")
-					}
-				}
-			}
-		}
-		return self
+//        if let effortSegment = effort.segment {
+//            if let segmentID = effortSegment.id {
+//                if let rvSegment = RVSegment.get(identifier: segmentID, inContext: self.managedObjectContext!) {
+//                    self.segment = rvSegment
+//                    appLog.debug("Got seg '\(effortSegment.name ?? "?")' for act '\(activity.name)', state \(rvSegment.resourceState.rawValue)")
+//                    // Check the resource state and request details if not there already
+//                    switch rvSegment.resourceState {
+//                    case .detailed:
+//                        break
+//                    default:
+//                        appLog.debug("Updating seg \(rvSegment.name ?? "")")
+//                        StravaManager.sharedInstance.updateSegment(rvSegment, context: self.managedObjectContext!) {
+//                            appLog.debug("Seg \(rvSegment.name ?? "") details updated")
+//                        break
+//                    }
+//                } else {            // Segment does not exist
+//                    appLog.debug("Create seg '\(effortSegment.name ?? "?")' for act \(activity.name)")
+//                    let newSegment = RVSegment.create(segment: effortSegment, context: self.managedObjectContext!)
+//                    self.segment = newSegment
+//                    StravaManager.sharedInstance.updateSegment(newSegment, context: self.managedObjectContext!) {
+//                        appLog.debug("New seg \(newSegment.name ?? "") details updated")
+//                    }
+//                }
+//            }
+//        }
+
+        return self
 	}
 }
 
@@ -99,14 +110,16 @@ class EffortListTableViewCell : UITableViewCell {
 	@IBOutlet weak var segmentName: UILabel!
 	@IBOutlet weak var distance: UILabel!
 	@IBOutlet weak var time: UILabel!
-	@IBOutlet weak var elevation: UILabel!
-	
+    @IBOutlet weak var powerLabel: UILabel!
+    
 	func configure(withModel: NSManagedObject) {
 		if let effort = withModel as? RVEffort {
 			segmentName.text	= effort.segment.name ?? ""
 			distance.text		= effort.distance.distanceDisplayString
 			time.text			= effort.elapsedTime.shortDurationDisplayString
-			elevation.text		= effort.segment.elevationGain.heightDisplayString
+			powerLabel.text		= "\(Int(round(effort.averageWatts)))"+"W"
+            
+            powerLabel.textColor = effort.activity.deviceWatts ? UIColor.black : UIColor.darkGray
 			
 			self.separatorInset = .zero
 		} else {
