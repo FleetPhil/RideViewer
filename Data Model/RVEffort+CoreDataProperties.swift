@@ -30,6 +30,8 @@ extension RVEffort {
     @NSManaged public var maxHeartRate: Double
     @NSManaged public var komRank: Int16
     @NSManaged public var prRank: Int16
+	@NSManaged public var startIndex: Int64
+	@NSManaged public var endIndex: Int64
     @NSManaged public var segment: RVSegment
     @NSManaged public var activity: RVActivity
 

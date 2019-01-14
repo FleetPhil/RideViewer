@@ -13,7 +13,7 @@ import StravaSwift
 import CoreLocation
 
 @objc(RVActivity)
-public class RVActivity: NSManagedObject {
+public class RVActivity: NSManagedObject, RouteViewCompatible {
 	
 	// Computed variables
 	var startLocation : CLLocationCoordinate2D	{
@@ -48,6 +48,8 @@ public class RVActivity: NSManagedObject {
 		self.distance				= activity.distance!
 		self.movingTime				= activity.movingTime!
 		self.elapsedTime			= activity.elapsedTime!
+		self.lowElevation			= activity.lowElevation ?? 0.0
+		self.highElevation			= activity.highElevation ?? 0.0
 		self.elevationGain			= activity.totalElevationGain ?? 0.0
 		self.startDate				= activity.startDate! as NSDate
 		self.timeZone				= timeZoneNameFromActivity(activity.timeZone ?? "")
@@ -61,6 +63,8 @@ public class RVActivity: NSManagedObject {
 		self.achievementCount		= Int16(activity.achievementCount ?? 0)
 		self.kudosCount				= Int16(activity.kudosCount ?? 0)
 		self.kiloJoules				= activity.kiloJoules ?? 0.0
+		self.averagePower			= activity.averagePower ?? 0.0
+		self.maxPower				= activity.maxPower ?? 0.0
 		self.deviceWatts			= activity.deviceWatts ?? false
 		self.trainer				= activity.trainer ?? false
 		
@@ -97,12 +101,8 @@ public class RVActivity: NSManagedObject {
 
 // Extension to support generic table view
 extension RVActivity : TableViewCompatible {
-	var reuseIdentifier: String {
-		return "ActivityCell"
-	}
-	
 	func cellForTableView(tableView: UITableView, atIndexPath indexPath: IndexPath) -> UITableViewCell {
-		if let cell = tableView.dequeueReusableCell(withIdentifier: self.reuseIdentifier, for: indexPath) as? ActivityListTableViewCell {
+		if let cell = tableView.dequeueReusableCell(withIdentifier: "ActivityCell", for: indexPath) as? ActivityListTableViewCell {
 			cell.configure(withModel: self)
 			return cell
 		} else {

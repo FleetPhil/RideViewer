@@ -9,26 +9,46 @@
 import Foundation
 import MapKit
 
-class RideMapView : MKMapView, MKMapViewDelegate {
-	func showForActivity(_ activity : RVActivity) {
-        var mapRegion : MKCoordinateRegion? = nil
+protocol RouteViewCompatible {
+	var startLocation : CLLocationCoordinate2D { get }
+	var endLocation : CLLocationCoordinate2D { get }
+	var map : RVMap? { get }
+}
 
-		self.addAnnotation(activity)
-		if let map = activity.map {
+fileprivate class RouteEndPoint : NSObject, MKAnnotation {
+	var coordinate: CLLocationCoordinate2D
+	var route: RouteViewCompatible
+	
+	init(route : RouteViewCompatible, isStart :  Bool) {
+		self.coordinate = isStart ? route.startLocation : route.endLocation
+		self.route = route
+		super.init()
+	}
+}
+
+class RideMapView : MKMapView, MKMapViewDelegate {
+
+	func showForRoute(_ route : RouteViewCompatible) {
+        var mapRegion : MKCoordinateRegion? = nil
+		
+		self.addAnnotation(RouteEndPoint(route: route, isStart: true))
+		self.addAnnotation(RouteEndPoint(route: route, isStart: false))
+	
+		if let map = route.map {
 			mapRegion = self.addPolylineForMap(map: map, summary: true)
 		} else {
-			appLog.debug("No map for activity")
+			appLog.debug("No map for route")
 		}
 
         if mapRegion == nil {
-            let mapDimension = Measurement(value: 50, unit: UnitLength.miles).converted(to: .meters).value
-            mapRegion = MKCoordinateRegion(center: activity.startLocation, latitudinalMeters: mapDimension, longitudinalMeters: mapDimension)
+            let mapDimension = Measurement(value: 50, unit: UnitLength.kilometers).converted(to: .meters).value
+            mapRegion = MKCoordinateRegion(center: route.startLocation, latitudinalMeters: mapDimension, longitudinalMeters: mapDimension)
         }
         self.showAnnotations(self.annotations, animated: true)
         self.setRegion(mapRegion!, animated: true)
 	}
 	
-	func addPolylineForMap(map : RVMap, summary : Bool = false) -> MKCoordinateRegion? {
+	private func addPolylineForMap(map : RVMap, summary : Bool = false) -> MKCoordinateRegion? {
         guard let locations = map.polylineLocations(summary: summary), locations.count > 0 else { return nil }
         
 		let polyline = MKPolyline(coordinates: locations, count: locations.count)
@@ -46,7 +66,7 @@ class RideMapView : MKMapView, MKMapViewDelegate {
     
     // MARK: MapView delegate
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        return MKAnnotationView(annotation: annotation, reuseIdentifier: "Ride")
+		return mapView.dequeueReusableAnnotationView(withIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier, for: annotation)
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
@@ -56,12 +76,5 @@ class RideMapView : MKMapView, MKMapViewDelegate {
         return renderer
     }
     
-
+	
 }
-
-extension RVActivity : MKAnnotation {
-	public var coordinate: CLLocationCoordinate2D {
-		return self.startLocation
-	}
-}
-

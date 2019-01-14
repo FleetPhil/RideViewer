@@ -4,6 +4,7 @@
         <attribute name="achievementCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="activityDescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="activityType" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="averagePower" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="averageSpeed" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="calories" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="deviceWatts" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
@@ -12,9 +13,12 @@
         <attribute name="elevationGain" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="endLat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="endLong" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="highElevation" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="kiloJoules" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="kudosCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="lowElevation" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="maxPower" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="maxSpeed" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="movingTime" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -33,6 +37,7 @@
         <attribute name="averageWatts" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="distance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="elapsedTime" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="endIndex" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="komRank" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="maxHeartRate" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
@@ -41,6 +46,7 @@
         <attribute name="prRank" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="resourceState" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="startIndex" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="activity" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVActivity" inverseName="efforts" inverseEntity="RVActivity" syncable="YES"/>
         <relationship name="segment" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVSegment" inverseName="efforts" inverseEntity="RVSegment" syncable="YES"/>
     </entity>
@@ -74,8 +80,8 @@
         <relationship name="map" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVMap" inverseName="segments" inverseEntity="RVMap" syncable="YES"/>
     </entity>
     <elements>
-        <element name="RVActivity" positionX="-427.44140625" positionY="71.51953125" width="128" height="420"/>
-        <element name="RVEffort" positionX="-248.51953125" positionY="74.57421875" width="128" height="270"/>
+        <element name="RVActivity" positionX="-427.44140625" positionY="71.51953125" width="128" height="480"/>
+        <element name="RVEffort" positionX="-248.51953125" positionY="74.57421875" width="128" height="300"/>
         <element name="RVMap" positionX="-199.33984375" positionY="450.8515625" width="128" height="135"/>
         <element name="RVSegment" positionX="-44.3671875" positionY="74.09765625" width="128" height="330"/>
     </elements>

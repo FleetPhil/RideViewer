@@ -10,9 +10,19 @@
 import Foundation
 import CoreData
 import StravaSwift
+import CoreLocation
 
 @objc(RVSegment)
-public class RVSegment: NSManagedObject {
+public class RVSegment: NSManagedObject, RouteViewCompatible {
+	
+	// MARK: Computed variables for RouteViewCompatible
+	var startLocation : CLLocationCoordinate2D	{
+		return CLLocationCoordinate2D(latitude: self.startLat, longitude: self.startLong)
+	}
+	var endLocation : CLLocationCoordinate2D	{
+		return CLLocationCoordinate2D(latitude: self.endLat, longitude: self.endLong)
+	}
+
 	// Class Methods
 	class func create(segment: Segment, context: NSManagedObjectContext) -> RVSegment {
 		return (RVSegment.get(identifier: segment.id!, inContext: context) ?? RVSegment(context: context)).update(segment: segment)
@@ -63,12 +73,8 @@ public class RVSegment: NSManagedObject {
 
 // Extension to support generic table view
 extension RVSegment : TableViewCompatible {
-	var reuseIdentifier: String {
-		return "SegmentCell"
-	}
-	
 	func cellForTableView(tableView: UITableView, atIndexPath indexPath: IndexPath) -> UITableViewCell {
-		if let cell = tableView.dequeueReusableCell(withIdentifier: self.reuseIdentifier, for: indexPath) as? SegmentListTableViewCell {
+		if let cell = tableView.dequeueReusableCell(withIdentifier: "SegmentCell", for: indexPath) as? SegmentListTableViewCell {
 			cell.configure(withModel: self)
 			return cell
 		} else {

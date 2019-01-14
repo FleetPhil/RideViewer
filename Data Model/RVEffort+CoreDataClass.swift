@@ -41,6 +41,8 @@ public class RVEffort: NSManagedObject {
 		self.maxHeartRate			= Double(effort.maxHeartRate ?? 0)
 		self.komRank				= Int16(effort.komRank ?? 0)
 		self.prRank					= Int16(effort.prRank ?? 0)
+		self.startIndex				= Int64(effort.startIndex ?? 0)
+		self.endIndex				= Int64(effort.endIndex ?? 0)
 		
 		let resourceStateValue 		= Int16(effort.resourceState != nil ? effort.resourceState!.rawValue : 0)
 		self.resourceState			= ResourceState(rawValue: resourceStateValue) ?? .undefined
@@ -88,43 +90,90 @@ public class RVEffort: NSManagedObject {
 }
 
 // Extension to support generic table view
+// Need to support 2 versions: efforts for activity and efforts for segment
+// enum raw value is stored in the tag
+
+enum EffortTableViewType : Int {
+	case effortsForActivity = 1
+	case effortsForSegment = 2
+}
+
 extension RVEffort : TableViewCompatible {
-	var reuseIdentifier: String {
-		return "EffortCell"
-	}
-	
 	func cellForTableView(tableView: UITableView, atIndexPath indexPath: IndexPath) -> UITableViewCell {
-		if let cell = tableView.dequeueReusableCell(withIdentifier: self.reuseIdentifier, for: indexPath) as? EffortListTableViewCell {
-			cell.configure(withModel: self)
-			return cell
+		if let tableType = EffortTableViewType(rawValue: tableView.tag) {
+			switch tableType {
+			case .effortsForActivity:
+				return (tableView.dequeueReusableCell(withIdentifier: "ActivityEffortCell", for: indexPath) as! EffortListForActivityTableViewCell).configure(withModel: self)
+			case .effortsForSegment:
+				return (tableView.dequeueReusableCell(withIdentifier: "SegmentEffortCell", for: indexPath) as! EffortListForSegmentTableViewCell).configure(withModel: self)
+			}
 		} else {
-			appLog.error("Unable to dequeue cell")
+			appLog.error("Unknown table type \(tableView.tag)")
 			return UITableViewCell()
 		}
 	}
 }
 
 // Table cell
-class EffortListTableViewCell : UITableViewCell {
+class EffortListForActivityTableViewCell : UITableViewCell {
 	
 	@IBOutlet weak var segmentName: UILabel!
-	@IBOutlet weak var distance: UILabel!
-	@IBOutlet weak var time: UILabel!
-    @IBOutlet weak var powerLabel: UILabel!
-    
-	func configure(withModel: NSManagedObject) {
+	@IBOutlet weak var segmentData: UILabel!
+	@IBOutlet weak var effortData: UILabel!
+	
+	func configure(withModel: NSManagedObject) -> EffortListForActivityTableViewCell {
 		if let effort = withModel as? RVEffort {
-			segmentName.text	= effort.segment.name ?? ""
-			distance.text		= effort.distance.distanceDisplayString
-			time.text			= effort.elapsedTime.shortDurationDisplayString
-			powerLabel.text		= "\(Int(round(effort.averageWatts)))"+"W"
-            
-            powerLabel.textColor = effort.activity.deviceWatts ? UIColor.black : UIColor.darkGray
+			
+			segmentName.text = effort.segment.name! + " " + ["","\u{2463}","\u{2462}","\u{2461}","\u{2460}", ""][5 - Int(effort.segment.climbCategory)]
+			
+			segmentData.text = "➡️ " + effort.distance.distanceDisplayString
+				+ "  ↗️ " + (effort.segment.maxElevation - effort.segment.minElevation).heightDisplayString
+				+ "  Av \(effort.segment.averageGrade.fixedFraction(digits: 1))%"
+				+ "  Max \(effort.segment.maxGrade.fixedFraction(digits: 1))%"
+			
+			effortData.text = "⏱ " + effort.elapsedTime.shortDurationDisplayString
+				+ "  ⏩ " + (effort.distance / effort.elapsedTime).speedDisplayString
+				+ "  🔌 \(effort.averageWatts.fixedFraction(digits: 0))W"
+				+ "  ❤️ \(effort.maxHeartRate.fixedFraction(digits: 0))"
 			
 			self.separatorInset = .zero
 		} else {
 			appLog.error("Unexpected entity for table view cell")
 		}
+		return self
 	}
 }
 
+class EffortListForSegmentTableViewCell : UITableViewCell {
+	
+	@IBOutlet weak var activityName: UILabel!
+	@IBOutlet weak var activityDate: UILabel!
+	@IBOutlet weak var effortData: UILabel!
+	
+	func configure(withModel: NSManagedObject) -> EffortListForSegmentTableViewCell {
+		if let effort = withModel as? RVEffort {
+			
+			activityName.text = effort.activity.name
+			activityDate.text = (effort.activity.startDate as Date).displayString(displayType: .dateOnly)
+			
+			let effortText = NSMutableAttributedString(string: "⏱ " + effort.elapsedTime.shortDurationDisplayString)
+			effortText.append(NSAttributedString(string: "  ⏩ " + (effort.distance / effort.elapsedTime).speedDisplayString))
+			effortText.append(NSAttributedString(string: effort.maxHeartRate > 0 ? "  ❤️ \(effort.maxHeartRate.fixedFraction(digits: 0))" : ""))
+
+			let powerAttributes : [NSAttributedString.Key : Any] = effort.activity.deviceWatts ? [:] : [.foregroundColor : UIColor.lightGray]
+			effortText.append(NSAttributedString(string: "  🔌 \(effort.averageWatts.fixedFraction(digits: 0))W", attributes: powerAttributes))
+			
+			effortData.attributedText = effortText
+			
+//			effortData.text = "⏱ " + effort.elapsedTime.shortDurationDisplayString
+//				+ "  ⏩ " + (effort.distance / effort.elapsedTime).speedDisplayString
+//				+ "  🔌 \(effort.averageWatts.fixedFraction(digits: 0))W"
+//				+ "  ❤️ \(effort.maxHeartRate.fixedFraction(digits: 0))"
+			
+			self.separatorInset = .zero
+		} else {
+			appLog.error("Unexpected entity for table view cell")
+		}
+		return self
+	}
+}

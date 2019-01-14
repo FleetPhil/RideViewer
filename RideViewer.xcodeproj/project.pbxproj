@@ -28,9 +28,13 @@
 		F42ECF0921CFD5FF0096F83B /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECF0821CFD5FF0096F83B /* DataManager.swift */; };
 		F42ECF0B21CFE1A50096F83B /* MOC Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECF0A21CFE1A50096F83B /* MOC Extensions.swift */; };
 		F42ECF1021CFEBC20096F83B /* Strava Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECF0F21CFEBC20096F83B /* Strava Manager.swift */; };
+		F453F63621EA6999006D72BA /* Header View.xib in Resources */ = {isa = PBXBuildFile; fileRef = F453F63521EA6999006D72BA /* Header View.xib */; };
+		F461168F21E0A4BF00E2693C /* PopupChooser.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F461168E21E0A4BF00E2693C /* PopupChooser.storyboard */; };
 		F475B72721D232BC0028F2AF /* StravaSwift Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F475B72621D232BC0028F2AF /* StravaSwift Extensions.swift */; };
+		F49E07DC21E1244000A0D678 /* SegmentDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49E07DB21E1244000A0D678 /* SegmentDetailViewController.swift */; };
 		F4AAD80B21DCF788006ED5DD /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AAD80A21DCF788006ED5DD /* SettingsTableViewController.swift */; };
 		F4AAD80D21DD251C006ED5DD /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AAD80C21DD251C006ED5DD /* Settings.swift */; };
+		F4BDDFBD21DFD19300E4668B /* PopupChooser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BDDFBC21DFD19300E4668B /* PopupChooser.swift */; };
 		F4C113D221D6790B00188A30 /* RVEffort+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C113CE21D6790B00188A30 /* RVEffort+CoreDataClass.swift */; };
 		F4C113D321D6790B00188A30 /* RVEffort+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C113CF21D6790B00188A30 /* RVEffort+CoreDataProperties.swift */; };
 		F4C113D421D6790B00188A30 /* RVSegment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C113D021D6790B00188A30 /* RVSegment+CoreDataClass.swift */; };
@@ -61,14 +65,18 @@
 		F42ECEFC21CFA6790096F83B /* RVActivity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVActivity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F42ECEFD21CFA6790096F83B /* RVActivity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVActivity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F42ECF0021CFD25E0096F83B /* ActivityListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityListViewController.swift; sourceTree = "<group>"; };
-		F42ECF0321CFD3090096F83B /* ActivityDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDetailViewController.swift; sourceTree = "<group>"; };
+		F42ECF0321CFD3090096F83B /* ActivityDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivityDetailViewController.swift; path = "Detail View Controllers/ActivityDetailViewController.swift"; sourceTree = "<group>"; };
 		F42ECF0621CFD5D80096F83B /* ListViewMaster.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewMaster.swift; sourceTree = "<group>"; };
 		F42ECF0821CFD5FF0096F83B /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		F42ECF0A21CFE1A50096F83B /* MOC Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MOC Extensions.swift"; sourceTree = "<group>"; };
 		F42ECF0F21CFEBC20096F83B /* Strava Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Strava Manager.swift"; sourceTree = "<group>"; };
+		F453F63521EA6999006D72BA /* Header View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "Header View.xib"; sourceTree = "<group>"; };
+		F461168E21E0A4BF00E2693C /* PopupChooser.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PopupChooser.storyboard; sourceTree = "<group>"; };
 		F475B72621D232BC0028F2AF /* StravaSwift Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StravaSwift Extensions.swift"; sourceTree = "<group>"; };
+		F49E07DB21E1244000A0D678 /* SegmentDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SegmentDetailViewController.swift; path = "Detail View Controllers/SegmentDetailViewController.swift"; sourceTree = "<group>"; };
 		F4AAD80A21DCF788006ED5DD /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		F4AAD80C21DD251C006ED5DD /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		F4BDDFBC21DFD19300E4668B /* PopupChooser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopupChooser.swift; sourceTree = "<group>"; };
 		F4C113CE21D6790B00188A30 /* RVEffort+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVEffort+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F4C113CF21D6790B00188A30 /* RVEffort+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVEffort+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F4C113D021D6790B00188A30 /* RVSegment+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVSegment+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -199,8 +207,10 @@
 		F42ECEFB21CF92660096F83B /* Storyboards */ = {
 			isa = PBXGroup;
 			children = (
+				F461168E21E0A4BF00E2693C /* PopupChooser.storyboard */,
 				F42ECEE721CF91130096F83B /* Main.storyboard */,
 				F42ECEEF21CF91150096F83B /* LaunchScreen.storyboard */,
+				F453F63521EA6999006D72BA /* Header View.xib */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -223,6 +233,7 @@
 				F42ECF0321CFD3090096F83B /* ActivityDetailViewController.swift */,
 				F41C7A2E21D0E820003A5C31 /* StravaConnectViewController.swift */,
 				F4AAD80A21DCF788006ED5DD /* SettingsTableViewController.swift */,
+				F49E07DB21E1244000A0D678 /* SegmentDetailViewController.swift */,
 			);
 			name = "Detail View Controllers";
 			path = "View Controllers";
@@ -242,6 +253,7 @@
 			children = (
 				F4DC5A1821D4C7B50017983E /* Distance Utilities.swift */,
 				F4AAD80C21DD251C006ED5DD /* Settings.swift */,
+				F4BDDFBC21DFD19300E4668B /* PopupChooser.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -309,8 +321,10 @@
 			files = (
 				F42ECEF121CF91150096F83B /* LaunchScreen.storyboard in Resources */,
 				F41C7A2D21D0E7E5003A5C31 /* Images.xcassets in Resources */,
+				F461168F21E0A4BF00E2693C /* PopupChooser.storyboard in Resources */,
 				F42ECEEE21CF91150096F83B /* Assets.xcassets in Resources */,
 				F42ECEE921CF91130096F83B /* Main.storyboard in Resources */,
+				F453F63621EA6999006D72BA /* Header View.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,11 +410,13 @@
 				F429A6F821D7F23000A053DE /* Data Model Extensions.swift in Sources */,
 				FA3F242B21DA7AC80048A828 /* RVMap+CoreDataClass.swift in Sources */,
 				F42ECEE621CF91130096F83B /* ViewController.swift in Sources */,
+				F49E07DC21E1244000A0D678 /* SegmentDetailViewController.swift in Sources */,
 				F4C113D421D6790B00188A30 /* RVSegment+CoreDataClass.swift in Sources */,
 				F4AAD80B21DCF788006ED5DD /* SettingsTableViewController.swift in Sources */,
 				F4C113D221D6790B00188A30 /* RVEffort+CoreDataClass.swift in Sources */,
 				F42ECEFE21CFA6790096F83B /* RVActivity+CoreDataClass.swift in Sources */,
 				F41C7A2F21D0E820003A5C31 /* StravaConnectViewController.swift in Sources */,
+				F4BDDFBD21DFD19300E4668B /* PopupChooser.swift in Sources */,
 				F475B72721D232BC0028F2AF /* StravaSwift Extensions.swift in Sources */,
 				F41C7A3121D12EFA003A5C31 /* Display Extensions.swift in Sources */,
 				F42ECF0B21CFE1A50096F83B /* MOC Extensions.swift in Sources */,

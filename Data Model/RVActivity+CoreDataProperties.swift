@@ -24,6 +24,8 @@ extension RVActivity {
     @NSManaged public var calories: Double
     @NSManaged public var distance: Distance
     @NSManaged public var elapsedTime: Duration
+	@NSManaged public var lowElevation: Height
+	@NSManaged public var highElevation: Height
     @NSManaged public var elevationGain: Height
     @NSManaged public var endLat: Double
     @NSManaged public var endLong: Double
@@ -38,6 +40,8 @@ extension RVActivity {
     @NSManaged public var timeZone: String
     @NSManaged public var resourceState: ResourceState
 	@NSManaged public var kiloJoules : Double
+	@NSManaged public var averagePower : Double
+	@NSManaged public var maxPower : Double
 	@NSManaged public var deviceWatts : Bool
 	@NSManaged public var trainer : Bool
 	@NSManaged public var map : RVMap?

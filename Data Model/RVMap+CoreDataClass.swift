@@ -43,7 +43,10 @@ public class RVMap: NSManagedObject {
 	}
 	
 	func polylineLocations(summary : Bool = false) -> [CLLocationCoordinate2D]? {
-		guard let polyline = (summary ? self.summaryPolyline : self.polyline) else { return nil }
-		return decodePolyline(polyline)
+		if summary && self.summaryPolyline != nil {
+			return decodePolyline(self.summaryPolyline!)
+		} else {
+			return decodePolyline(self.polyline!)			// Polyline always exists
+		}
 	}
 }
