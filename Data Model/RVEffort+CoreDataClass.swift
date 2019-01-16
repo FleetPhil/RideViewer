@@ -12,6 +12,35 @@ import CoreData
 import UIKit
 import StravaSwift
 
+enum EffortSort : String, PopupSelectable, CaseIterable {
+	case distance 		= "distance"
+	case movingTime 	= "movingTime"
+	case date			= "startDate"
+	case maxHR			= "maxHeartRate"
+	case averageWatts 	= "averageWatts"
+	
+	var displayString : String {           // Text to use when choosing item
+		switch self {
+		case .distance:			return "Distance"
+		case .movingTime:		return "Moving Time"
+		case .date:				return "Date"
+		case .maxHR:			return "Max HR"
+		case .averageWatts:		return "Av. Power"
+		}
+	}
+
+    var defaultAscending : Bool {
+        switch self {
+        case .distance:            return false
+        case .movingTime:        return false
+        case .date:                return false
+        case .maxHR:            return false
+        case .averageWatts:        return false
+        }
+    }
+}
+
+
 @objc(RVEffort)
 public class RVEffort: NSManagedObject {
 	// Class Methods
@@ -21,7 +50,7 @@ public class RVEffort: NSManagedObject {
 	
 	class func get(identifier: Int, inContext context: NSManagedObjectContext) -> RVEffort? {
 		// Get the effort with the specified identifier
-		if let effort = context.fetchObjectForEntityName(RVEffort.entityName, withKeyValue: identifier, forKey: "id") as! RVEffort? {
+		if let effort : RVEffort = context.fetchObject(withKeyValue: identifier, forKey: "id") {
 			return effort
 		} else {			// Not found
 			return nil
@@ -43,9 +72,8 @@ public class RVEffort: NSManagedObject {
 		self.prRank					= Int16(effort.prRank ?? 0)
 		self.startIndex				= Int64(effort.startIndex ?? 0)
 		self.endIndex				= Int64(effort.endIndex ?? 0)
-		
-		let resourceStateValue 		= Int16(effort.resourceState != nil ? effort.resourceState!.rawValue : 0)
-		self.resourceState			= ResourceState(rawValue: resourceStateValue) ?? .undefined
+
+        self.resourceState = self.resourceState.newState(returnedState: effort.resourceState)
 
 		self.activity				= activity
         
@@ -98,8 +126,8 @@ enum EffortTableViewType : Int {
 	case effortsForSegment = 2
 }
 
-extension RVEffort : TableViewCompatible {
-	func cellForTableView(tableView: UITableView, atIndexPath indexPath: IndexPath) -> UITableViewCell {
+extension RVEffort : TableViewCompatibleEntity {
+	func cellForTableView(tableView: UITableView, atIndexPath indexPath: IndexPath) -> TableViewCompatibleCell {
 		if let tableType = EffortTableViewType(rawValue: tableView.tag) {
 			switch tableType {
 			case .effortsForActivity:
@@ -109,22 +137,23 @@ extension RVEffort : TableViewCompatible {
 			}
 		} else {
 			appLog.error("Unknown table type \(tableView.tag)")
-			return UITableViewCell()
+			return UITableViewCell() as! TableViewCompatibleCell
 		}
 	}
 }
 
 // Table cell
-class EffortListForActivityTableViewCell : UITableViewCell {
+class EffortListForActivityTableViewCell : UITableViewCell, TableViewCompatibleCell {
 	
 	@IBOutlet weak var segmentName: UILabel!
 	@IBOutlet weak var segmentData: UILabel!
 	@IBOutlet weak var effortData: UILabel!
 	
-	func configure(withModel: NSManagedObject) -> EffortListForActivityTableViewCell {
+	func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell {
 		if let effort = withModel as? RVEffort {
-			
+            
 			segmentName.text = effort.segment.name! + " " + ["","\u{2463}","\u{2462}","\u{2461}","\u{2460}", ""][5 - Int(effort.segment.climbCategory)]
+            segmentName.textColor = effort.resourceState.resourceStateColour
 			
 			segmentData.text = "➡️ " + effort.distance.distanceDisplayString
 				+ "  ↗️ " + (effort.segment.maxElevation - effort.segment.minElevation).heightDisplayString
@@ -144,36 +173,34 @@ class EffortListForActivityTableViewCell : UITableViewCell {
 	}
 }
 
-class EffortListForSegmentTableViewCell : UITableViewCell {
+class EffortListForSegmentTableViewCell : UITableViewCell, TableViewCompatibleCell {
 	
 	@IBOutlet weak var activityName: UILabel!
 	@IBOutlet weak var activityDate: UILabel!
 	@IBOutlet weak var effortData: UILabel!
 	
-	func configure(withModel: NSManagedObject) -> EffortListForSegmentTableViewCell {
+	func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell  {
 		if let effort = withModel as? RVEffort {
 			
 			activityName.text = effort.activity.name
+            activityName.textColor = effort.resourceState.resourceStateColour
 			activityDate.text = (effort.activity.startDate as Date).displayString(displayType: .dateOnly)
-			
+
 			let effortText = NSMutableAttributedString(string: "⏱ " + effort.elapsedTime.shortDurationDisplayString)
 			effortText.append(NSAttributedString(string: "  ⏩ " + (effort.distance / effort.elapsedTime).speedDisplayString))
 			effortText.append(NSAttributedString(string: effort.maxHeartRate > 0 ? "  ❤️ \(effort.maxHeartRate.fixedFraction(digits: 0))" : ""))
+
 
 			let powerAttributes : [NSAttributedString.Key : Any] = effort.activity.deviceWatts ? [:] : [.foregroundColor : UIColor.lightGray]
 			effortText.append(NSAttributedString(string: "  🔌 \(effort.averageWatts.fixedFraction(digits: 0))W", attributes: powerAttributes))
 			
 			effortData.attributedText = effortText
 			
-//			effortData.text = "⏱ " + effort.elapsedTime.shortDurationDisplayString
-//				+ "  ⏩ " + (effort.distance / effort.elapsedTime).speedDisplayString
-//				+ "  🔌 \(effort.averageWatts.fixedFraction(digits: 0))W"
-//				+ "  ❤️ \(effort.maxHeartRate.fixedFraction(digits: 0))"
-			
 			self.separatorInset = .zero
 		} else {
 			appLog.error("Unexpected entity for table view cell")
 		}
-		return self
+        
+        return self
 	}
 }

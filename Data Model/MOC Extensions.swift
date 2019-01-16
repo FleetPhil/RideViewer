@@ -61,25 +61,25 @@ class CoreDataManager {
     }()
 }
 
-// Extension to return entity name
-extension NSManagedObject {
-    static var entityName : String {
-        let fullName = self.entity().managedObjectClassName!
-        if let index = fullName.index(of: ".") {
-            let substring = String(fullName[(fullName.index(after: index))...])
-            return substring
-        } else {
-            return fullName
-        }
-    }
-}
+//// Extension to return entity name
+//extension NSManagedObject {
+//    static var entityName : String {
+//        let fullName = self.entity().managedObjectClassName!
+//        if let index = fullName.index(of: ".") {
+//            let substring = String(fullName[(fullName.index(after: index))...])
+//            return substring
+//        } else {
+//            return fullName
+//        }
+//    }
+//}
 
 extension NSManagedObjectContext {
 	
 	// Return count of entitity instances
-	func countOfObjectsForEntityName (_ entityName: String, withPredicate predicate: NSPredicate? = nil) -> Int?  {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
-		fetchRequest.entity = NSEntityDescription.entity(forEntityName: entityName, in: self)
+	func countOfObjects(_ entity: NSManagedObject.Type, withPredicate predicate: NSPredicate? = nil) -> Int?  {
+		let fetchRequest = entity.fetchRequest()
+
 		if predicate != nil {
 			fetchRequest.predicate = predicate!
 		}
@@ -94,37 +94,32 @@ extension NSManagedObjectContext {
 	}
 	
 	// Return one object with the specified key
-	func fetchObjectForEntityName (_ entityName: String, withKeyValue keyValue: String,forKey key: String) -> AnyObject? {
+	func fetchObject<Entity>(withKeyValue keyValue: String,forKey key: String) -> Entity? {
 		let predicateFormat = "\(key) = \"\(keyValue)\""
 		let predicate = NSPredicate(format: predicateFormat, argumentArray: nil)
-		let results = self.fetchObjectsForEntityName(entityName, withPredicate: predicate, withSortDescriptor: nil)
-		return results?.last
-	}
-	// Overloaded for entities with Int key
-	func fetchObjectForEntityName (_ entityName: String, withKeyValue keyValue: Int,forKey key: String) -> AnyObject? {
-		let predicateFormat = "\(key) = \(keyValue)"
-		let predicate = NSPredicate(format: predicateFormat, argumentArray: nil)
-		let results = self.fetchObjectsForEntityName(entityName, withPredicate: predicate, withSortDescriptor: nil)
-		return results?.last
+		let results = self.fetchObjects(withPredicate: predicate, withSortDescriptor: nil)
+		return results?.last as? Entity
 	}
 
+	// Overloaded for entities with Int key
+	func fetchObject<Entity>(withKeyValue keyValue: Int,forKey key: String) -> Entity? {
+		let predicateFormat = "\(key) = \(keyValue)"
+		let predicate = NSPredicate(format: predicateFormat, argumentArray: nil)
+		let results = self.fetchObjects(withPredicate: predicate, withSortDescriptor: nil)
+		return results?.last as? Entity
+	}
+	
 	// Generic retrieve function
-	func fetchObjectsForEntityName (_ entityName: String, withPredicate predicate: NSPredicate? = nil, withSortDescriptor sortDescriptor: NSSortDescriptor? = nil) -> [AnyObject]? {
-		
-		let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
-		fetchRequest.entity = NSEntityDescription.entity(forEntityName: entityName, in: self)
-		
-		if predicate != nil {
-			fetchRequest.predicate = predicate!
-		}
-		if sortDescriptor != nil {
-			fetchRequest.sortDescriptors = [sortDescriptor!]
-		}
+	func fetchObjects<Entity : NSManagedObject> (withPredicate predicate: NSPredicate? = nil, withSortDescriptor sortDescriptor: NSSortDescriptor? = nil) -> [Entity]? {
+		let fetchRequest = Entity.fetchRequest()
+
+		if predicate != nil { fetchRequest.predicate = predicate! }
+		if sortDescriptor != nil { fetchRequest.sortDescriptors = [sortDescriptor!] }
 		
 		let error: NSErrorPointer? = nil
-		let results: [AnyObject]?
+		let results: [Entity]?
 		do {
-			results = try self.fetch(fetchRequest)
+			results = try self.fetch(fetchRequest) as? [Entity]
 		} catch let error1 as NSError {
 			error??.pointee = error1
 			results = nil
@@ -134,22 +129,19 @@ extension NSManagedObjectContext {
 			print("fetchObjectsForEntityName: error: \(String(describing: error))")
 			return nil
 		}
-
-		return results
 		
+		return results
 	}
 	
-	func deleteObjectsForEntityName (_ entityName: String ) -> Int {
-		
+	func deleteObjects(_ entity : NSManagedObject.Type) -> Int {
 		var count = 0
 		
-		if let items = self.fetchObjectsForEntityName(entityName) {
+		if let items = self.fetchObjects() {
 			for object in items {
-				self.delete(object as! NSManagedObject)
+				self.delete(object)
 				count += 1
 			}
 		}
-
         return count
 	}
     

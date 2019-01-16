@@ -59,6 +59,7 @@
         <relationship name="segments" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVSegment" inverseName="map" inverseEntity="RVSegment" syncable="YES"/>
     </entity>
     <entity name="RVSegment" representedClassName="RVSegment" syncable="YES">
+        <attribute name="allEfforts" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="athleteCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="averageGrade" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="climbCategory" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
@@ -83,6 +84,6 @@
         <element name="RVActivity" positionX="-427.44140625" positionY="71.51953125" width="128" height="480"/>
         <element name="RVEffort" positionX="-248.51953125" positionY="74.57421875" width="128" height="300"/>
         <element name="RVMap" positionX="-199.33984375" positionY="450.8515625" width="128" height="135"/>
-        <element name="RVSegment" positionX="-44.3671875" positionY="74.09765625" width="128" height="330"/>
+        <element name="RVSegment" positionX="-44.3671875" positionY="74.09765625" width="128" height="345"/>
     </elements>
 </model>

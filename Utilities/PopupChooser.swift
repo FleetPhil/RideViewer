@@ -11,10 +11,12 @@ import UIKit
 
 protocol PopupSelectable {
 	var displayString : String { get }
+    var defaultAscending : Bool { get }
 }
 
 extension String : PopupSelectable {
 	var displayString : String { return self }
+    var defaultAscending : Bool { return true }
 }
 
 fileprivate protocol PopupDelegate {
@@ -112,8 +114,10 @@ class ItemSelectionViewController : UIViewController, UITableViewDelegate   {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(editDone(sender:)))
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(editCancel(sender:)))
+        if multipleSelection {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(editDone(sender:)))
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(editCancel(sender:)))
+        }
 
         tableView.allowsMultipleSelection = multipleSelection
     }
@@ -128,7 +132,7 @@ class ItemSelectionViewController : UIViewController, UITableViewDelegate   {
 }
 
 extension UIResponder {
-	func owningViewController() -> UIViewController? {
+	fileprivate func owningViewController() -> UIViewController? {
 		var nextResponser = self
 		while let next = nextResponser.next {
 			nextResponser = next

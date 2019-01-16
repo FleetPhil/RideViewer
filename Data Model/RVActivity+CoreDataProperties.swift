@@ -38,7 +38,7 @@ extension RVActivity {
     @NSManaged public var startLat: Double
     @NSManaged public var startLong: Double
     @NSManaged public var timeZone: String
-    @NSManaged public var resourceState: ResourceState
+    @NSManaged public var resourceState: RVResourceState
 	@NSManaged public var kiloJoules : Double
 	@NSManaged public var averagePower : Double
 	@NSManaged public var maxPower : Double

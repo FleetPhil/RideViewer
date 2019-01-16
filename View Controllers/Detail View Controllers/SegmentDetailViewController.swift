@@ -9,13 +9,15 @@
 import UIKit
 import CoreData
 
-class SegmentDetailViewController: ListViewMaster, UITableViewDelegate {
+class SegmentDetailViewController: UIViewController {
 	
 	//MARK: Model
 	var segment : RVSegment!
 
 	// MARK: Model for effort table
 	private lazy var dataManager = DataManager<RVEffort>()
+	
+	@IBOutlet weak var tableView: RVTableView!
 	
 	@IBOutlet weak var effortsLabel: UILabel!
 	
@@ -28,6 +30,8 @@ class SegmentDetailViewController: ListViewMaster, UITableViewDelegate {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		
+		tableView.sortFilterDelegate = self
 		
 		if segment != nil {
 			updateView()
@@ -42,17 +46,18 @@ class SegmentDetailViewController: ListViewMaster, UITableViewDelegate {
 		mapView!.showForRoute(segment)
 		
 		if segment.resourceState != .detailed {
+            // Get segment details including route
+            tableView.startDataRetrieval()
 			StravaManager.sharedInstance.updateSegment(segment, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] in
 				if let currentSelf = self {
 					currentSelf.mapView!.showForRoute(currentSelf.segment)
+                    // Get all efforts for this segment
+                    StravaManager.sharedInstance.effortsForSegment(currentSelf.segment, page: 1, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [ weak self ] in
+                        self?.tableView?.endDataRetrieval()
+                        self?.effortsLabel.text    = "\(self?.tableView.numberOfRows(inSection: 0) ?? 0) Efforts"
+                    })
 				}
 			})
-		}
-
-		if StravaManager.sharedInstance.haveNewActivities == .yes {
-			StravaManager.sharedInstance.effortsForSegment(segment, page: 1, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] in
-				self?.setupEfforts(self!.segment)
-			} )
 		}
 		setupEfforts(segment)
 	}
@@ -71,24 +76,51 @@ class SegmentDetailViewController: ListViewMaster, UITableViewDelegate {
 
 }
 
-extension SegmentDetailViewController {
+extension SegmentDetailViewController : SortFilterDelegate {
 	// MARK: effort table view support
 	
 	func setupEfforts(_ forSegment : RVSegment) {
 		tableView.dataSource    = dataManager
-		tableView.delegate      = self
 		tableView.rowHeight 	= UITableView.automaticDimension
 		
 		tableView.tag = EffortTableViewType.effortsForSegment.rawValue
-		
-		dataManager.delegate = self
-		
-		let sortDescriptor = NSSortDescriptor(key: "startIndex", ascending: true)
+		dataManager.tableView = tableView
+		setDataManager(sortKey: .distance, ascending: EffortSort.distance.defaultAscending)
+	}
+	
+    func setDataManager(sortKey : EffortSort, ascending :  Bool) {
 		let settingsPredicate = Settings.sharedInstance.segmentSettingsPredicate
-		let filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "segment.id == %@", argumentArray: [forSegment.id]), settingsPredicate])
+		let sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: ascending)
+		let filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "segment.id == %@", argumentArray: [segment.id]), settingsPredicate])
 		let efforts = dataManager.fetchObjects(sortDescriptor: sortDescriptor, filterPredicate: filterPredicate)
 		self.effortsLabel.text = "\(efforts.count) Efforts"
 	}
+	
+	func tableRowSelectedAtIndex(_ index: IndexPath) {
+		performSegue(withIdentifier: "SegmentEffortListToSegmentDetail", sender: self)
+	}
+	
+	func sortButtonPressed(sender: UIView) {
+		// Popup the list of fields to select sort order
+		let chooser = PopupupChooser<EffortSort>()
+		chooser.title = "Select sort order"
+		chooser.showSelectionPopup(items: EffortSort.allCases,
+								   sourceView: sender,
+								   updateHandler: newSortOrder)
+	}
+	
+	func filterButtonPressed(sender: UIView) {
+		
+	}
+	
+	private func newSortOrder(newOrder : [EffortSort]) {
+		if let newSort = newOrder.first {
+			setDataManager(sortKey: newSort, ascending: newSort.defaultAscending)
+			tableView.reloadData()
+		}
+	}
+
+	
 	
 }
 

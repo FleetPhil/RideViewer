@@ -10,23 +10,12 @@ import UIKit
 import StravaSwift
 import CoreData
 
-fileprivate enum SegmentSort : String, PopupSelectable, CaseIterable {
-	case distance = "distance"
-	case grade = "averageGrade"
-	
-	var displayString : String {           // Text to use when choosing item
-		switch self {
-		case .distance:		return "Distance"
-		case .grade:		return "Av. Grade"
-		}
-	}
-}
-
-class SegmentListViewController: ListViewMaster, UITableViewDelegate {
+class SegmentListViewController: UIViewController, SortFilterDelegate {
 	
 	// MARK: Model
 	private lazy var dataManager = DataManager<RVSegment>()
-	private var sortKey : SegmentSort = .distance
+	
+	@IBOutlet weak var tableView: RVTableView!
 	
 	@IBOutlet weak var sortButton: UIBarButtonItem!
 	
@@ -36,17 +25,18 @@ class SegmentListViewController: ListViewMaster, UITableViewDelegate {
 		
 		self.title = "Segments"
 		tableView.dataSource    = dataManager
-		tableView.delegate      = self
 		tableView.rowHeight = UITableView.automaticDimension
 		
-		dataManager.delegate = self
+		tableView.sortFilterDelegate = self
 		
-		setDataManager()
+		dataManager.tableView = self.tableView
+		
+		setDataManager(sortKey: .distance, ascending: SegmentSort.distance.defaultAscending)
 	}
 	
-	func setDataManager() {
+    func setDataManager(sortKey : SegmentSort, ascending : Bool) {
 		let predicate = Settings.sharedInstance.segmentSettingsPredicate
-		let sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: false)
+		let sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: ascending)
 		_ = dataManager.fetchObjects(sortDescriptor: sortDescriptor, filterPredicate: predicate)
 	}
 	
@@ -54,21 +44,28 @@ class SegmentListViewController: ListViewMaster, UITableViewDelegate {
 		performSegue(withIdentifier: "SegmentListToSegmentDetail", sender: self)
 	}
 
-	@IBAction func sortButtonPressed(_ sender: Any) {
+	func sortButtonPressed(sender: UIView) {
 		// Popup the list of fields to select sort order
 		let chooser = PopupupChooser<SegmentSort>()
 		chooser.title = "Select sort order"
 		chooser.showSelectionPopup(items: SegmentSort.allCases,
-								   sourceView: tableView,
+								   sourceView: sender,
 								   updateHandler: newSortOrder)
+	}
+	
+	func filterButtonPressed(sender: UIView) {
+		
 	}
 	
 	private func newSortOrder(newOrder : [SegmentSort]) {
 		if let newSort = newOrder.first {
-			sortKey = newSort
-			setDataManager()
+			setDataManager(sortKey: newSort, ascending: newSort.defaultAscending)
 			tableView.reloadData()
 		}
+	}
+	
+	func tableRowSelectedAtIndex(_ index: IndexPath) {
+		performSegue(withIdentifier: "SegmentListToSegmentDetail", sender: self)
 	}
 
 	// MARK: - Navigation

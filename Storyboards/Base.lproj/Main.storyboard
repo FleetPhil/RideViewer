@@ -34,8 +34,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="834"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="s7c-zU-qMq">
-                                <rect key="frame" x="0.0" y="70" width="320" height="664"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="s7c-zU-qMq" customClass="RVTableView" customModule="RideViewer" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="70" width="320" height="714"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ActivityCell" id="X03-AV-H3J" customClass="ActivityListTableViewCell" customModule="RideViewer" customModuleProvider="target">
@@ -109,27 +109,13 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cXe-x4-yoe">
-                                <rect key="frame" x="0.0" y="734" width="320" height="50"/>
-                                <items>
-                                    <barButtonItem title="Sort" id="aaK-a9-Vlf">
-                                        <connections>
-                                            <action selector="sortButtonPressed:" destination="kHb-9h-vJU" id="KEJ-Vf-hUq"/>
-                                        </connections>
-                                    </barButtonItem>
-                                </items>
-                            </toolbar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="ryV-z6-Kh4" firstAttribute="bottom" secondItem="s7c-zU-qMq" secondAttribute="bottom" id="1Ea-Xg-PTD"/>
                             <constraint firstItem="s7c-zU-qMq" firstAttribute="leading" secondItem="ryV-z6-Kh4" secondAttribute="leading" id="7NJ-Yf-B8f"/>
-                            <constraint firstItem="cXe-x4-yoe" firstAttribute="leading" secondItem="ryV-z6-Kh4" secondAttribute="leading" id="GdS-ai-eoh"/>
-                            <constraint firstItem="ryV-z6-Kh4" firstAttribute="bottom" secondItem="cXe-x4-yoe" secondAttribute="bottom" id="PYS-2Z-lcs"/>
                             <constraint firstItem="s7c-zU-qMq" firstAttribute="top" secondItem="ryV-z6-Kh4" secondAttribute="top" id="YG9-QN-glw"/>
-                            <constraint firstItem="cXe-x4-yoe" firstAttribute="trailing" secondItem="ryV-z6-Kh4" secondAttribute="trailing" id="ijk-Cd-PXI"/>
-                            <constraint firstItem="s7c-zU-qMq" firstAttribute="bottom" secondItem="cXe-x4-yoe" secondAttribute="top" id="moc-nM-U6W"/>
                             <constraint firstItem="s7c-zU-qMq" firstAttribute="trailing" secondItem="ryV-z6-Kh4" secondAttribute="trailing" id="usd-6G-s4q"/>
-                            <constraint firstItem="cXe-x4-yoe" firstAttribute="bottom" secondItem="ryV-z6-Kh4" secondAttribute="bottom" id="wSZ-i7-TXX"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="ryV-z6-Kh4"/>
                     </view>
@@ -151,8 +137,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="834"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lo4-aL-AhB">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="734"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lo4-aL-AhB" customClass="RVTableView" customModule="RideViewer" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="784"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="SegmentCell" rowHeight="84" id="um5-Dc-AnL" customClass="SegmentListTableViewCell" customModule="RideViewer" customModuleProvider="target">
@@ -221,33 +207,18 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Up1-ig-F1B">
-                                <rect key="frame" x="0.0" y="734" width="320" height="50"/>
-                                <items>
-                                    <barButtonItem title="Sort" id="Tpf-vP-Pj3">
-                                        <connections>
-                                            <action selector="sortButtonPressed:" destination="bSQ-Mg-PlR" id="BTz-Go-QvY"/>
-                                        </connections>
-                                    </barButtonItem>
-                                </items>
-                            </toolbar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="Up1-ig-F1B" firstAttribute="bottom" secondItem="YAx-OC-3zO" secondAttribute="bottom" id="F4n-cO-rfr"/>
-                            <constraint firstItem="Up1-ig-F1B" firstAttribute="top" secondItem="lo4-aL-AhB" secondAttribute="bottom" id="FZ6-oQ-SGb"/>
-                            <constraint firstItem="Up1-ig-F1B" firstAttribute="leading" secondItem="YAx-OC-3zO" secondAttribute="leading" id="YHs-d4-l0r"/>
+                            <constraint firstItem="YAx-OC-3zO" firstAttribute="bottom" secondItem="lo4-aL-AhB" secondAttribute="bottom" id="4zQ-NX-We6"/>
                             <constraint firstItem="lo4-aL-AhB" firstAttribute="leading" secondItem="YAx-OC-3zO" secondAttribute="leading" id="ZN5-aT-gUa"/>
                             <constraint firstItem="lo4-aL-AhB" firstAttribute="top" secondItem="ovw-bZ-fTM" secondAttribute="top" id="hw8-LY-34X"/>
-                            <constraint firstItem="Up1-ig-F1B" firstAttribute="trailing" secondItem="YAx-OC-3zO" secondAttribute="trailing" id="jJ5-tk-6NP"/>
-                            <constraint firstItem="Up1-ig-F1B" firstAttribute="top" secondItem="lo4-aL-AhB" secondAttribute="bottom" id="pOK-9e-uYT"/>
                             <constraint firstItem="lo4-aL-AhB" firstAttribute="trailing" secondItem="YAx-OC-3zO" secondAttribute="trailing" id="xY5-gN-sDZ"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="YAx-OC-3zO"/>
                     </view>
                     <navigationItem key="navigationItem" id="rga-4g-9bX"/>
                     <connections>
-                        <outlet property="sortButton" destination="Tpf-vP-Pj3" id="1Qb-fx-6lw"/>
                         <outlet property="tableView" destination="lo4-aL-AhB" id="pI0-tb-QNW"/>
                         <segue destination="e7j-Qi-G4a" kind="showDetail" identifier="SegmentListToSegmentDetail" id="kSC-tZ-wLp"/>
                     </connections>
@@ -398,7 +369,7 @@
                                                     <constraint firstAttribute="width" constant="2" id="AlU-yv-Dbr"/>
                                                 </constraints>
                                             </view>
-                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="OT5-hi-JS5">
+                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="OT5-hi-JS5" customClass="RVTableView" customModule="RideViewer" customModuleProvider="target">
                                                 <rect key="frame" x="385" y="0.0" width="366.5" height="488"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <prototypes>
@@ -697,7 +668,7 @@
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="OJh-QH-Qif">
+                                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="OJh-QH-Qif" customClass="RVTableView" customModule="RideViewer" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="24.5" width="445" height="344.5"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <prototypes>

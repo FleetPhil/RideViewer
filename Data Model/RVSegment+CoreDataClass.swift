@@ -12,6 +12,29 @@ import CoreData
 import StravaSwift
 import CoreLocation
 
+enum SegmentSort : String, PopupSelectable, CaseIterable {
+	case name 		= "name"
+	case distance 	= "distance"
+	case grade 		= "averageGrade"
+	
+	var displayString : String {           // Text to use when choosing item
+		switch self {
+		case .name:			return "Name"
+		case .distance:		return "Distance"
+		case .grade:		return "Av. Grade"
+		}
+	}
+    
+    var defaultAscending : Bool {           //
+        switch self {
+        case .name:            return true
+        case .distance:        return false
+        case .grade:           return false
+        }
+    }
+
+}
+
 @objc(RVSegment)
 public class RVSegment: NSManagedObject, RouteViewCompatible {
 	
@@ -30,7 +53,7 @@ public class RVSegment: NSManagedObject, RouteViewCompatible {
 	
 	class func get(identifier: Int, inContext context: NSManagedObjectContext) -> RVSegment? {
 		// Get the effort with the specified identifier
-		if let segment = context.fetchObjectForEntityName(RVSegment.entityName, withKeyValue: identifier, forKey: "id") as! RVSegment? {
+		if let segment : RVSegment = context.fetchObject(withKeyValue: identifier, forKey: "id") {
 			return segment
 		} else {			// Not found
 			return nil
@@ -54,16 +77,16 @@ public class RVSegment: NSManagedObject, RouteViewCompatible {
 		self.elevationGain	= segment.totalElevationGain ?? ((segment.elevationHigh ?? 0.0) - (segment.elevationLow ?? 0.0))
 		self.effortCount	= Int64(segment.effortCount ?? 0)
 		self.athleteCount	= Int64(segment.athleteCount ?? 0)
-		
+
 		if let _ = segment.map?.id {
 			self.map		= RVMap.create(map: segment.map!, context: self.managedObjectContext!)
 		} else {
 			self.map = nil
 		}
 
-		
-		let resourceStateValue 		= Int16(segment.resourceState != nil ? segment.resourceState!.rawValue : 0)
-		self.resourceState			= ResourceState(rawValue: resourceStateValue) ?? .undefined
+        self.resourceState = self.resourceState.newState(returnedState: segment.resourceState)
+
+		self.allEfforts				= false
 		
 		return self
 	}
@@ -72,20 +95,14 @@ public class RVSegment: NSManagedObject, RouteViewCompatible {
 }
 
 // Extension to support generic table view
-extension RVSegment : TableViewCompatible {
-	func cellForTableView(tableView: UITableView, atIndexPath indexPath: IndexPath) -> UITableViewCell {
-		if let cell = tableView.dequeueReusableCell(withIdentifier: "SegmentCell", for: indexPath) as? SegmentListTableViewCell {
-			cell.configure(withModel: self)
-			return cell
-		} else {
-			appLog.error("Unable to dequeue cell")
-			return UITableViewCell()
-		}
+extension RVSegment : TableViewCompatibleEntity {
+	func cellForTableView(tableView: UITableView, atIndexPath indexPath: IndexPath) -> TableViewCompatibleCell {
+		return (tableView.dequeueReusableCell(withIdentifier: "SegmentCell", for: indexPath) as! SegmentListTableViewCell).configure(withModel: self)
 	}
 }
 
 // Table cell
-class SegmentListTableViewCell : UITableViewCell {
+class SegmentListTableViewCell : UITableViewCell, TableViewCompatibleCell {
 	
 	@IBOutlet weak var nameLabel: UILabel!
 	@IBOutlet weak var distanceLabel: UILabel!
@@ -93,11 +110,12 @@ class SegmentListTableViewCell : UITableViewCell {
     @IBOutlet weak var gradeLabel: UILabel!
     
 	
-	func configure(withModel: NSManagedObject) {
+	func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell {
 		if let segment = withModel as? RVSegment {
 //			appLog.debug("Segment state is \(segment.resourceState.rawValue)")
 			
-			nameLabel.text		= segment.name
+            nameLabel.text		= "\(segment.efforts.count) " + segment.name!
+			nameLabel.textColor	= segment.resourceState.resourceStateColour
 			distanceLabel.text	= segment.distance.distanceDisplayString
 			gradeLabel.text	= segment.averageGrade.fixedFraction(digits: 1) + "%"
 			elevationLabel.text	= segment.elevationGain.heightDisplayString
@@ -106,6 +124,8 @@ class SegmentListTableViewCell : UITableViewCell {
 		} else {
 			appLog.error("Unexpected entity for table view cell")
 		}
+        
+        return self
 	}
 }
 

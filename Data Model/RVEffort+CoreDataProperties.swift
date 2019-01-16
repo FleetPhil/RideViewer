@@ -17,7 +17,7 @@ extension RVEffort {
         return NSFetchRequest<RVEffort>(entityName: "RVEffort")
     }
 
-    @NSManaged public var resourceState: ResourceState
+    @NSManaged public var resourceState: RVResourceState
     @NSManaged public var id: Int64
     @NSManaged public var elapsedTime: Duration
     @NSManaged public var name: String?

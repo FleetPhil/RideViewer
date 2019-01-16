@@ -10,12 +10,6 @@ import Foundation
 import StravaSwift
 import CoreData
 
-enum NewActivitiesLoaded {
-	case yes
-	case no
-	case inProgress
-}
-
 class StravaManager : TokenDelegate {
 	func get() -> OAuthToken? {
 		return token
@@ -29,8 +23,6 @@ class StravaManager : TokenDelegate {
 	var strava : StravaClient!
 	
 	private var token: OAuthToken!
-
-	var haveNewActivities : NewActivitiesLoaded = .inProgress
 	private var originalActivityCount = 0
 	private var newActivityCount = 0
 	
@@ -67,14 +59,18 @@ class StravaManager : TokenDelegate {
 		}
 	}
 	
-	func getAthleteActivities(page : Int, context : NSManagedObjectContext) {
+    func getAthleteActivities(page : Int, context : NSManagedObjectContext, completionHandler : @escaping ((_ newActivities : Int)->Void)) {
+		var params = ["per_page":100, "page":page]
+
+		// Get time of latest activity as a UNIX epoch and add as a parameter
+		if let activities : [RVActivity] = context.fetchObjects() {
+			params["after"] = Int(activities.map( { $0.startDate as Date } ).max()?.timeIntervalSince1970 ?? 0.0)
+		}
 		if page == 1 {
-			self.originalActivityCount = context.countOfObjectsForEntityName(RVActivity.entityName) ?? 0
 			self.newActivityCount = 0
-			self.haveNewActivities = .inProgress
 		}
 		
-		try? StravaClient.sharedInstance.request(Router.athleteActivities(params: ["per_page":100, "page":page]), result: { [weak self] (activities: [Activity]?) in
+		try? StravaClient.sharedInstance.request(Router.athleteActivities(params: params), result: { [weak self] (activities: [Activity]?) in
 			guard let `self` = self, let activities = activities else { return }
 			
 			appLog.debug("Retrieved \(activities.count) activities for page \(page)")
@@ -84,14 +80,10 @@ class StravaManager : TokenDelegate {
 				}
 				context.saveContext()
 				self.newActivityCount = self.newActivityCount + activities.count
-				self.getAthleteActivities(page: page + 1, context: context)		// get next page
+                self.getAthleteActivities(page: page + 1, context: context, completionHandler: completionHandler)		// get next page
 			} else {
 				// No more activities to load
-				if self.originalActivityCount == self.newActivityCount {
-					self.haveNewActivities = .no
-				} else {
-					self.haveNewActivities = .yes
-				}
+                completionHandler(self.newActivityCount)
 			}
 			}, failure: { (error: NSError) in
 				debugPrint(error)
@@ -99,16 +91,22 @@ class StravaManager : TokenDelegate {
 	}
 	
 	// Get details for specified activity
-	func updateActivity(_ activity : RVActivity, context : NSManagedObjectContext, completionHandler : @escaping (()->Void)) {
-		guard token != nil else { return }
+    func updateActivity(_ activity : RVActivity, context : NSManagedObjectContext, completionHandler : @escaping ((Bool)->Void)) {
+		guard token != nil else {
+            completionHandler(false)
+            return
+        }
 		
 		try? StravaClient.sharedInstance.request(Router.activities(id: Router.Id(activity.id), params: ["include_all_efforts":false]), result: { (activities: Activity?) in
-			guard let activity = activities else { return }
+			guard let activity = activities else {
+                completionHandler(false)
+                return
+            }
 			
 			//			appLog.debug("Retrieved activity details for \(activity.name ?? "None?")")
 			let _ = RVActivity.create(activity: activity, context: context)
 			context.saveContext()
-			completionHandler()
+			completionHandler(true)
 		}, failure: { (error: NSError) in
 			debugPrint(error)
 		})
@@ -143,12 +141,13 @@ class StravaManager : TokenDelegate {
 				context.saveContext()
 				self.effortsForSegment(segment, page: page + 1, context: context, completionHandler: completionHandler)
 			} else {			// Finished
+				// We have all current efforts for this segment
+				segment.allEfforts = true
 				completionHandler()
 			}
 		}, failure: { (error: NSError) in
 			debugPrint(error)
 		})
 	}
-	
-	
 }
+

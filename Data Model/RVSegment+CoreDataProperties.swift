@@ -19,7 +19,8 @@ extension RVSegment {
 
     @NSManaged public var id: Int64
     @NSManaged public var name: String?
-    @NSManaged public var resourceState: ResourceState
+    @NSManaged public var resourceState: RVResourceState
+	@NSManaged public var allEfforts: Bool
     @NSManaged public var distance: Distance
     @NSManaged public var averageGrade: Double
     @NSManaged public var maxGrade: Double

@@ -17,7 +17,7 @@ extension RVMap {
         return NSFetchRequest<RVMap>(entityName: "RVMap")
     }
 
-    @NSManaged public var resourceState: ResourceState
+    @NSManaged public var resourceState: RVResourceState
     @NSManaged public var id: String
     @NSManaged public var polyline: String?
     @NSManaged public var summaryPolyline: String?

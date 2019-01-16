@@ -26,16 +26,16 @@ public class RVMap: NSManagedObject {
 		newMap.id				= map.id!
 		newMap.polyline 		= map.polyline ?? ""
 		newMap.summaryPolyline	= map.summaryPolyline
-		
-		let resourceStateValue 		= Int16(map.resourceState != nil ? map.resourceState!.rawValue : 0)
-		newMap.resourceState		= ResourceState(rawValue: resourceStateValue) ?? .undefined
+        newMap.resourceState    = .undefined
+        
+        newMap.resourceState = newMap.resourceState.newState(returnedState: map.resourceState)
 
 		return newMap
 	}
 	
 	class func get(identifier: String, inContext context: NSManagedObjectContext) -> RVMap? {
 		// Get the map with the specified identifier
-		if let map = context.fetchObjectForEntityName(RVMap.entityName, withKeyValue: identifier, forKey: "id") as! RVMap? {
+		if let map : RVMap = context.fetchObject(withKeyValue: identifier, forKey: "id") {
 			return map
 		} else {			// Not found
 			return nil
