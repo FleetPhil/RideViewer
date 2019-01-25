@@ -61,8 +61,8 @@ class SettingsTableViewController: UITableViewController {
 		self.activityStepper.value		= Settings.sharedInstance.activityMinDistance
 		self.segmentStepper.value		= Settings.sharedInstance.segmentMinDistance
 		
-		self.activityMinText.text		= "Only show activities at least \(Settings.sharedInstance.activityMinDistance.distanceDisplayString)"
-		self.segmentMinText.text		= "Only show segments at least \(Settings.sharedInstance.segmentMinDistance.distanceDisplayString)"
+		self.activityMinText.text		= "'Short activities' are under \(Settings.sharedInstance.activityMinDistance.distanceDisplayString)"
+		self.segmentMinText.text		= "'Short segments' are under \(Settings.sharedInstance.segmentMinDistance.distanceDisplayString)"
 	}
 	
 

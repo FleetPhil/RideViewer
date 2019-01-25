@@ -18,73 +18,144 @@ protocol RouteViewCompatible {
 fileprivate class RouteEndPoint : NSObject, MKAnnotation {
 	var coordinate: CLLocationCoordinate2D
 	var route: RouteViewCompatible
+	var isStart : Bool
 	
 	init(route : RouteViewCompatible, isStart :  Bool) {
 		self.coordinate = isStart ? route.startLocation : route.endLocation
 		self.route = route
+		self.isStart = isStart
 		super.init()
 	}
 }
 
+fileprivate class PhotoAnnotation : NSObject, MKAnnotation {
+	var coordinate: CLLocationCoordinate2D
+	var image : UIImage
+	init(image : UIImage,  location : CLLocation) {
+		self.coordinate = location.coordinate
+		self.image = image
+		super.init()
+	}
+}
+
+fileprivate class MapPhotoView : MKAnnotationView {
+	
+}
+
+fileprivate class RideRouteLine : MKPolyline {
+	var highlighted : Bool = false
+	var route : RouteViewCompatible!
+	
+	convenience init(coordinates: UnsafePointer<CLLocationCoordinate2D>, count: Int, highlighted : Bool, route: RouteViewCompatible) {
+		self.init(coordinates: coordinates, count: count)
+		self.highlighted = highlighted
+		self.route = route
+	}
+}
+
 class RideMapView : MKMapView, MKMapViewDelegate {
-
-	func showForRoute(_ route : RouteViewCompatible) {
-        var mapRegion : MKCoordinateRegion? = nil
-		
-		self.addAnnotation(RouteEndPoint(route: route, isStart: true))
-		self.addAnnotation(RouteEndPoint(route: route, isStart: false))
 	
-		if let map = route.map {
-			mapRegion = self.addPolylineForMap(map: map, summary: true)
-		} else {
-			appLog.debug("No map for route")
+	var mapRegion : MKCoordinateRegion!
+	
+	required init?(coder aDecoder: NSCoder) {
+		super.init(coder: aDecoder)
+		self.register(MapPhotoView.self, forAnnotationViewWithReuseIdentifier: "photoView")
+	}
+	
+	// Public functions
+	func addRoute(_ route : RouteViewCompatible, highlighted: Bool) {
+		if highlighted {
+			self.addAnnotation(RouteEndPoint(route: route, isStart: true))
+			self.addAnnotation(RouteEndPoint(route: route, isStart: false))
 		}
-
-        if mapRegion == nil {
-            let mapDimension = Measurement(value: 50, unit: UnitLength.kilometers).converted(to: .meters).value
-            mapRegion = MKCoordinateRegion(center: route.startLocation, latitudinalMeters: mapDimension, longitudinalMeters: mapDimension)
-        }
-        self.showAnnotations(self.annotations, animated: true)
-        self.setRegion(mapRegion!, animated: true)
+		guard let locations = route.map?.polylineLocations(summary: false), locations.count > 0 else { return }
+		self.addOverlay(RideRouteLine(coordinates: locations, count: locations.count, highlighted: highlighted, route: route))
+		
+		setMapRegion()
 	}
 	
-	private func addPolylineForMap(map : RVMap, summary : Bool = false) -> MKCoordinateRegion? {
-        guard let locations = map.polylineLocations(summary: summary), locations.count > 0 else { return nil }
-        
-		let polyline = MKPolyline(coordinates: locations, count: locations.count)
-		self.addOverlay(polyline)
-        
-        // Work out the region covered by the map and return it
-        let maxLat = (locations.map { $0.latitude }).max()!
-        let minLat = (locations.map { $0.latitude }).min()!
-        let maxLong = (locations.map { $0.longitude }).max()!
-        let minLong = (locations.map { $0.longitude }).min()!
-        let mapCentre = CLLocationCoordinate2D(latitude: (minLat + maxLat) / 2, longitude: (minLong + maxLong) / 2)
-        let mapSpan = MKCoordinateSpan(latitudeDelta: maxLat - minLat, longitudeDelta: maxLong - minLong)
-        return MKCoordinateRegion(center: mapCentre, span: mapSpan)
+	func removeRoute(_ route : RouteViewCompatible) {
+		removeOverlays(self.overlays.compactMap({ $0 as? RideRouteLine }).filter({	$0.route.map == route.map }))
+		removeAnnotations(self.annotations.compactMap({$0 as? RouteEndPoint}).filter({ $0.route.map == route.map }))
+		
+		setMapRegion()
 	}
-    
+	
+	private func setMapRegion() {
+		if self.overlays.count == 0 {
+			return
+		}
+		// Calculate the region that includes all of the routes
+		if self.overlays.count == 1 {
+			self.setRegion(MKCoordinateRegion(self.overlays[0].boundingMapRect), animated: true)
+		} else {
+			self.setRegion(MKCoordinateRegion(self.overlays.map ({ $0.boundingMapRect }).reduce(MKMapRect.null, { $0.union($1) })), animated: true)
+		}
+	}
+
+	func addPhoto(image : UIImage?, location : CLLocation?) {
+		guard let image = image, let location = location else { return }
+		
+		self.removeAnnotations(self.annotations.filter({ $0 is PhotoAnnotation }))
+		self.addAnnotation(PhotoAnnotation(image: image, location: location))
+	}
+
     // MARK: MapView delegate
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-		return mapView.dequeueReusableAnnotationView(withIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier, for: annotation)
+		if let photoAnnotation = annotation as? PhotoAnnotation {
+			let view = mapView.dequeueReusableAnnotationView(withIdentifier: "photoView", for: photoAnnotation)
+			view.image = photoAnnotation.image.renderResizedImage(newWidth: 30)
+			return view
+		} else {
+			let identifier = "EndMarker"
+			var view: MKMarkerAnnotationView
+			if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView {
+				view = dequeuedView
+			} else {
+				view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+				view.canShowCallout = false
+				view.calloutOffset = CGPoint(x: -5, y: 5)
+				view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+			}
+			if let endPoint = annotation as? RouteEndPoint {
+				if endPoint.isStart {
+					view.glyphText = "🇬🇧"
+					view.glyphTintColor = UIColor.lightGray
+				} else {
+					view.glyphText = "🏁"
+					view .glyphTintColor = UIColor.green
+				}
+			}
+			return view
+		}
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        let renderer = MKPolylineRenderer(overlay: overlay)
-        renderer.strokeColor = UIColor.orange
-        renderer.lineWidth = 3
-        return renderer
+		let highlighted = (overlay as? RideRouteLine)?.highlighted ?? false
+		
+		let renderer = MKPolylineRenderer(overlay: overlay)
+		renderer.strokeColor = highlighted ? UIColor.red : UIColor.orange
+		renderer.lineWidth = highlighted ? 5 : 3
+		return renderer
     }
 }
 
-protocol SortFilterDelegate {
+protocol SortFilterDelegate : class {
 	func tableRowSelectedAtIndex(_ index : IndexPath)
+	func tableRowDeselectedAtIndex(_ index : IndexPath)
 	func sortButtonPressed(sender : UIView)
 	func filterButtonPressed(sender : UIView)
 }
 
+// Default behaviour for optional functions
+extension SortFilterDelegate {
+	func tableRowDeselectedAtIndex(_ index : IndexPath) {
+		return
+	}
+}
+
 class RVTableView : UITableView, UITableViewDelegate {
-	var sortFilterDelegate : SortFilterDelegate?
+	weak var sortFilterDelegate : SortFilterDelegate?
     var activityIndicator : UIActivityIndicatorView!
 	
 	required init?(coder aDecoder: NSCoder) {
@@ -100,6 +171,10 @@ class RVTableView : UITableView, UITableViewDelegate {
 	// Tableview delegate methods
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		sortFilterDelegate?.tableRowSelectedAtIndex(indexPath)
+	}
+	
+	func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+		sortFilterDelegate?.tableRowDeselectedAtIndex(indexPath)
 	}
 	
 	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -149,5 +224,20 @@ class RVTableView : UITableView, UITableViewDelegate {
             alert.dismiss(animated: true, completion: nil)
         }
     }
+}
+
+extension UIImage {
+	func renderResizedImage (newWidth: CGFloat) -> UIImage {
+		let scale = newWidth / self.size.width
+		let newHeight = self.size.height * scale
+		let newSize = CGSize(width: newWidth, height: newHeight)
+		
+		let renderer = UIGraphicsImageRenderer(size: newSize)
+		
+		let image = renderer.image { (context) in
+			self.draw(in: CGRect(origin: CGPoint(x: 0, y: 0), size: newSize))
+		}
+		return image
+	}
 }
 

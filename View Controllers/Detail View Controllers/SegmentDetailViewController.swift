@@ -42,27 +42,30 @@ class SegmentDetailViewController: UIViewController {
 		self.title 				= segment.name
 		
 		self.effortsLabel.text	= "\(tableView.numberOfRows(inSection: 0)) Efforts"
+		self.effortsLabel.textColor = segment.resourceState.resourceStateColour
 		
-		mapView!.showForRoute(segment)
-		
+		segment.efforts.forEach({ mapView!.addRoute($0.activity, highlighted: false) })
+		mapView!.addRoute(segment,highlighted: true)
+
 		if segment.resourceState != .detailed {
             // Get segment details including route
             tableView.startDataRetrieval()
-			StravaManager.sharedInstance.updateSegment(segment, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] in
-				if let currentSelf = self {
-					currentSelf.mapView!.showForRoute(currentSelf.segment)
+			StravaManager.sharedInstance.updateSegment(segment, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] success in
+				guard self != nil else { return }
+				if success {
+					self!.mapView!.addRoute(self!.segment, highlighted: true)
                     // Get all efforts for this segment
-                    StravaManager.sharedInstance.effortsForSegment(currentSelf.segment, page: 1, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [ weak self ] in
+                    StravaManager.sharedInstance.effortsForSegment(self!.segment, page: 1, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [ weak self ] success in
                         self?.tableView?.endDataRetrieval()
                         self?.effortsLabel.text    = "\(self?.tableView.numberOfRows(inSection: 0) ?? 0) Efforts"
                     })
+				} else {		// Get segment details failed
+					self!.tableView.dataRetrievalFailed()
 				}
 			})
 		}
 		setupEfforts(segment)
 	}
-	
-	
 	
     /*
     // MARK: - Navigation
@@ -85,7 +88,7 @@ extension SegmentDetailViewController : SortFilterDelegate {
 		
 		tableView.tag = EffortTableViewType.effortsForSegment.rawValue
 		dataManager.tableView = tableView
-		setDataManager(sortKey: .distance, ascending: EffortSort.distance.defaultAscending)
+		setDataManager(sortKey: .movingTime, ascending: EffortSort.movingTime.defaultAscending)
 	}
 	
     func setDataManager(sortKey : EffortSort, ascending :  Bool) {

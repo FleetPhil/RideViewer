@@ -16,12 +16,14 @@ enum SegmentSort : String, PopupSelectable, CaseIterable {
 	case name 		= "name"
 	case distance 	= "distance"
 	case grade 		= "averageGrade"
+	case effortCount = "effortCount"
 	
 	var displayString : String {           // Text to use when choosing item
 		switch self {
 		case .name:			return "Name"
 		case .distance:		return "Distance"
 		case .grade:		return "Av. Grade"
+		case .effortCount:	return "Rides"
 		}
 	}
     
@@ -30,10 +32,59 @@ enum SegmentSort : String, PopupSelectable, CaseIterable {
         case .name:            return true
         case .distance:        return false
         case .grade:           return false
+		case .effortCount:	   return false
         }
     }
 
 }
+
+enum SegmentFilter : String, PopupSelectable, CaseIterable {
+	case short				= "Short"
+	case long				= "Long"
+	case flat				= "Flat"
+	case ascending			= "Ascending"
+	case descending			= "Descending"
+	case singleEffort		= "Single Effort"
+	case multipleEfforts	= "Multiple Effort"
+	
+	var displayString: String {
+		return self.rawValue
+	}
+	
+	var filterGroup: String {
+		switch self {
+		case .short, .long: 					return "Segment Length"
+		case .flat, .ascending, .descending:	return "Profile"
+		case .multipleEfforts, .singleEffort: 	return "Number of Efforts"
+		}
+	}
+	
+	func predicateForFilterOption() -> NSPredicate {
+		let longLimit = Settings.sharedInstance.segmentMinDistance
+		switch self {
+		case .short:			return NSPredicate(format: "distance < %f", argumentArray: [longLimit])
+		case .long:				return NSPredicate(format: "distance >= %f", argumentArray: [longLimit])
+		case .flat:				return NSPredicate(format: "averageGrade = 0", argumentArray: nil)
+		case .ascending:		return NSPredicate(format: "averageGrade > 0", argumentArray: nil)
+		case .descending:		return NSPredicate(format: "averageGrade < 0", argumentArray: nil)
+		case .multipleEfforts:	return NSPredicate(format: "effortCount > 1", argumentArray: nil)
+		case .singleEffort:		return NSPredicate(format: "effortCount = 1", argumentArray: nil)
+		}
+	}
+	
+	static func predicateForFilters(_ filters : [SegmentFilter]) -> NSCompoundPredicate {
+		var predicates : [NSCompoundPredicate] = []
+		let filterGroups = Dictionary(grouping: filters, by: { $0.filterGroup })
+		for group in filterGroups {
+			let subPred = group.value.map({ $0.predicateForFilterOption() })
+			let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subPred)
+			predicates.append(groupPredicate)
+		}
+		return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+	}
+
+}
+
 
 @objc(RVSegment)
 public class RVSegment: NSManagedObject, RouteViewCompatible {
@@ -75,7 +126,7 @@ public class RVSegment: NSManagedObject, RouteViewCompatible {
 		self.climbCategory	= Int16(segment.climbCategory ?? 0)
 		self.starred		= segment.starred ?? false
 		self.elevationGain	= segment.totalElevationGain ?? ((segment.elevationHigh ?? 0.0) - (segment.elevationLow ?? 0.0))
-		self.effortCount	= Int64(segment.effortCount ?? 0)
+		self.effortCount	= Int64(self.efforts.count)
 		self.athleteCount	= Int64(segment.athleteCount ?? 0)
 
 		if let _ = segment.map?.id {
@@ -100,6 +151,7 @@ extension RVSegment : TableViewCompatibleEntity {
 		return (tableView.dequeueReusableCell(withIdentifier: "SegmentCell", for: indexPath) as! SegmentListTableViewCell).configure(withModel: self)
 	}
 }
+
 
 // Table cell
 class SegmentListTableViewCell : UITableViewCell, TableViewCompatibleCell {

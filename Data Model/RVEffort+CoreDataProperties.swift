@@ -32,7 +32,11 @@ extension RVEffort {
     @NSManaged public var prRank: Int16
 	@NSManaged public var startIndex: Int64
 	@NSManaged public var endIndex: Int64
+	@NSManaged public var photoScanDate : NSDate?
     @NSManaged public var segment: RVSegment
     @NSManaged public var activity: RVActivity
+	
+	@NSManaged public var photos: Set<RVPhotoAsset>
+
 
 }

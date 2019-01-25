@@ -33,22 +33,24 @@ enum timeDateContent {
 }
 
 extension Date {
-	func displayString(displayType : timeDateContent = .dateTime,
-					   timeZone : TimeZone = TimeZone(identifier: "UTC")!) -> String {
+	func displayString(displayType : timeDateContent = .dateTime, timeZone : TimeZone?) -> String {
 		let dateFormatter        = DateFormatter()
-		let timeZoneSuffix        : String!
-		
-		// Work out the timezone for the date
-		dateFormatter.timeZone = timeZone
-		timeZoneSuffix = timeZone.abbreviation()
 		
 		dateFormatter.dateFormat = displayType.formatString
+		dateFormatter.timeZone = timeZone ?? TimeZone(identifier: "UTC")!
+
 		if displayType == .timeWithTZ || displayType == .dateTimeWithTZ {
+			let timeZoneSuffix = (dateFormatter.timeZone.abbreviation() ?? "UTC") + (dateFormatter.timeZone.isDaylightSavingTime(for: self) ? "+" : "")
 			return(dateFormatter.string(from: self)) + " " + timeZoneSuffix
 		} else {
 			return(dateFormatter.string(from: self))
 		}
-		
+	}
+}
+
+extension String {
+	var timeZone : TimeZone? {
+		return TimeZone.init(identifier: self)
 	}
 }
 
@@ -74,3 +76,5 @@ extension ActivityType {
 		}
 	}
 }
+
+

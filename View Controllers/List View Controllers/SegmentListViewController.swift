@@ -19,6 +19,11 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 	
 	@IBOutlet weak var sortButton: UIBarButtonItem!
 	
+	// Properties
+	var filters : [SegmentFilter]!
+	var sortKey : SegmentSort!
+	var sortOrderAscending : Bool!
+	
 	// MARK: Lifecycle
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -31,12 +36,17 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 		
 		dataManager.tableView = self.tableView
 		
-		setDataManager(sortKey: .distance, ascending: SegmentSort.distance.defaultAscending)
+		self.filters = [.long, .flat, .ascending, .descending, .multipleEfforts]
+		self.sortKey = .distance
+		self.sortOrderAscending = false
+		
+		setDataManager()
 	}
 	
-    func setDataManager(sortKey : SegmentSort, ascending : Bool) {
-		let predicate = Settings.sharedInstance.segmentSettingsPredicate
-		let sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: ascending)
+    func setDataManager() {
+		guard sortKey != nil, filters != nil else { return }
+		let predicate = SegmentFilter.predicateForFilters(filters)
+		let sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: sortOrderAscending)
 		_ = dataManager.fetchObjects(sortDescriptor: sortDescriptor, filterPredicate: predicate)
 	}
 	
@@ -54,12 +64,24 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 	}
 	
 	func filterButtonPressed(sender: UIView) {
-		
+		let chooser = PopupupChooser<SegmentFilter>()
+		chooser.title = "Include"
+		chooser.multipleSelection = true
+		chooser.selectedItems = self.filters
+		chooser.showSelectionPopup(items: SegmentFilter.allCases, sourceView: sender, updateHandler: newFilters)
+	}
+	
+	private func newFilters(_ newFilters : [SegmentFilter])  {
+		self.filters = newFilters
+		setDataManager()
+		tableView.reloadData()
 	}
 	
 	private func newSortOrder(newOrder : [SegmentSort]) {
 		if let newSort = newOrder.first {
-			setDataManager(sortKey: newSort, ascending: newSort.defaultAscending)
+			self.sortKey = newSort
+			self.sortOrderAscending = self.sortKey.defaultAscending
+			setDataManager()
 			tableView.reloadData()
 		}
 	}

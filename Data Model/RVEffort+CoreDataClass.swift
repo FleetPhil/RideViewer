@@ -12,9 +12,10 @@ import CoreData
 import UIKit
 import StravaSwift
 
-enum EffortSort : String, PopupSelectable, CaseIterable {
+enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
 	case distance 		= "distance"
 	case movingTime 	= "movingTime"
+	case elapsedTime	= "elapsedTime"
 	case date			= "startDate"
 	case maxHR			= "maxHeartRate"
 	case averageWatts 	= "averageWatts"
@@ -23,6 +24,7 @@ enum EffortSort : String, PopupSelectable, CaseIterable {
 		switch self {
 		case .distance:			return "Distance"
 		case .movingTime:		return "Moving Time"
+		case .elapsedTime:		return "Elapsed Time"
 		case .date:				return "Date"
 		case .maxHR:			return "Max HR"
 		case .averageWatts:		return "Av. Power"
@@ -33,6 +35,7 @@ enum EffortSort : String, PopupSelectable, CaseIterable {
         switch self {
         case .distance:            return false
         case .movingTime:        return false
+		case .elapsedTime:		return false
         case .date:                return false
         case .maxHR:            return false
         case .averageWatts:        return false
@@ -76,46 +79,55 @@ public class RVEffort: NSManagedObject {
         self.resourceState = self.resourceState.newState(returnedState: effort.resourceState)
 
 		self.activity				= activity
-        
+		
         // Get or create the related segment
         if let segmentID = effort.segment?.id {
             if let rvSegment = RVSegment.get(identifier: segmentID, inContext: self.managedObjectContext!) {
                 self.segment = rvSegment
+				self.segment.effortCount = Int64(self.segment.efforts.count)
             } else {            // Segment does not exist
                 let newSegment = RVSegment.create(segment: effort.segment!, context: self.managedObjectContext!)
                 self.segment = newSegment
+				self.segment.effortCount = 1
             }
         }
-		
-//        if let effortSegment = effort.segment {
-//            if let segmentID = effortSegment.id {
-//                if let rvSegment = RVSegment.get(identifier: segmentID, inContext: self.managedObjectContext!) {
-//                    self.segment = rvSegment
-//                    appLog.debug("Got seg '\(effortSegment.name ?? "?")' for act '\(activity.name)', state \(rvSegment.resourceState.rawValue)")
-//                    // Check the resource state and request details if not there already
-//                    switch rvSegment.resourceState {
-//                    case .detailed:
-//                        break
-//                    default:
-//                        appLog.debug("Updating seg \(rvSegment.name ?? "")")
-//                        StravaManager.sharedInstance.updateSegment(rvSegment, context: self.managedObjectContext!) {
-//                            appLog.debug("Seg \(rvSegment.name ?? "") details updated")
-//                        break
-//                    }
-//                } else {            // Segment does not exist
-//                    appLog.debug("Create seg '\(effortSegment.name ?? "?")' for act \(activity.name)")
-//                    let newSegment = RVSegment.create(segment: effortSegment, context: self.managedObjectContext!)
-//                    self.segment = newSegment
-//                    StravaManager.sharedInstance.updateSegment(newSegment, context: self.managedObjectContext!) {
-//                        appLog.debug("New seg \(newSegment.name ?? "") details updated")
-//                    }
-//                }
-//            }
-//        }
-
         return self
 	}
 }
+
+// Extension to support photos
+extension RVEffort {
+	// Return photo asset identifiers to completion handler on main thread
+	func getPhotoAssets(force : Bool, completionHandler : @escaping ([RVPhotoAsset])->Void) {
+		if !force && self.photoScanDate != nil {
+			completionHandler(Array(self.photos).sorted(by: { ($0.photoDate as Date) < ($1.photoDate as Date) }))
+			return
+		}
+		
+		CoreDataManager.sharedManager().viewContext.automaticallyMergesChangesFromParent = true
+		CoreDataManager.sharedManager().persistentContainer.performBackgroundTask( { context in
+			let contextSelf = (context.object(with: self.objectID) as! RVEffort)
+			contextSelf.photos.forEach({ context.delete($0) })
+			
+			let photos = PhotoManager.shared().photosForTimePeriod(self.startDate as Date, duration: self.elapsedTime)
+			guard photos.count <= Settings.sharedInstance.maxPhotosForActivity else {
+				appLog.error("More than \(Settings.sharedInstance.maxPhotosForActivity) photos for \(self.name!) on \(self.startDate)")
+				return
+			}
+			photos.forEach({ asset in
+				let newAsset = RVPhotoAsset.create(asset: asset, context: context)
+				newAsset.activity = context.object(with: self.objectID) as? RVActivity
+			})
+			contextSelf.photoScanDate = Date() as NSDate
+			context.saveContext()
+			DispatchQueue.main.async() {
+				completionHandler(Array(self.photos).sorted(by: { ($0.photoDate as Date) < ($1.photoDate as Date) }))
+			}
+		})
+	}
+}
+
+
 
 // Extension to support generic table view
 // Need to support 2 versions: efforts for activity and efforts for segment
@@ -142,6 +154,19 @@ extension RVEffort : TableViewCompatibleEntity {
 	}
 }
 
+extension RVEffort {
+	var effortDisplayText : NSAttributedString {
+		let effortText = NSMutableAttributedString(string: "⏱ " + self.elapsedTime.shortDurationDisplayString)
+		effortText.append(NSAttributedString(string: "  ⏩ " + (self.distance / self.elapsedTime).speedDisplayString))
+		effortText.append(NSAttributedString(string: self.maxHeartRate > 0 ? "  ❤️ \(self.maxHeartRate.fixedFraction(digits: 0))" : ""))
+		
+		let powerAttributes : [NSAttributedString.Key : Any] = self.activity.deviceWatts ? [:] : [.foregroundColor : UIColor.lightGray]
+		effortText.append(NSAttributedString(string: "  🔌 \(self.averageWatts.fixedFraction(digits: 0))W", attributes: powerAttributes))
+		
+		return effortText
+	}
+}
+
 // Table cell
 class EffortListForActivityTableViewCell : UITableViewCell, TableViewCompatibleCell {
 	
@@ -153,17 +178,14 @@ class EffortListForActivityTableViewCell : UITableViewCell, TableViewCompatibleC
 		if let effort = withModel as? RVEffort {
             
 			segmentName.text = effort.segment.name! + " " + ["","\u{2463}","\u{2462}","\u{2461}","\u{2460}", ""][5 - Int(effort.segment.climbCategory)]
-            segmentName.textColor = effort.resourceState.resourceStateColour
+            segmentName.textColor = effort.segment.resourceState.resourceStateColour
 			
 			segmentData.text = "➡️ " + effort.distance.distanceDisplayString
 				+ "  ↗️ " + (effort.segment.maxElevation - effort.segment.minElevation).heightDisplayString
 				+ "  Av \(effort.segment.averageGrade.fixedFraction(digits: 1))%"
 				+ "  Max \(effort.segment.maxGrade.fixedFraction(digits: 1))%"
 			
-			effortData.text = "⏱ " + effort.elapsedTime.shortDurationDisplayString
-				+ "  ⏩ " + (effort.distance / effort.elapsedTime).speedDisplayString
-				+ "  🔌 \(effort.averageWatts.fixedFraction(digits: 0))W"
-				+ "  ❤️ \(effort.maxHeartRate.fixedFraction(digits: 0))"
+			effortData.attributedText = effort.effortDisplayText
 			
 			self.separatorInset = .zero
 		} else {
@@ -183,18 +205,10 @@ class EffortListForSegmentTableViewCell : UITableViewCell, TableViewCompatibleCe
 		if let effort = withModel as? RVEffort {
 			
 			activityName.text = effort.activity.name
-            activityName.textColor = effort.resourceState.resourceStateColour
-			activityDate.text = (effort.activity.startDate as Date).displayString(displayType: .dateOnly)
+			activityName.textColor = effort.activity.resourceState.resourceStateColour
+			activityDate.text = (effort.activity.startDate as Date).displayString(displayType: .dateOnly, timeZone: effort.activity.timeZone.timeZone)
 
-			let effortText = NSMutableAttributedString(string: "⏱ " + effort.elapsedTime.shortDurationDisplayString)
-			effortText.append(NSAttributedString(string: "  ⏩ " + (effort.distance / effort.elapsedTime).speedDisplayString))
-			effortText.append(NSAttributedString(string: effort.maxHeartRate > 0 ? "  ❤️ \(effort.maxHeartRate.fixedFraction(digits: 0))" : ""))
-
-
-			let powerAttributes : [NSAttributedString.Key : Any] = effort.activity.deviceWatts ? [:] : [.foregroundColor : UIColor.lightGray]
-			effortText.append(NSAttributedString(string: "  🔌 \(effort.averageWatts.fixedFraction(digits: 0))W", attributes: powerAttributes))
-			
-			effortData.attributedText = effortText
+			effortData.attributedText = effort.effortDisplayText
 			
 			self.separatorInset = .zero
 		} else {

@@ -9,14 +9,24 @@
 import Foundation
 import UIKit
 
-protocol PopupSelectable {
+protocol PopupSelectable : Equatable {
 	var displayString : String { get }
-    var defaultAscending : Bool { get }
+    var sortDefaultAscending : Bool { get }
+	var filterGroup : String { get }
+}
+
+// Provide defaults
+extension PopupSelectable {
+	var sortDefaultAscending : Bool {
+		return false
+	}
+	var filterGroup : String {
+		return ""
+	}
 }
 
 extension String : PopupSelectable {
 	var displayString : String { return self }
-    var defaultAscending : Bool { return true }
 }
 
 fileprivate protocol PopupDelegate {
@@ -25,23 +35,31 @@ fileprivate protocol PopupDelegate {
 }
 
 class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationControllerDelegate, UITableViewDataSource, PopupDelegate {
-	private var itemsForSelection : [T]!
+	private var itemsForSelection : [String : [T]]!
+	private var sectionNumbers : [Int : String] = [:]
 	private var handler : (([T]) -> Void)!
     private var sourceView : UIView!
-    
+
     public var title : String!
     public var multipleSelection : Bool = false
-    var selectedItems : [Int] = []
+	public var selectedItems : [T] = []
 	
 	func showSelectionPopup(items : [T], sourceView : UIView, updateHandler : @escaping ([T]) -> Void) {
-		itemsForSelection = items
+		itemsForSelection = Dictionary(grouping: items, by: { $0.filterGroup })	// Section (aka group) : Items
+		var i = 0
+		for key in itemsForSelection.keys {
+			sectionNumbers[i] = key
+			i += 1
+		}
+		
 		handler = updateHandler
         self.sourceView = sourceView
 		
 		guard let popoverContent = UIStoryboard(name: "PopupChooser", bundle: nil).instantiateViewController(withIdentifier: "MappingSelection") as? ItemSelectionViewController else {
 			return
 		}
-        popoverContent.multipleSelection = multipleSelection
+
+		popoverContent.multipleSelection = multipleSelection
         
 		let navigationController = UINavigationController(rootViewController: popoverContent)
 		navigationController.modalPresentationStyle = UIModalPresentationStyle.popover
@@ -58,16 +76,29 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
 		self.sourceView.owningViewController()?.present(navigationController, animated: true, completion: nil)
 	}
 	
-	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return itemsForSelection.count
+	// MARK: Table view functions
+	
+	func numberOfSections(in tableView: UITableView) -> Int {
+		return itemsForSelection.keys.count
 	}
 	
+	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		return itemsForSelection[sectionNumbers[section]!]!.count
+	}
+	
+	func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+		let x = sectionNumbers[section]! != "" ? sectionNumbers[section]! : nil
+		return x
+	}
+
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: "DataTypeSelectionCell", for: indexPath)
+		let cellValue = itemsForSelection[sectionNumbers[indexPath.section]!]![indexPath.row]
 		
-		cell.textLabel!.text = itemsForSelection[indexPath.row].displayString
+		cell.textLabel!.text = cellValue.displayString
         cell.selectionStyle = .none
-        if selectedItems.contains(indexPath.row) {
+		
+		if selectedItems.contains(cellValue) {
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
             cell.accessoryType = .checkmark
         } else {
@@ -76,13 +107,17 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
 
 		return cell
 	}
+	
+	// MARK: return functions
     
-    func didSelectPaths(paths : [IndexPath]) {
+    fileprivate func didSelectPaths(paths : [IndexPath]) {
         self.sourceView.owningViewController()?.dismiss(animated: true, completion: nil)
-        handler(paths.map { itemsForSelection[$0.row] })
+		
+		
+        handler(paths.map { itemsForSelection[sectionNumbers[$0.section]!]![$0.row] })
     }
     
-    func didCancelSelection() {
+    fileprivate func didCancelSelection() {
         self.sourceView.owningViewController()?.dismiss(animated: true, completion: nil)
     }
 }

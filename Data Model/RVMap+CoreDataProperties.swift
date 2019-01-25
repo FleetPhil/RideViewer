@@ -21,7 +21,7 @@ extension RVMap {
     @NSManaged public var id: String
     @NSManaged public var polyline: String?
     @NSManaged public var summaryPolyline: String?
-    @NSManaged public var activities: NSSet?
+    @NSManaged public var activities: Set<RVActivity>
     @NSManaged public var segments: NSSet?
 
 }

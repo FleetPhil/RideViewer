@@ -94,19 +94,19 @@ extension NSManagedObjectContext {
 	}
 	
 	// Return one object with the specified key
-	func fetchObject<Entity>(withKeyValue keyValue: String,forKey key: String) -> Entity? {
+	func fetchObject<Entity : NSManagedObject>(withKeyValue keyValue: String,forKey key: String) -> Entity? {
 		let predicateFormat = "\(key) = \"\(keyValue)\""
 		let predicate = NSPredicate(format: predicateFormat, argumentArray: nil)
-		let results = self.fetchObjects(withPredicate: predicate, withSortDescriptor: nil)
-		return results?.last as? Entity
+		let results : [Entity]? = self.fetchObjects(withPredicate: predicate, withSortDescriptor: nil)
+		return results?.last
 	}
 
 	// Overloaded for entities with Int key
-	func fetchObject<Entity>(withKeyValue keyValue: Int,forKey key: String) -> Entity? {
+	func fetchObject<Entity : NSManagedObject>(withKeyValue keyValue: Int,forKey key: String) -> Entity? {
 		let predicateFormat = "\(key) = \(keyValue)"
 		let predicate = NSPredicate(format: predicateFormat, argumentArray: nil)
-		let results = self.fetchObjects(withPredicate: predicate, withSortDescriptor: nil)
-		return results?.last as? Entity
+		let results : [Entity]? = self.fetchObjects(withPredicate: predicate, withSortDescriptor: nil)
+		return results?.last
 	}
 	
 	// Generic retrieve function
@@ -133,18 +133,29 @@ extension NSManagedObjectContext {
 		return results
 	}
 	
-	func deleteObjects(_ entity : NSManagedObject.Type) -> Int {
-		var count = 0
-		
-		if let items = self.fetchObjects() {
-			for object in items {
-				self.delete(object)
-				count += 1
-			}
-		}
-        return count
+	func deleteObjects<T : NSManagedObject>(_ objects : Set<T>) -> Bool {
+		return self.deleteObjects(Array(objects))
 	}
-    
+	
+	func deleteObjects<T : NSManagedObject>(_ objects : [T]) -> Bool {
+		objects.forEach({ object in
+			self.delete(object)
+		})
+		return true
+	}
+	
+//	func deleteAllObjects(_ objectType : NSManagedObject.Type) -> Bool {
+//		let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: objectType.fetchRequest())
+//		do {
+//			try self.execute(batchDeleteRequest)
+//		} catch {
+//			let nserror = error as NSError
+//			appLog.error("Unresolved error \(nserror), \(nserror.userInfo)")
+//			return false
+//		}
+//        return true
+//	}
+	
     func saveContext () {
         if self.hasChanges {
             do {

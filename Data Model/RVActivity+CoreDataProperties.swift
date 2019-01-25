@@ -45,8 +45,11 @@ extension RVActivity {
 	@NSManaged public var deviceWatts : Bool
 	@NSManaged public var trainer : Bool
 	@NSManaged public var map : RVMap?
+	@NSManaged public var photoScanDate : NSDate?
 
-    @NSManaged public var efforts: NSSet
+    @NSManaged public var efforts: Set<RVEffort>
+	@NSManaged public var photos: Set<RVPhotoAsset>
+
 	
 
 }

@@ -46,6 +46,57 @@ enum ActivitySort : String, PopupSelectable, CaseIterable {
     }
 }
 
+enum ActivityFilter : PopupSelectable, CaseIterable {
+	case cycleRide
+	case shortRide
+	case longRide
+	case virtualRide
+	case walk
+	case other
+	
+	var displayString: String {
+		switch self {
+		case .cycleRide:		return "Cycle Rides"
+		case .virtualRide:		return "Virtual Rides"
+		case .longRide:			return "Long Rides"
+		case .shortRide:		return "Short Rides"
+		case .walk:				return "Walks"
+		case .other:			return "Other Activities"
+		}
+	}
+	
+	var filterGroup: String {
+		switch self {
+		case .cycleRide, .virtualRide, .walk, .other:		return "Activity Type"
+		case .longRide, .shortRide:							return "Ride Length"
+		}
+	}
+	
+	func predicateForFilterOption() -> NSPredicate {
+		let longRideLimit = Settings.sharedInstance.activityMinDistance
+		switch self {
+		case .cycleRide:		return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.ride.rawValue])
+		case .virtualRide:		return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.virtualRide.rawValue])
+		case .longRide:			return NSPredicate(format: "distance >= %f", 	argumentArray: [longRideLimit])
+		case .shortRide:		return NSPredicate(format: "distance < %f", 	argumentArray: [longRideLimit])
+		case .walk:				return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.walk.rawValue])
+		case .other:			return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.workout.rawValue])
+
+		}
+	}
+	
+	static func predicateForFilters(_ filters : [ActivityFilter]) -> NSCompoundPredicate {
+		var predicates : [NSCompoundPredicate] = []
+		let filterGroups = Dictionary(grouping: filters, by: { $0.filterGroup })
+		for group in filterGroups {
+			let subPred = group.value.map({ $0.predicateForFilterOption() })
+			let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subPred)
+			predicates.append(groupPredicate)
+		}
+		return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+	}
+}
+
 @objc(RVActivity)
 public class RVActivity: NSManagedObject, RouteViewCompatible {
     
@@ -141,27 +192,71 @@ extension RVActivity : TableViewCompatibleEntity {
     }
 }
 
+// Extension to support photos
+extension RVActivity {
+	// Return photo asset identifiers to completion handler on main thread
+	func getPhotoAssets(force : Bool, completionHandler : @escaping ([RVPhotoAsset])->Void) {
+		if !force && self.photoScanDate != nil {
+			completionHandler(Array(self.photos).sorted(by: { ($0.photoDate as Date) < ($1.photoDate as Date) }))
+			return
+		}
+		
+		CoreDataManager.sharedManager().viewContext.automaticallyMergesChangesFromParent = true
+		CoreDataManager.sharedManager().persistentContainer.performBackgroundTask( { context in
+			let contextSelf = (context.object(with: self.objectID) as! RVActivity)
+			_ = context.deleteObjects(contextSelf.photos)
+			
+			let photos = PhotoManager.shared().photosForTimePeriod(self.startDate as Date, duration: self.elapsedTime)
+			guard photos.count <= Settings.sharedInstance.maxPhotosForActivity else {
+				appLog.error("More than \(Settings.sharedInstance.maxPhotosForActivity) photos for \(self.name) on \(self.startDate)")
+				return
+			}
+			photos.forEach({ asset in
+				let newAsset = RVPhotoAsset.create(asset: asset, context: context)
+				newAsset.activity = context.object(with: self.objectID) as? RVActivity
+			})
+			contextSelf.photoScanDate = Date() as NSDate
+			context.saveContext()
+			DispatchQueue.main.async() {
+				completionHandler(Array(self.photos).sorted(by: { ($0.photoDate as Date) < ($1.photoDate as Date) }))
+			}
+		})
+	}
+}
+
+protocol PhotoOwningObject {
+	var photos: Set<RVPhotoAsset> { get set }
+	
+}
+
+extension RVActivity : PhotoOwningObject {
+	
+}
+
+
+
 
 
 // Table cell
 class ActivityListTableViewCell : UITableViewCell, TableViewCompatibleCell {
     
     @IBOutlet weak var nameLabel: UILabel!
-    @IBOutlet weak var dateLabel: UILabel!
+	@IBOutlet weak var photoIcon: UILabel!
+	@IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
     
     func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell {
         if let activity = withModel as? RVActivity {
-            
-            //			appLog.debug("Activity state is \(activity.resourceState.rawValue)")
-            
+			
             let effortCount = activity.efforts.count
             
             nameLabel.text		= "\(effortCount) " + activity.type.emoji + " " + activity.name
             nameLabel.textColor	= activity.resourceState.resourceStateColour
+			
+			photoIcon.text		= activity.photos.count > 0 ? "\u{1F4F7}" : ""
             
-            dateLabel.text		= (activity.startDate as Date).displayString(displayType: .dateTime)
+			dateLabel.text		= (activity.startDate as Date).displayString(displayType: .dateTime, timeZone: activity.timeZone.timeZone)
             distanceLabel.text	= activity.distance.distanceDisplayString
             timeLabel.text		= activity.elapsedTime.durationDisplayString
             
