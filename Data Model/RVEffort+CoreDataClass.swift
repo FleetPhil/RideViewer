@@ -34,8 +34,8 @@ enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
     var defaultAscending : Bool {
         switch self {
         case .distance:            return false
-        case .movingTime:        return false
-		case .elapsedTime:		return false
+        case .movingTime:        return true
+		case .elapsedTime:		return true
         case .date:                return false
         case .maxHR:            return false
         case .averageWatts:        return false
@@ -204,7 +204,7 @@ class EffortListForSegmentTableViewCell : UITableViewCell, TableViewCompatibleCe
 	func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell  {
 		if let effort = withModel as? RVEffort {
 			
-			activityName.text = effort.activity.name
+			activityName.text = effort.activity.name + (effort.activity.streams.count > 0 ? " 🔹" : "")
 			activityName.textColor = effort.activity.resourceState.resourceStateColour
 			activityDate.text = (effort.activity.startDate as Date).displayString(displayType: .dateOnly, timeZone: effort.activity.timeZone.timeZone)
 

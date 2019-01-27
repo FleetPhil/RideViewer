@@ -61,19 +61,6 @@ class CoreDataManager {
     }()
 }
 
-//// Extension to return entity name
-//extension NSManagedObject {
-//    static var entityName : String {
-//        let fullName = self.entity().managedObjectClassName!
-//        if let index = fullName.index(of: ".") {
-//            let substring = String(fullName[(fullName.index(after: index))...])
-//            return substring
-//        } else {
-//            return fullName
-//        }
-//    }
-//}
-
 extension NSManagedObjectContext {
 	
 	// Return count of entitity instances

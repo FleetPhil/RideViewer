@@ -28,6 +28,8 @@ class SegmentDetailViewController: UIViewController {
 		}
 	}
 	
+	@IBOutlet weak var routeElevationView: RVRouteElevationView!
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -44,7 +46,6 @@ class SegmentDetailViewController: UIViewController {
 		self.effortsLabel.text	= "\(tableView.numberOfRows(inSection: 0)) Efforts"
 		self.effortsLabel.textColor = segment.resourceState.resourceStateColour
 		
-		segment.efforts.forEach({ mapView!.addRoute($0.activity, highlighted: false) })
 		mapView!.addRoute(segment,highlighted: true)
 
 		if segment.resourceState != .detailed {
@@ -65,18 +66,8 @@ class SegmentDetailViewController: UIViewController {
 			})
 		}
 		setupEfforts(segment)
+		
 	}
-	
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 extension SegmentDetailViewController : SortFilterDelegate {
@@ -99,8 +90,28 @@ extension SegmentDetailViewController : SortFilterDelegate {
 		self.effortsLabel.text = "\(efforts.count) Efforts"
 	}
 	
+	func tableRowDeselectedAtIndex(_ index: IndexPath) {
+		let activity = dataManager.objectAtIndexPath(index)!.activity
+		self.mapView.removeRoute(activity)
+	}
+	
 	func tableRowSelectedAtIndex(_ index: IndexPath) {
-		performSegue(withIdentifier: "SegmentEffortListToSegmentDetail", sender: self)
+		let effort = dataManager.objectAtIndexPath(index)!
+		self.mapView.addRoute(effort.activity, highlighted: false)
+		
+		routeElevationView.drawForActivity(effort.activity, streamType: .altitude, effort: effort)		// Will draw blank if no streams for this activity
+		if effort.activity.streams.count == 0 {
+			// Get streams
+			StravaManager.sharedInstance.streamsForActivity(effort.activity, context: effort.managedObjectContext!, completionHandler: { [ weak self] success in
+				if success {
+					self?.routeElevationView.drawForActivity(effort.activity, streamType: .altitude, effort: effort)
+				} else {
+					appLog.debug("Failed to get stream data for activity \(effort.activity) ")
+				}
+			})
+		}
+		
+//		performSegue(withIdentifier: "SegmentEffortListToSegmentDetail", sender: self)
 	}
 	
 	func sortButtonPressed(sender: UIView) {

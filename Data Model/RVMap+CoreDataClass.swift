@@ -43,10 +43,23 @@ public class RVMap: NSManagedObject {
 	}
 	
 	func polylineLocations(summary : Bool = false) -> [CLLocationCoordinate2D]? {
-		if summary && self.summaryPolyline != nil {
-			return decodePolyline(self.summaryPolyline!)
-		} else {
-			return decodePolyline(self.polyline!)			// Polyline always exists
+		// If oly one is valid return it
+		if self.polyline.isValid() && !self.summaryPolyline.isValid() { return decodePolyline(self.polyline!) }
+		if !self.polyline.isValid() && self.summaryPolyline.isValid() { return decodePolyline(self.summaryPolyline!) }
+
+		// Both invalid - return nil
+		if !self.polyline.isValid() && !self.summaryPolyline.isValid() { return nil }
+
+		// Both valid - return preference
+		return summary ? decodePolyline(self.summaryPolyline!) : decodePolyline(self.polyline!)
+	}
+}
+
+extension Optional where Wrapped == String {
+	func isValid() -> Bool {
+		switch self {
+		case .none: return false
+		case .some(let value):	return value == "" ? false : true
 		}
 	}
 }

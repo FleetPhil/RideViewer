@@ -43,6 +43,10 @@
 		F4C113D421D6790B00188A30 /* RVSegment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C113D021D6790B00188A30 /* RVSegment+CoreDataClass.swift */; };
 		F4C113D521D6790B00188A30 /* RVSegment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C113D121D6790B00188A30 /* RVSegment+CoreDataProperties.swift */; };
 		F4DC5A1921D4C7B50017983E /* Distance Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DC5A1821D4C7B50017983E /* Distance Utilities.swift */; };
+		F4F5195021FB79C3005D3752 /* RVStreamData+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194C21FB79C3005D3752 /* RVStreamData+CoreDataClass.swift */; };
+		F4F5195121FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194D21FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift */; };
+		F4F5195221FB79C3005D3752 /* RVStream+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194E21FB79C3005D3752 /* RVStream+CoreDataClass.swift */; };
+		F4F5195321FB79C4005D3752 /* RVStream+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194F21FB79C3005D3752 /* RVStream+CoreDataProperties.swift */; };
 		F4F5AFC421F0DDDB005DB8B1 /* PhotoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5AFC221F0DDDB005DB8B1 /* PhotoManager.swift */; };
 		FA3F242B21DA7AC80048A828 /* RVMap+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3F242921DA7AC80048A828 /* RVMap+CoreDataClass.swift */; };
 		FA3F242C21DA7AC80048A828 /* RVMap+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3F242A21DA7AC80048A828 /* RVMap+CoreDataProperties.swift */; };
@@ -89,6 +93,10 @@
 		F4C113D021D6790B00188A30 /* RVSegment+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVSegment+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F4C113D121D6790B00188A30 /* RVSegment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVSegment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F4DC5A1821D4C7B50017983E /* Distance Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Distance Utilities.swift"; sourceTree = "<group>"; };
+		F4F5194C21FB79C3005D3752 /* RVStreamData+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStreamData+CoreDataClass.swift"; sourceTree = "<group>"; };
+		F4F5194D21FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStreamData+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		F4F5194E21FB79C3005D3752 /* RVStream+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStream+CoreDataClass.swift"; sourceTree = "<group>"; };
+		F4F5194F21FB79C3005D3752 /* RVStream+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStream+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F4F5AFC221F0DDDB005DB8B1 /* PhotoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoManager.swift; sourceTree = "<group>"; };
 		FA3F242921DA7AC80048A828 /* RVMap+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVMap+CoreDataClass.swift"; sourceTree = "<group>"; };
 		FA3F242A21DA7AC80048A828 /* RVMap+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVMap+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -190,6 +198,10 @@
 		F42ECEF921CF92430096F83B /* Data Model */ = {
 			isa = PBXGroup;
 			children = (
+				F4F5194C21FB79C3005D3752 /* RVStreamData+CoreDataClass.swift */,
+				F4F5194D21FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift */,
+				F4F5194E21FB79C3005D3752 /* RVStream+CoreDataClass.swift */,
+				F4F5194F21FB79C3005D3752 /* RVStream+CoreDataProperties.swift */,
 				F46C126B21F200F7007438DB /* RVPhotoAsset+CoreDataClass.swift */,
 				F46C126C21F200F7007438DB /* RVPhotoAsset+CoreDataProperties.swift */,
 				FA3F242921DA7AC80048A828 /* RVMap+CoreDataClass.swift */,
@@ -404,15 +416,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4DC5A1921D4C7B50017983E /* Distance Utilities.swift in Sources */,
+				F4F5195021FB79C3005D3752 /* RVStreamData+CoreDataClass.swift in Sources */,
 				F44EA68021F23ABA00BBABA0 /* ImageScrollView.swift in Sources */,
 				F4611B9F21F3935C00EDFC13 /* General Utilities.swift in Sources */,
 				F42ECF0121CFD25E0096F83B /* ActivityListViewController.swift in Sources */,
+				F4F5195121FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift in Sources */,
 				F4F5AFC421F0DDDB005DB8B1 /* PhotoManager.swift in Sources */,
 				F4AAD80D21DD251C006ED5DD /* Settings.swift in Sources */,
 				F42ECEEC21CF91130096F83B /* RideViewer.xcdatamodeld in Sources */,
+				F4F5195321FB79C4005D3752 /* RVStream+CoreDataProperties.swift in Sources */,
 				F4C113D321D6790B00188A30 /* RVEffort+CoreDataProperties.swift in Sources */,
 				F40CC8AC21D666EE00EC3594 /* Views.swift in Sources */,
 				F42ECF0421CFD3090096F83B /* ActivityDetailViewController.swift in Sources */,
+				F4F5195221FB79C3005D3752 /* RVStream+CoreDataClass.swift in Sources */,
 				F429A6F821D7F23000A053DE /* Data Model Extensions.swift in Sources */,
 				FA3F242B21DA7AC80048A828 /* RVMap+CoreDataClass.swift in Sources */,
 				F49E07DC21E1244000A0D678 /* SegmentDetailViewController.swift in Sources */,

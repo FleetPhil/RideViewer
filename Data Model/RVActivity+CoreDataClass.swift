@@ -251,7 +251,7 @@ class ActivityListTableViewCell : UITableViewCell, TableViewCompatibleCell {
 			
             let effortCount = activity.efforts.count
             
-            nameLabel.text		= "\(effortCount) " + activity.type.emoji + " " + activity.name
+            nameLabel.text		= "\(effortCount) " + activity.type.emoji + " " + activity.name + (activity.streams.count > 0 ? " 🔹" : "")
             nameLabel.textColor	= activity.resourceState.resourceStateColour
 			
 			photoIcon.text		= activity.photos.count > 0 ? "\u{1F4F7}" : ""

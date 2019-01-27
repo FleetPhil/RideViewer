@@ -8,6 +8,7 @@
 
 import Foundation
 import MapKit
+import StravaSwift
 
 protocol RouteViewCompatible {
 	var startLocation : CLLocationCoordinate2D { get }
@@ -56,6 +57,7 @@ fileprivate class RideRouteLine : MKPolyline {
 class RideMapView : MKMapView, MKMapViewDelegate {
 	
 	var mapRegion : MKCoordinateRegion!
+	let inset : Double = 200
 	
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
@@ -68,9 +70,9 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 			self.addAnnotation(RouteEndPoint(route: route, isStart: true))
 			self.addAnnotation(RouteEndPoint(route: route, isStart: false))
 		}
-		guard let locations = route.map?.polylineLocations(summary: false), locations.count > 0 else { return }
-		self.addOverlay(RideRouteLine(coordinates: locations, count: locations.count, highlighted: highlighted, route: route))
-		
+		if let locations = route.map?.polylineLocations(summary: false), locations.count > 0 {
+			self.addOverlay(RideRouteLine(coordinates: locations, count: locations.count, highlighted: highlighted, route: route))
+		}
 		setMapRegion()
 	}
 	
@@ -83,13 +85,17 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 	
 	private func setMapRegion() {
 		if self.overlays.count == 0 {
+			let zoomRect = annotations.reduce(MKMapRect.null, {
+				$0.union(MKMapRect(origin: MKMapPoint($1.coordinate), size: MKMapSize(width: 0.1, height: 0.1)))
+			})
+			self.setVisibleMapRect(zoomRect.insetBy(dx: -inset*100, dy: -inset*100), animated: true)
 			return
 		}
 		// Calculate the region that includes all of the routes
 		if self.overlays.count == 1 {
-			self.setRegion(MKCoordinateRegion(self.overlays[0].boundingMapRect), animated: true)
+			self.setRegion(MKCoordinateRegion(self.overlays[0].boundingMapRect.insetBy(dx: inset, dy: inset)), animated: true)
 		} else {
-			self.setRegion(MKCoordinateRegion(self.overlays.map ({ $0.boundingMapRect }).reduce(MKMapRect.null, { $0.union($1) })), animated: true)
+			self.setRegion(MKCoordinateRegion(self.overlays.map ({ $0.boundingMapRect }).reduce(MKMapRect.null, { $0.union($1) }).insetBy(dx: inset, dy: inset)), animated: true)
 		}
 	}
 
@@ -138,6 +144,69 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 		renderer.lineWidth = highlighted ? 5 : 3
 		return renderer
     }
+}
+
+class RVRouteElevationView : UIView {
+	var dataPoints : [Double] = []
+	var highlightRange : (Int64, Int64)? = nil
+	
+	func drawForActivity(_ activity : RVActivity, streamType : StravaSwift.StreamType, effort : RVEffort?) {
+		if let stream = activity.streams.filter({ $0.type == streamType.rawValue }).first {
+			self.dataPoints = stream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
+			self.highlightRange = effort == nil ? nil : (effort!.startIndex, effort!.endIndex)
+		} else {
+			dataPoints = []
+			highlightRange = nil
+		}
+		self.setNeedsDisplay()
+	}
+	
+	private func createPath() -> UIBezierPath? {
+		guard dataPoints.count > 0 else { return nil }
+		
+		let dataMin = dataPoints.min()!
+		let dataRange = CGFloat(dataPoints.max()!) - CGFloat(dataPoints.min()!)
+		let yInset = self.bounds.height / 10
+		
+		func pointForData(_ data : Double, index : Int) -> CGPoint {
+			let x = self.bounds.width * (CGFloat(index) / CGFloat(dataPoints.count-1))
+			let y = self.bounds.height - (((CGFloat(data-dataMin) / dataRange) * (self.bounds.height-yInset)) + yInset/2)
+			return CGPoint(x: x, y: y)
+		}
+
+		let path = UIBezierPath()
+		for (index, point) in dataPoints.enumerated() {
+			if index == 0 {
+				path.move(to: pointForData(dataPoints[0], index: 0))
+			} else {
+				path.addLine(to: pointForData(point, index: index))
+			}
+		}
+		
+		return path
+	}
+	
+	private func createHighlight() -> UIBezierPath? {
+		guard let highlight = highlightRange else { return nil }
+		
+		let increment = self.bounds.width / CGFloat(dataPoints.count)
+		let rect = CGRect(x: CGFloat(highlight.0) * increment, y: 0, width: CGFloat(highlight.1 - highlight.0) * increment, height: self.bounds.height)
+		
+		let path = UIBezierPath(rect: rect)
+		return path
+	}
+	
+	override func draw(_ rect: CGRect) {
+		if let path = createHighlight() {
+			UIColor.lightGray.setFill()
+			path.fill()
+		}
+		if let path = createPath() {
+			path.lineWidth = 1.0
+			UIColor.blue.setStroke()
+			path.stroke()
+		}
+	}
 }
 
 protocol SortFilterDelegate : class {

@@ -32,6 +32,7 @@
         <relationship name="efforts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVEffort" inverseName="activity" inverseEntity="RVEffort" syncable="YES"/>
         <relationship name="map" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVMap" inverseName="activities" inverseEntity="RVMap" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVPhotoAsset" inverseName="activity" inverseEntity="RVPhotoAsset" syncable="YES"/>
+        <relationship name="streams" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVStream" inverseName="activity" inverseEntity="RVStream" syncable="YES"/>
     </entity>
     <entity name="RVEffort" representedClassName="RVEffort" syncable="YES">
         <attribute name="averageCadence" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
@@ -92,11 +93,26 @@
         <relationship name="efforts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVEffort" inverseName="segment" inverseEntity="RVEffort" syncable="YES"/>
         <relationship name="map" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVMap" inverseName="segments" inverseEntity="RVMap" syncable="YES"/>
     </entity>
+    <entity name="RVStream" representedClassName="RVStream" syncable="YES">
+        <attribute name="originalSize" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="resolution" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="seriesType" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="activity" maxCount="1" deletionRule="Nullify" destinationEntity="RVActivity" inverseName="streams" inverseEntity="RVActivity" syncable="YES"/>
+        <relationship name="dataPoints" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVStreamData" inverseName="stream" inverseEntity="RVStreamData" syncable="YES"/>
+    </entity>
+    <entity name="RVStreamData" representedClassName="RVStreamData" syncable="YES">
+        <attribute name="dataPoint" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="index" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <relationship name="stream" maxCount="1" deletionRule="Nullify" destinationEntity="RVStream" inverseName="dataPoints" inverseEntity="RVStream" syncable="YES"/>
+    </entity>
     <elements>
-        <element name="RVActivity" positionX="-427.44140625" positionY="71.51953125" width="128" height="510"/>
-        <element name="RVEffort" positionX="-248.51953125" positionY="74.57421875" width="128" height="330"/>
-        <element name="RVMap" positionX="-199.33984375" positionY="450.8515625" width="128" height="135"/>
-        <element name="RVPhotoAsset" positionX="-225" positionY="234" width="128" height="135"/>
-        <element name="RVSegment" positionX="-44.3671875" positionY="74.09765625" width="128" height="345"/>
+        <element name="RVActivity" positionX="-613.76953125" positionY="202.71875" width="128" height="525"/>
+        <element name="RVEffort" positionX="-166.86328125" positionY="158.14453125" width="128" height="330"/>
+        <element name="RVMap" positionX="-154.84765625" positionY="571.109375" width="128" height="135"/>
+        <element name="RVPhotoAsset" positionX="-431.28515625" positionY="198.04296875" width="128" height="135"/>
+        <element name="RVSegment" positionX="38.171875" positionY="232.7578125" width="128" height="345"/>
+        <element name="RVStream" positionX="33.37890625" positionY="704.015625" width="128" height="135"/>
+        <element name="RVStreamData" positionX="260.0625" positionY="716.359375" width="128" height="90"/>
     </elements>
 </model>

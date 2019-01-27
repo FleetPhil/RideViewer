@@ -49,8 +49,7 @@ extension RVActivity {
 
     @NSManaged public var efforts: Set<RVEffort>
 	@NSManaged public var photos: Set<RVPhotoAsset>
-
-	
+	@NSManaged public var streams: Set<RVStream>
 
 }
 

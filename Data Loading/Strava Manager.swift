@@ -162,5 +162,26 @@ class StravaManager : TokenDelegate {
 			debugPrint(error)
 		})
 	}
+	
+	func streamsForActivity(_ activity : RVActivity, context: NSManagedObjectContext, completionHandler: @escaping ((Bool)->Void)) {
+		guard token != nil else { return }
+		
+		try? StravaClient.sharedInstance.request(Router.activityStreams(id: Router.Id(activity.id), types: "altitude,watts,heartrate"), result: { [weak self ] (streams : [StravaSwift.Stream]?) in
+			guard let `self` = self, let streams = streams else {
+				completionHandler(false)
+				return
+			}
+			
+			for stream in streams {
+//				appLog.debug("Returned \(stream.data?.count ?? 0) points for stream type \(stream.type!), series type \(stream.seriesType!)")
+				_ = RVStream.create(stream: stream, activity: activity, context: context)
+			}
+			context.saveContext()
+			completionHandler(true)
+
+			}, failure: { (error: NSError) in
+				debugPrint(error)
+		})
+	}
 }
 
