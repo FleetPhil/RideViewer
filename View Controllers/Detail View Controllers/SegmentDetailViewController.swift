@@ -99,12 +99,14 @@ extension SegmentDetailViewController : SortFilterDelegate {
 		let effort = dataManager.objectAtIndexPath(index)!
 		self.mapView.addRoute(effort.activity, highlighted: false)
 		
-		routeElevationView.drawForActivity(effort.activity, streamType: .altitude, effort: effort)		// Will draw blank if no streams for this activity
+		routeElevationView.drawForActivity(effort.activity, streamType: .altitude)		// Will draw blank if no streams for this activity
+		routeElevationView.highlightEffort(effort)
 		if effort.activity.streams.count == 0 {
 			// Get streams
 			StravaManager.sharedInstance.streamsForActivity(effort.activity, context: effort.managedObjectContext!, completionHandler: { [ weak self] success in
 				if success {
-					self?.routeElevationView.drawForActivity(effort.activity, streamType: .altitude, effort: effort)
+					self?.routeElevationView.drawForActivity(effort.activity, streamType: .altitude)
+					self?.routeElevationView.highlightEffort(effort)
 				} else {
 					appLog.debug("Failed to get stream data for activity \(effort.activity) ")
 				}

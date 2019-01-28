@@ -10,6 +10,8 @@ import Foundation
 import MapKit
 import StravaSwift
 
+// MARK: RideMapView
+
 protocol RouteViewCompatible {
 	var startLocation : CLLocationCoordinate2D { get }
 	var endLocation : CLLocationCoordinate2D { get }
@@ -146,14 +148,31 @@ class RideMapView : MKMapView, MKMapViewDelegate {
     }
 }
 
+// MARK: Route Elevation View
+
 class RVRouteElevationView : UIView {
 	var dataPoints : [Double] = []
 	var highlightRange : (Int64, Int64)? = nil
+	var startIndex : Int = 0					// index of first data point in view
+
+	var widthPerDataPoint : CGFloat!			// bounds.width / number of data points
 	
-	func drawForActivity(_ activity : RVActivity, streamType : StravaSwift.StreamType, effort : RVEffort?) {
+	required init?(coder aDecoder: NSCoder) {
+		super.init(coder: aDecoder)
+		self.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(didPinch)))
+		self.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
+		self.isUserInteractionEnabled = true
+	}
+	
+	func highlightEffort(_ effort : RVEffort?) {
+		self.highlightRange = effort == nil ? nil : (effort!.startIndex, effort!.endIndex)
+	}
+	
+	func drawForActivity(_ activity : RVActivity, streamType : StravaSwift.StreamType) {
 		if let stream = activity.streams.filter({ $0.type == streamType.rawValue }).first {
 			self.dataPoints = stream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
-			self.highlightRange = effort == nil ? nil : (effort!.startIndex, effort!.endIndex)
+			self.widthPerDataPoint = self.bounds.width / CGFloat(self.dataPoints.count)			// Reset
+			self.startIndex = 0
 		} else {
 			dataPoints = []
 			highlightRange = nil
@@ -161,6 +180,38 @@ class RVRouteElevationView : UIView {
 		self.setNeedsDisplay()
 	}
 	
+	@IBAction func didPinch(_ gestureRecognizer : UIPinchGestureRecognizer) {
+		guard gestureRecognizer.view != nil else { return }
+		guard gestureRecognizer.state == .began || gestureRecognizer.state == .changed else { return }
+		
+		self.widthPerDataPoint *= gestureRecognizer.scale
+		
+		// Check that the set of data points is not less than the bounds width
+		if CGFloat(self.dataPoints.count) * self.widthPerDataPoint < self.bounds.width {
+			self.widthPerDataPoint = self.bounds.width / CGFloat(self.dataPoints.count)
+		}
+		gestureRecognizer.scale = 1.0
+		self.setNeedsDisplay()
+	}
+
+	@IBAction func didPan(_ gestureRecognizer : UIPanGestureRecognizer) {
+		guard gestureRecognizer.view != nil else { return }
+		guard gestureRecognizer.state == .began || gestureRecognizer.state == .changed else { return }
+		
+		startIndex -= Int(gestureRecognizer.translation(in: self).x / self.widthPerDataPoint)
+		
+		if startIndex < 0 { startIndex = 0 }
+		
+		let maxPoints = Int(self.bounds.width / widthPerDataPoint)
+		if (startIndex + maxPoints) > dataPoints.count {
+			startIndex = dataPoints.count - maxPoints
+		}
+		
+		gestureRecognizer.setTranslation(CGPoint(x: 0, y: 0), in: self)
+		
+		self.setNeedsDisplay()
+	}
+
 	private func createPath() -> UIBezierPath? {
 		guard dataPoints.count > 0 else { return nil }
 		
@@ -169,17 +220,17 @@ class RVRouteElevationView : UIView {
 		let yInset = self.bounds.height / 10
 		
 		func pointForData(_ data : Double, index : Int) -> CGPoint {
-			let x = self.bounds.width * (CGFloat(index) / CGFloat(dataPoints.count-1))
+			let x = CGFloat(index) * self.widthPerDataPoint
 			let y = self.bounds.height - (((CGFloat(data-dataMin) / dataRange) * (self.bounds.height-yInset)) + yInset/2)
 			return CGPoint(x: x, y: y)
 		}
-
+		
 		let path = UIBezierPath()
 		for (index, point) in dataPoints.enumerated() {
-			if index == 0 {
-				path.move(to: pointForData(dataPoints[0], index: 0))
-			} else {
-				path.addLine(to: pointForData(point, index: index))
+			if index == startIndex {
+				path.move(to: pointForData(point, index: 0))
+			} else if index > startIndex {
+				path.addLine(to: pointForData(point, index: index-startIndex))
 			}
 		}
 		
@@ -189,8 +240,8 @@ class RVRouteElevationView : UIView {
 	private func createHighlight() -> UIBezierPath? {
 		guard let highlight = highlightRange else { return nil }
 		
-		let increment = self.bounds.width / CGFloat(dataPoints.count)
-		let rect = CGRect(x: CGFloat(highlight.0) * increment, y: 0, width: CGFloat(highlight.1 - highlight.0) * increment, height: self.bounds.height)
+		let rect = CGRect(x:( CGFloat(highlight.0) - CGFloat(startIndex)) * self.widthPerDataPoint, y: 0,
+						  width: CGFloat(highlight.1 - highlight.0) * self.widthPerDataPoint, height: self.bounds.height)
 		
 		let path = UIBezierPath(rect: rect)
 		return path
@@ -208,6 +259,8 @@ class RVRouteElevationView : UIView {
 		}
 	}
 }
+
+// MARK: RVTableView
 
 protocol SortFilterDelegate : class {
 	func tableRowSelectedAtIndex(_ index : IndexPath)

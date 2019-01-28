@@ -47,9 +47,7 @@ enum SegmentFilter : String, PopupSelectable, CaseIterable {
 	case singleEffort		= "Single Effort"
 	case multipleEfforts	= "Multiple Effort"
 	
-	var displayString: String {
-		return self.rawValue
-	}
+	var displayString: String { return self.rawValue }
 	
 	var filterGroup: String {
 		switch self {

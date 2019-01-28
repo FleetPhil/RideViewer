@@ -37,6 +37,7 @@
     <entity name="RVEffort" representedClassName="RVEffort" syncable="YES">
         <attribute name="averageCadence" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="averageHeartRate" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="averageSpeed" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="averageWatts" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="distance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="elapsedTime" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
@@ -108,7 +109,7 @@
     </entity>
     <elements>
         <element name="RVActivity" positionX="-613.76953125" positionY="202.71875" width="128" height="525"/>
-        <element name="RVEffort" positionX="-166.86328125" positionY="158.14453125" width="128" height="330"/>
+        <element name="RVEffort" positionX="-166.86328125" positionY="158.14453125" width="128" height="345"/>
         <element name="RVMap" positionX="-154.84765625" positionY="571.109375" width="128" height="135"/>
         <element name="RVPhotoAsset" positionX="-431.28515625" positionY="198.04296875" width="128" height="135"/>
         <element name="RVSegment" positionX="38.171875" positionY="232.7578125" width="128" height="345"/>

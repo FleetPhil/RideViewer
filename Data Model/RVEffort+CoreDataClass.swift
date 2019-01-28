@@ -13,7 +13,9 @@ import UIKit
 import StravaSwift
 
 enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
+	case sequence		= "startIndex"
 	case distance 		= "distance"
+	case speed			= "averageSpeed"
 	case movingTime 	= "movingTime"
 	case elapsedTime	= "elapsedTime"
 	case date			= "startDate"
@@ -22,7 +24,9 @@ enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
 	
 	var displayString : String {           // Text to use when choosing item
 		switch self {
+		case .sequence:			return "Sequence"
 		case .distance:			return "Distance"
+		case .speed:			return "Av. Speed"
 		case .movingTime:		return "Moving Time"
 		case .elapsedTime:		return "Elapsed Time"
 		case .date:				return "Date"
@@ -33,12 +37,14 @@ enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
 
     var defaultAscending : Bool {
         switch self {
-        case .distance:            return false
-        case .movingTime:        return true
+		case .sequence:			return true
+        case .distance:         return false
+		case .speed:			return false
+        case .movingTime:       return true
 		case .elapsedTime:		return true
-        case .date:                return false
+        case .date:             return false
         case .maxHR:            return false
-        case .averageWatts:        return false
+        case .averageWatts:     return false
         }
     }
 }
@@ -70,6 +76,7 @@ public class RVEffort: NSManagedObject {
 		self.averageCadence			= effort.averageCadence ?? 0.0
 		self.averageWatts			= effort.averageWatts ?? 0.0
 		self.averageHeartRate		= effort.averageHeartRate ?? 0.0
+		self.averageSpeed			= effort.distance! / Double(effort.elapsedTime!)		// in m/s
 		self.maxHeartRate			= Double(effort.maxHeartRate ?? 0)
 		self.komRank				= Int16(effort.komRank ?? 0)
 		self.prRank					= Int16(effort.prRank ?? 0)

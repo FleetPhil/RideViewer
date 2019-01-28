@@ -23,10 +23,11 @@ extension RVEffort {
     @NSManaged public var name: String?
     @NSManaged public var movingTime: Duration
     @NSManaged public var startDate: NSDate
-    @NSManaged public var distance: Double
+    @NSManaged public var distance: Distance
     @NSManaged public var averageCadence: Double
     @NSManaged public var averageWatts: Double
     @NSManaged public var averageHeartRate: Double
+	@NSManaged public var averageSpeed: Speed
     @NSManaged public var maxHeartRate: Double
     @NSManaged public var komRank: Int16
     @NSManaged public var prRank: Int16
