@@ -28,6 +28,7 @@
 		F42ECF1021CFEBC20096F83B /* Strava Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECF0F21CFEBC20096F83B /* Strava Manager.swift */; };
 		F44EA67F21F23ABA00BBABA0 /* PhotoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F44EA67D21F23ABA00BBABA0 /* PhotoView.xib */; };
 		F44EA68021F23ABA00BBABA0 /* ImageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44EA67E21F23ABA00BBABA0 /* ImageScrollView.swift */; };
+		F44F19ED2204B6BA00A43723 /* RideMapAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44F19EC2204B6BA00A43723 /* RideMapAnnotationView.swift */; };
 		F461168F21E0A4BF00E2693C /* PopupChooser.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F461168E21E0A4BF00E2693C /* PopupChooser.storyboard */; };
 		F4611B9D21F37FE800EDFC13 /* ScanPhotosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4611B9C21F37FE800EDFC13 /* ScanPhotosViewController.swift */; };
 		F4611B9F21F3935C00EDFC13 /* General Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4611B9E21F3935C00EDFC13 /* General Utilities.swift */; };
@@ -78,6 +79,7 @@
 		F42ECF0F21CFEBC20096F83B /* Strava Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Strava Manager.swift"; sourceTree = "<group>"; };
 		F44EA67D21F23ABA00BBABA0 /* PhotoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoView.xib; sourceTree = "<group>"; };
 		F44EA67E21F23ABA00BBABA0 /* ImageScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageScrollView.swift; sourceTree = "<group>"; };
+		F44F19EC2204B6BA00A43723 /* RideMapAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideMapAnnotationView.swift; sourceTree = "<group>"; };
 		F461168E21E0A4BF00E2693C /* PopupChooser.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PopupChooser.storyboard; sourceTree = "<group>"; };
 		F4611B9C21F37FE800EDFC13 /* ScanPhotosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ScanPhotosViewController.swift; path = "Detail View Controllers/ScanPhotosViewController.swift"; sourceTree = "<group>"; };
 		F4611B9E21F3935C00EDFC13 /* General Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "General Utilities.swift"; sourceTree = "<group>"; };
@@ -137,6 +139,7 @@
 				F44EA67E21F23ABA00BBABA0 /* ImageScrollView.swift */,
 				F44EA67D21F23ABA00BBABA0 /* PhotoView.xib */,
 				F40CC8AB21D666EE00EC3594 /* Views.swift */,
+				F44F19EC2204B6BA00A43723 /* RideMapAnnotationView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -440,6 +443,7 @@
 				F41C7A2F21D0E820003A5C31 /* StravaConnectViewController.swift in Sources */,
 				F4BDDFBD21DFD19300E4668B /* PopupChooser.swift in Sources */,
 				F46C126E21F200F7007438DB /* RVPhotoAsset+CoreDataProperties.swift in Sources */,
+				F44F19ED2204B6BA00A43723 /* RideMapAnnotationView.swift in Sources */,
 				F475B72721D232BC0028F2AF /* StravaSwift Extensions.swift in Sources */,
 				F41C7A3121D12EFA003A5C31 /* Display Extensions.swift in Sources */,
 				F42ECF0B21CFE1A50096F83B /* MOC Extensions.swift in Sources */,

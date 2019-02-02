@@ -11,6 +11,7 @@ import Foundation
 import CoreData
 import UIKit
 import StravaSwift
+import MapKit
 
 enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
 	case sequence		= "startIndex"
@@ -51,7 +52,7 @@ enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
 
 
 @objc(RVEffort)
-public class RVEffort: NSManagedObject {
+public class RVEffort: NSManagedObject, RouteViewCompatible {
 	// Class Methods
 	class func create(effort: Effort, forActivity : RVActivity, context: NSManagedObjectContext) -> RVEffort {
 		return (RVEffort.get(identifier: effort.id!, inContext: context) ?? RVEffort(context: context)).update(effort: effort, activity : forActivity)
@@ -65,7 +66,7 @@ public class RVEffort: NSManagedObject {
 			return nil
 		}
 	}
-	
+    
 	func update(effort : Effort, activity :  RVActivity) -> RVEffort {
 		self.id						= Int64(effort.id!)
 		self.name					= effort.name ?? "No name"
@@ -99,6 +100,33 @@ public class RVEffort: NSManagedObject {
             }
         }
         return self
+	}
+    
+    var indexRange : RouteIndexRange {
+        return RouteIndexRange(from: Int(self.startIndex), to: Int(self.endIndex))
+    }
+    
+    class func filterPredicate(activity : RVActivity, range : RouteIndexRange?) -> NSCompoundPredicate {
+        let settingsPredicate = Settings.sharedInstance.segmentSettingsPredicate
+        var filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "activity.id == %@", argumentArray: [activity.id]), settingsPredicate])
+        if let routeRange = range {     // Only show efforts in specified index range
+            let rangePredicate = NSPredicate(format: "startIndex >= %d && startIndex <= %d", argumentArray: [routeRange.from, routeRange.to])
+            filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [filterPredicate, rangePredicate])
+        }
+        return filterPredicate
+    }
+
+	// Route view compatible
+	var startLocation: CLLocationCoordinate2D {
+		return self.segment.startLocation
+	}
+	
+	var endLocation: CLLocationCoordinate2D {
+		return self.segment.endLocation
+	}
+	
+	var map: RVMap? {
+		return self.segment.map
 	}
 }
 

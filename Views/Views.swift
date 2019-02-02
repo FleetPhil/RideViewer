@@ -12,20 +12,55 @@ import StravaSwift
 
 // MARK: RideMapView
 
-protocol RouteViewCompatible {
+// underlying objects
+protocol RouteViewCompatible : class {
 	var startLocation : CLLocationCoordinate2D { get }
 	var endLocation : CLLocationCoordinate2D { get }
 	var map : RVMap? { get }
 }
 
-fileprivate class RouteEndPoint : NSObject, MKAnnotation {
+// Route objects: RideRoute, RouteEndPoint, RoutePath
+fileprivate class RideRoute {
+	var type: RouteViewType
+	var route : RouteViewCompatible
+	var endPoints : [RouteEnd] = []
+	var path : RoutePath?
+	
+	init(route : RouteViewCompatible, type : RouteViewType) {
+		self.route = route
+		self.type = type
+
+		self.endPoints.append(RouteEnd(rideRoute: self, coordinate: route.startLocation, isStart: true))
+		self.endPoints.append(RouteEnd(rideRoute: self, coordinate: route.endLocation, isStart: false))
+		self.path = RoutePath(rideRoute: self)
+	}
+	var startPoint : RouteEnd { return endPoints[0] }
+	var finishPoint : RouteEnd { return endPoints[1] }
+}
+
+fileprivate class RoutePath : MKPolyline {
+	
+	var rideRoute : RideRoute!
+	
+	convenience init?(rideRoute : RideRoute) {
+		if let locations = rideRoute.route.map?.polylineLocations(summary: false) {
+			self.init(coordinates: UnsafePointer(locations), count: locations.count)
+			self.rideRoute = rideRoute
+		} else {
+			return nil
+		}
+	}
+	
+}
+
+fileprivate class RouteEnd : NSObject, MKAnnotation {
 	var coordinate: CLLocationCoordinate2D
-	var route: RouteViewCompatible
+	var rideRoute: RideRoute
 	var isStart : Bool
 	
-	init(route : RouteViewCompatible, isStart :  Bool) {
-		self.coordinate = isStart ? route.startLocation : route.endLocation
-		self.route = route
+	init(rideRoute : RideRoute, coordinate: CLLocationCoordinate2D, isStart :  Bool) {
+		self.coordinate = coordinate
+		self.rideRoute = rideRoute
 		self.isStart = isStart
 		super.init()
 	}
@@ -45,47 +80,129 @@ fileprivate class MapPhotoView : MKAnnotationView {
 	
 }
 
-fileprivate class RideRouteLine : MKPolyline {
-	var highlighted : Bool = false
-	var route : RouteViewCompatible!
+public enum RouteViewType {
+	case mainActivity
+    case activity
+    case highlightSegment
+    case backgroundSegment
+    
+    var colour : UIColor {
+        switch self {
+		case .mainActivity:			return UIColor.red
+        case .activity:             return UIColor.orange
+        case .highlightSegment:     return UIColor.green
+        case .backgroundSegment:    return UIColor.darkGray
+			
+        }
+    }
+    var lineWidth : CGFloat {
+        switch self {
+        case .mainActivity, .activity, .backgroundSegment:     return 3
+        case .highlightSegment:                 return 5
+        }
+    }
 	
-	convenience init(coordinates: UnsafePointer<CLLocationCoordinate2D>, count: Int, highlighted : Bool, route: RouteViewCompatible) {
-		self.init(coordinates: coordinates, count: count)
-		self.highlighted = highlighted
-		self.route = route
+	var isSegment : Bool {
+		switch self {
+		case .backgroundSegment, .highlightSegment: return true
+		default: return false
+		}
 	}
 }
 
+public struct RouteIndexRange {
+	var from: Int
+	var to: Int
+}
+
+// MARK: Map view
+protocol RideMapViewDelegate : class {
+	func didChangeVisibleRoutes(_ routes : [RouteViewCompatible])
+	func didSelectRoute(route: RouteViewCompatible)
+	func didDeselectRoute(route: RouteViewCompatible)
+
+}
+
 class RideMapView : MKMapView, MKMapViewDelegate {
+
+	public weak var viewDelegate : RideMapViewDelegate?
 	
-	var mapRegion : MKCoordinateRegion!
-	let inset : Double = 200
+	private var routes : [RideRoute] = []
+	private let inset : Double = 200
 	
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
 		self.register(MapPhotoView.self, forAnnotationViewWithReuseIdentifier: "photoView")
+		self.register(SegmentStartAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
+		self.register(SegmentFinishAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
 	}
+
 	
 	// Public functions
-	func addRoute(_ route : RouteViewCompatible, highlighted: Bool) {
-		if highlighted {
-			self.addAnnotation(RouteEndPoint(route: route, isStart: true))
-			self.addAnnotation(RouteEndPoint(route: route, isStart: false))
-		}
-		if let locations = route.map?.polylineLocations(summary: false), locations.count > 0 {
-			self.addOverlay(RideRouteLine(coordinates: locations, count: locations.count, highlighted: highlighted, route: route))
-		}
-		setMapRegion()
+    func addRoute(_ route : RouteViewCompatible, type : RouteViewType) {
+		let rideRoute = RideRoute(route: route, type: type)
+		self.routes.append(rideRoute)
+
+		self.setAnnotationsForRideRoute(rideRoute)
+        if type != .backgroundSegment {
+			if let path = rideRoute.path {
+            	self.addOverlay(path)
+			}
+        }
+		setNeedsDisplay()
 	}
 	
-	func removeRoute(_ route : RouteViewCompatible) {
-		removeOverlays(self.overlays.compactMap({ $0 as? RideRouteLine }).filter({	$0.route.map == route.map }))
-		removeAnnotations(self.annotations.compactMap({$0 as? RouteEndPoint}).filter({ $0.route.map == route.map }))
+	func setTypeForRoute(_ route : RouteViewCompatible, type : RouteViewType) {
+		guard let thisRoute = self.routes.filter({ $0.route === route }).first else {
+			appLog.error("Unable to find route to update")
+			return
+		}
+		thisRoute.type = type
+		self.setAnnotationsForRideRoute(thisRoute)
+		setNeedsDisplay()
+	}
+	
+	fileprivate func setAnnotationsForRideRoute(_ rideRoute : RideRoute) {
 		
-		setMapRegion()
+		var startAnnotation : MKAnnotation? {
+			return (self.annotations.filter({$0 is RouteEnd}) as! [RouteEnd]).filter({ $0.rideRoute === rideRoute && $0.isStart }).first
+		}
+		var finishAnnotation : MKAnnotation? {
+			return (self.annotations.filter({$0 is RouteEnd}) as! [RouteEnd]).filter({ $0.rideRoute === rideRoute && !$0.isStart }).first
+		}
+
+		// Show start annotation for everything if not already there
+		if startAnnotation == nil { self.addAnnotation(rideRoute.startPoint) }
+		
+		// Show finish annotation unless it's a background segment
+		if rideRoute.type != .backgroundSegment && finishAnnotation == nil {
+			self.addAnnotation(rideRoute.finishPoint)
+		}
+		
+		// Remove end annotation if it's a background segment
+		if rideRoute.type == .backgroundSegment {
+			self.removeAnnotation(rideRoute.finishPoint)
+		}
 	}
 	
-	private func setMapRegion() {
+//	func removeRoute(_ route : RouteViewCompatible) {
+//		guard let thisRoute = self.routes.filter({ $0.route === route }).first else {
+//			appLog.error("Unable to find route to remove")
+//			return
+//		}
+//		removeOverlays(self.overlays.compactMap({ $0 as? RoutePath }).filter({ $0.rideRoute.route.map == thisRoute.route.map }))
+//		removeAnnotations(self.annotations.compactMap({$0 as? RouteEnd}).filter({ thisRoute.endPoints.contains($0) }))
+//		
+//		for (i, _) in self.routes.enumerated() {
+//			self.routes.remove(at: i)
+//		}
+//	}
+
+	func routes(ofTypes: [RouteViewType]) -> [RouteViewCompatible] {
+		return routes.filter({ ofTypes.contains($0.type) }).map({ $0.route })
+	}
+    
+    func setMapRegion() {
 		if self.overlays.count == 0 {
 			let zoomRect = annotations.reduce(MKMapRect.null, {
 				$0.union(MKMapRect(origin: MKMapPoint($1.coordinate), size: MKMapSize(width: 0.1, height: 0.1)))
@@ -114,123 +231,169 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 			let view = mapView.dequeueReusableAnnotationView(withIdentifier: "photoView", for: photoAnnotation)
 			view.image = photoAnnotation.image.renderResizedImage(newWidth: 30)
 			return view
+		}
+		
+		guard let annotation = annotation as? RouteEnd else { return nil }
+		
+		if annotation.isStart {
+			return SegmentStartAnnotationView(annotation: annotation, reuseIdentifier: SegmentStartAnnotationView.reuseID)
 		} else {
-			let identifier = "EndMarker"
-			var view: MKMarkerAnnotationView
-			if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView {
-				view = dequeuedView
-			} else {
-				view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-				view.canShowCallout = false
-				view.calloutOffset = CGPoint(x: -5, y: 5)
-				view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
-			}
-			if let endPoint = annotation as? RouteEndPoint {
-				if endPoint.isStart {
-					view.glyphText = "🇬🇧"
-					view.glyphTintColor = UIColor.lightGray
-				} else {
-					view.glyphText = "🏁"
-					view .glyphTintColor = UIColor.green
-				}
-			}
-			return view
+			return SegmentFinishAnnotationView(annotation: annotation, reuseIdentifier: SegmentFinishAnnotationView.reuseID)
 		}
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-		let highlighted = (overlay as? RideRouteLine)?.highlighted ?? false
+        guard let type = (overlay as? RoutePath)?.rideRoute.type else { return MKOverlayPathRenderer() }
 		
 		let renderer = MKPolylineRenderer(overlay: overlay)
-		renderer.strokeColor = highlighted ? UIColor.red : UIColor.orange
-		renderer.lineWidth = highlighted ? 5 : 3
+		renderer.strokeColor = type.colour
+		renderer.lineWidth = type.lineWidth
 		return renderer
     }
+	
+	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+		let visibleRouteEnds = self.annotations(in: mapView.visibleMapRect).filter({ $0 is RouteEnd }) as! Set<RouteEnd>
+		let visibleRoutes = visibleRouteEnds.compactMap({ $0.rideRoute.route })
+
+		viewDelegate?.didChangeVisibleRoutes(Array(visibleRoutes))
+	}
+	
+	func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+		if let routeEnd = view.annotation as? RouteEnd {
+			viewDelegate?.didSelectRoute(route: routeEnd.rideRoute.route)
+		}
+	}
+	
+	func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+		if let routeEnd = view.annotation as? RouteEnd {
+			viewDelegate?.didDeselectRoute(route: routeEnd.rideRoute.route)
+		}
+	}
 }
 
-// MARK: Route Elevation View
+// MARK: Route View
+protocol RouteViewDelegate : class {
+    func newIndexRange(_ range : RouteIndexRange)
+}
 
-class RVRouteElevationView : UIView {
-	var dataPoints : [Double] = []
-	var highlightRange : (Int64, Int64)? = nil
-	var startIndex : Int = 0					// index of first data point in view
+class RVRouteView : UIView {
+    weak var delegate : RouteViewDelegate?
 
-	var widthPerDataPoint : CGFloat!			// bounds.width / number of data points
-	
-	required init?(coder aDecoder: NSCoder) {
-		super.init(coder: aDecoder)
-		self.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(didPinch)))
-		self.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
-		self.isUserInteractionEnabled = true
+	public var viewRange : RouteIndexRange! {
+		didSet {
+			setNeedsDisplay()
+		}
 	}
+	
+	private var dataPoints : [Double] = []
+    
+	private var highlightRange : RouteIndexRange? = nil
+    private var fullRange : RouteIndexRange? = nil
+    private var viewPoints : Int {
+        return viewRange == nil ? 0 : viewRange!.to - viewRange!.from
+    }
+
+//	required init?(coder aDecoder: NSCoder) {
+//		super.init(coder: aDecoder)
+//		self.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(didPinch)))
+//		self.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
+//		self.isUserInteractionEnabled = true
+//	}
 	
 	func highlightEffort(_ effort : RVEffort?) {
-		self.highlightRange = effort == nil ? nil : (effort!.startIndex, effort!.endIndex)
+		self.highlightRange = effort == nil ? nil : effort!.indexRange
+        self.setNeedsDisplay()
 	}
-	
+    
 	func drawForActivity(_ activity : RVActivity, streamType : StravaSwift.StreamType) {
 		if let stream = activity.streams.filter({ $0.type == streamType.rawValue }).first {
 			self.dataPoints = stream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
-			self.widthPerDataPoint = self.bounds.width / CGFloat(self.dataPoints.count)			// Reset
-			self.startIndex = 0
+			self.fullRange = RouteIndexRange(from: 0, to: dataPoints.count)
+            self.viewRange = self.fullRange			// Setting view range will trigger redraw
 		} else {
 			dataPoints = []
 			highlightRange = nil
 		}
-		self.setNeedsDisplay()
 	}
 	
 	@IBAction func didPinch(_ gestureRecognizer : UIPinchGestureRecognizer) {
 		guard gestureRecognizer.view != nil else { return }
+        
+        if gestureRecognizer.state == .ended {
+            delegate?.newIndexRange(self.viewRange)
+        }
+        
 		guard gestureRecognizer.state == .began || gestureRecognizer.state == .changed else { return }
-		
-		self.widthPerDataPoint *= gestureRecognizer.scale
-		
-		// Check that the set of data points is not less than the bounds width
-		if CGFloat(self.dataPoints.count) * self.widthPerDataPoint < self.bounds.width {
-			self.widthPerDataPoint = self.bounds.width / CGFloat(self.dataPoints.count)
-		}
+        
+        let visiblePoints = CGFloat(self.viewRange.to - self.viewRange.from)
+        let newVisiblePoints = CGFloat(self.viewRange.to - self.viewRange.from) / gestureRecognizer.scale
+        let change = Int(newVisiblePoints - visiblePoints)
+        viewRange = RouteIndexRange(from: viewRange.from - change/2, to: viewRange.to + change/2)
+        if viewRange.from < 0 {
+            viewRange.to += -viewRange.from
+            viewRange.from += -viewRange.from
+        }
+
+        if Int(newVisiblePoints) > dataPoints.count {
+            viewRange = RouteIndexRange(from: 0, to: dataPoints.count)
+        }
 		gestureRecognizer.scale = 1.0
+        
 		self.setNeedsDisplay()
 	}
 
 	@IBAction func didPan(_ gestureRecognizer : UIPanGestureRecognizer) {
 		guard gestureRecognizer.view != nil else { return }
-		guard gestureRecognizer.state == .began || gestureRecognizer.state == .changed else { return }
-		
-		startIndex -= Int(gestureRecognizer.translation(in: self).x / self.widthPerDataPoint)
-		
-		if startIndex < 0 { startIndex = 0 }
-		
-		let maxPoints = Int(self.bounds.width / widthPerDataPoint)
-		if (startIndex + maxPoints) > dataPoints.count {
-			startIndex = dataPoints.count - maxPoints
-		}
-		
-		gestureRecognizer.setTranslation(CGPoint(x: 0, y: 0), in: self)
-		
-		self.setNeedsDisplay()
+        
+        switch gestureRecognizer.state {
+        case .ended:
+            delegate?.newIndexRange(viewRange)
+        case .began, .changed:
+            let widthPerDataPoint = self.bounds.width / CGFloat(self.viewRange.to - self.viewRange.from)
+            viewRange.from -= Int(gestureRecognizer.translation(in: self).x / widthPerDataPoint)
+            
+            if viewRange.from < 0 { viewRange.from = 0 }
+            
+            viewRange.to = viewRange.from + Int(self.bounds.width / widthPerDataPoint)
+            if viewRange.to > dataPoints.count {
+                viewRange.from -= (viewRange.to - dataPoints.count)
+                viewRange.to -= (viewRange.to - dataPoints.count)
+            }
+            gestureRecognizer.setTranslation(CGPoint(x: 0, y: 0), in: self)
+            self.setNeedsDisplay()
+        default:
+            break
+            
+        }
 	}
 
 	private func createPath() -> UIBezierPath? {
-		guard dataPoints.count > 0 else { return nil }
+		guard dataPoints.count > 0, viewRange.to - viewRange.from > 0 else { return nil }
+        
+//        appLog.debug("Create path: bounds are \(self.bounds)")
 		
 		let dataMin = dataPoints.min()!
 		let dataRange = CGFloat(dataPoints.max()!) - CGFloat(dataPoints.min()!)
 		let yInset = self.bounds.height / 10
+        
+        let widthPerDataPoint = self.bounds.width / CGFloat(viewRange.to - viewRange.from)
 		
 		func pointForData(_ data : Double, index : Int) -> CGPoint {
-			let x = CGFloat(index) * self.widthPerDataPoint
+			let x = CGFloat(index) * widthPerDataPoint
 			let y = self.bounds.height - (((CGFloat(data-dataMin) / dataRange) * (self.bounds.height-yInset)) + yInset/2)
 			return CGPoint(x: x, y: y)
 		}
 		
 		let path = UIBezierPath()
 		for (index, point) in dataPoints.enumerated() {
-			if index == startIndex {
+			if index == viewRange.from {
 				path.move(to: pointForData(point, index: 0))
-			} else if index > startIndex {
-				path.addLine(to: pointForData(point, index: index-startIndex))
+			} else if index > viewRange.from {
+                if path.currentPoint == CGPoint.zero {
+                    appLog.severe("no current point")
+					fatalError()
+                }
+				path.addLine(to: pointForData(point, index: index-viewRange.from))
 			}
 		}
 		
@@ -238,10 +401,12 @@ class RVRouteElevationView : UIView {
 	}
 	
 	private func createHighlight() -> UIBezierPath? {
-		guard let highlight = highlightRange else { return nil }
+		guard let highlight = highlightRange, viewRange.to - viewRange.from > 0 else { return nil }
 		
-		let rect = CGRect(x:( CGFloat(highlight.0) - CGFloat(startIndex)) * self.widthPerDataPoint, y: 0,
-						  width: CGFloat(highlight.1 - highlight.0) * self.widthPerDataPoint, height: self.bounds.height)
+        let widthPerDataPoint = self.bounds.width / CGFloat(self.viewRange.to - self.viewRange.from)
+
+		let rect = CGRect(x:( CGFloat(highlight.from) - CGFloat(viewRange.from)) * widthPerDataPoint, y: 0,
+						  width: CGFloat(highlight.to - highlight.from) * widthPerDataPoint, height: self.bounds.height)
 		
 		let path = UIBezierPath(rect: rect)
 		return path
@@ -265,6 +430,8 @@ class RVRouteElevationView : UIView {
 protocol SortFilterDelegate : class {
 	func tableRowSelectedAtIndex(_ index : IndexPath)
 	func tableRowDeselectedAtIndex(_ index : IndexPath)
+    func didScrollToVisiblePaths(_ paths : [IndexPath]?)
+
 	func sortButtonPressed(sender : UIView)
 	func filterButtonPressed(sender : UIView)
 }
@@ -304,6 +471,13 @@ class RVTableView : UITableView, UITableViewDelegate {
 		headerView.backgroundColor = UIColor.lightGray
 		return headerView
 	}
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            sortFilterDelegate?.didScrollToVisiblePaths(self.indexPathsForVisibleRows)
+        }
+    }
+
 	
 	func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
 		let sortButton = UIButton(frame: CGRect(x: 20, y: 0, width: 44, height: view.bounds.maxY))

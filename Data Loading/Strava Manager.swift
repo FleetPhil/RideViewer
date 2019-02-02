@@ -166,8 +166,8 @@ class StravaManager : TokenDelegate {
 	func streamsForActivity(_ activity : RVActivity, context: NSManagedObjectContext, completionHandler: @escaping ((Bool)->Void)) {
 		guard token != nil else { return }
 		
-		try? StravaClient.sharedInstance.request(Router.activityStreams(id: Router.Id(activity.id), types: "altitude,watts,heartrate"), result: { [weak self ] (streams : [StravaSwift.Stream]?) in
-			guard let `self` = self, let streams = streams else {
+		try? StravaClient.sharedInstance.request(Router.activityStreams(id: Router.Id(activity.id), types: "distance,altitude,watts,heartrate"), result: { (streams : [StravaSwift.Stream]?) in
+            guard let streams = streams else {
 				completionHandler(false)
 				return
 			}

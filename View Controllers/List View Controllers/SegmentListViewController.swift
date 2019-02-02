@@ -45,9 +45,9 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 	
     func setDataManager() {
 		guard sortKey != nil, filters != nil else { return }
-		let predicate = SegmentFilter.predicateForFilters(filters)
-		let sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: sortOrderAscending)
-		_ = dataManager.fetchObjects(sortDescriptor: sortDescriptor, filterPredicate: predicate)
+		dataManager.filterPredicate = SegmentFilter.predicateForFilters(filters)
+		dataManager.sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: sortOrderAscending)
+		_ = dataManager.fetchObjects()
 	}
 	
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -89,6 +89,12 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 	func tableRowSelectedAtIndex(_ index: IndexPath) {
 		performSegue(withIdentifier: "SegmentListToSegmentDetail", sender: self)
 	}
+    
+    func didScrollToVisiblePaths(_ paths : [IndexPath]?) {
+        
+    }
+    
+
 
 	// MARK: - Navigation
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

@@ -28,7 +28,7 @@ class SegmentDetailViewController: UIViewController {
 		}
 	}
 	
-	@IBOutlet weak var routeElevationView: RVRouteElevationView!
+	@IBOutlet weak var routeView: RVRouteView!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -46,7 +46,7 @@ class SegmentDetailViewController: UIViewController {
 		self.effortsLabel.text	= "\(tableView.numberOfRows(inSection: 0)) Efforts"
 		self.effortsLabel.textColor = segment.resourceState.resourceStateColour
 		
-		mapView!.addRoute(segment,highlighted: true)
+        mapView!.addRoute(segment, type: .highlightSegment)
 
 		if segment.resourceState != .detailed {
             // Get segment details including route
@@ -54,7 +54,7 @@ class SegmentDetailViewController: UIViewController {
 			StravaManager.sharedInstance.updateSegment(segment, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] success in
 				guard self != nil else { return }
 				if success {
-					self!.mapView!.addRoute(self!.segment, highlighted: true)
+					self!.mapView!.addRoute(self!.segment, type: .highlightSegment)
                     // Get all efforts for this segment
                     StravaManager.sharedInstance.effortsForSegment(self!.segment, page: 1, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [ weak self ] success in
                         self?.tableView?.endDataRetrieval()
@@ -83,30 +83,32 @@ extension SegmentDetailViewController : SortFilterDelegate {
 	}
 	
     func setDataManager(sortKey : EffortSort, ascending :  Bool) {
+        dataManager.sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: ascending)
+
 		let settingsPredicate = Settings.sharedInstance.segmentSettingsPredicate
-		let sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: ascending)
 		let filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "segment.id == %@", argumentArray: [segment.id]), settingsPredicate])
-		let efforts = dataManager.fetchObjects(sortDescriptor: sortDescriptor, filterPredicate: filterPredicate)
+        dataManager.filterPredicate = filterPredicate
+		let efforts = dataManager.fetchObjects()
 		self.effortsLabel.text = "\(efforts.count) Efforts"
 	}
 	
 	func tableRowDeselectedAtIndex(_ index: IndexPath) {
 		let activity = dataManager.objectAtIndexPath(index)!.activity
-		self.mapView.removeRoute(activity)
+		self.mapView.setTypeForRoute(activity, type: .backgroundSegment)
 	}
 	
 	func tableRowSelectedAtIndex(_ index: IndexPath) {
 		let effort = dataManager.objectAtIndexPath(index)!
-		self.mapView.addRoute(effort.activity, highlighted: false)
+		self.mapView.addRoute(effort.activity, type: .highlightSegment)
 		
-		routeElevationView.drawForActivity(effort.activity, streamType: .altitude)		// Will draw blank if no streams for this activity
-		routeElevationView.highlightEffort(effort)
+		routeView.drawForActivity(effort.activity, streamType: .altitude)		// Will draw blank if no streams for this activity
+		routeView.highlightEffort(effort)
 		if effort.activity.streams.count == 0 {
 			// Get streams
 			StravaManager.sharedInstance.streamsForActivity(effort.activity, context: effort.managedObjectContext!, completionHandler: { [ weak self] success in
 				if success {
-					self?.routeElevationView.drawForActivity(effort.activity, streamType: .altitude)
-					self?.routeElevationView.highlightEffort(effort)
+					self?.routeView.drawForActivity(effort.activity, streamType: .altitude)
+					self?.routeView.highlightEffort(effort)
 				} else {
 					appLog.debug("Failed to get stream data for activity \(effort.activity) ")
 				}
@@ -115,6 +117,10 @@ extension SegmentDetailViewController : SortFilterDelegate {
 		
 //		performSegue(withIdentifier: "SegmentEffortListToSegmentDetail", sender: self)
 	}
+    
+    func didScrollToVisiblePaths(_ paths : [IndexPath]?) {
+        
+    }
 	
 	func sortButtonPressed(sender: UIView) {
 		// Popup the list of fields to select sort order

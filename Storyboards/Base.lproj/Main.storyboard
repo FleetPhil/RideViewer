@@ -248,16 +248,16 @@
                                 <rect key="frame" x="20" y="78" width="751.5" height="748"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="2xn-tZ-S9Z">
-                                        <rect key="frame" x="0.0" y="0.0" width="751.5" height="488"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="751.5" height="560"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="elw-fy-X7j">
-                                                <rect key="frame" x="0.0" y="0.0" width="367" height="488"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="367" height="560"/>
                                                 <subviews>
                                                     <view contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="DEe-Rj-4UT" userLabel="Top view">
-                                                        <rect key="frame" x="0.0" y="0.0" width="367" height="195"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="367" height="267"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="250" axis="vertical" distribution="equalSpacing" alignment="top" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="u8R-k3-4mo">
-                                                                <rect key="frame" x="0.0" y="0.0" width="367" height="195"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="367" height="267"/>
                                                                 <subviews>
                                                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6UI-ET-Y45">
                                                                         <rect key="frame" x="0.0" y="0.0" width="367" height="20.5"/>
@@ -277,7 +277,7 @@
                                                                         </subviews>
                                                                     </stackView>
                                                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="FJT-0C-ce3">
-                                                                        <rect key="frame" x="0.0" y="29" width="367" height="166"/>
+                                                                        <rect key="frame" x="0.0" y="101" width="367" height="166"/>
                                                                         <subviews>
                                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="UMt-zF-bVf">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="80" height="77.5"/>
@@ -348,14 +348,14 @@
                                                         </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="D0g-Dy-2eD">
-                                                        <rect key="frame" x="0.0" y="203" width="367" height="2"/>
+                                                        <rect key="frame" x="0.0" y="275" width="367" height="2"/>
                                                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="2" id="eEu-qq-Hfj"/>
                                                         </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2E7-gy-3lf" userLabel="Photo View" customClass="ScrollingPhotoView" customModule="RideViewer" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="213" width="367" height="275"/>
+                                                        <rect key="frame" x="0.0" y="285" width="367" height="275"/>
                                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" secondItem="2E7-gy-3lf" secondAttribute="height" multiplier="4:3" id="9jA-p7-mta"/>
@@ -375,14 +375,14 @@
                                                 </constraints>
                                             </stackView>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Xt-wU-9JN">
-                                                <rect key="frame" x="375" y="0.0" width="2" height="488"/>
+                                                <rect key="frame" x="375" y="0.0" width="2" height="560"/>
                                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="2" id="AlU-yv-Dbr"/>
                                                 </constraints>
                                             </view>
                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="OT5-hi-JS5" customClass="RVTableView" customModule="RideViewer" customModuleProvider="target">
-                                                <rect key="frame" x="385" y="0.0" width="366.5" height="488"/>
+                                                <rect key="frame" x="385" y="0.0" width="366.5" height="560"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <prototypes>
                                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ActivityEffortCell" id="93A-Y1-4Jd" customClass="EffortListForActivityTableViewCell" customModule="RideViewer" customModuleProvider="target">
@@ -452,30 +452,30 @@
                                         </constraints>
                                     </stackView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iWH-Qb-ij9">
-                                        <rect key="frame" x="0.0" y="492" width="751.5" height="2"/>
+                                        <rect key="frame" x="0.0" y="564" width="751.5" height="2"/>
                                         <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="2" id="hoX-21-65B"/>
                                         </constraints>
                                     </view>
                                     <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="j7B-lm-dtS" customClass="RideMapView" customModule="RideViewer" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="498" width="751.5" height="201"/>
+                                        <rect key="frame" x="0.0" y="570" width="751.5" height="135"/>
                                     </mapView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C6S-nh-et1">
-                                        <rect key="frame" x="0.0" y="703" width="751.5" height="1"/>
+                                        <rect key="frame" x="0.0" y="709" width="751.5" height="1"/>
                                         <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="mOc-UC-4fm"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="loF-vZ-kCc" customClass="RVRouteElevationView" customModule="RideViewer" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="708" width="751.5" height="40"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="loF-vZ-kCc" customClass="RVRouteView" customModule="RideViewer" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="714" width="751.5" height="34"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </view>
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="2xn-tZ-S9Z" secondAttribute="trailing" id="9Fl-pJ-w0Y"/>
-                                    <constraint firstItem="loF-vZ-kCc" firstAttribute="height" secondItem="j7B-lm-dtS" secondAttribute="height" multiplier="0.2" id="EuF-F5-GXx"/>
+                                    <constraint firstItem="loF-vZ-kCc" firstAttribute="height" secondItem="j7B-lm-dtS" secondAttribute="height" multiplier="0.25" id="EuF-F5-GXx"/>
                                     <constraint firstItem="2xn-tZ-S9Z" firstAttribute="leading" secondItem="FzS-Xl-GLW" secondAttribute="leading" id="NrE-AY-f5y"/>
                                     <constraint firstItem="loF-vZ-kCc" firstAttribute="leading" secondItem="FzS-Xl-GLW" secondAttribute="leading" id="NvE-O9-mud"/>
                                     <constraint firstItem="2xn-tZ-S9Z" firstAttribute="top" secondItem="FzS-Xl-GLW" secondAttribute="top" id="fnw-68-hjF"/>
@@ -499,7 +499,7 @@
                         <outlet property="mapView" destination="j7B-lm-dtS" id="ysv-2Q-Aq5"/>
                         <outlet property="photoView" destination="2E7-gy-3lf" id="81G-nk-eDT"/>
                         <outlet property="powerData" destination="0zc-YL-06Y" id="9Lc-1w-4To"/>
-                        <outlet property="routeElevationView" destination="loF-vZ-kCc" id="0j6-Fd-3DO"/>
+                        <outlet property="routeView" destination="loF-vZ-kCc" id="bXh-38-hWv"/>
                         <outlet property="startTime" destination="mBm-hX-ywC" id="c5M-gD-5Og"/>
                         <outlet property="tableView" destination="OT5-hi-JS5" id="2F4-3F-Vny"/>
                         <outlet property="timeData" destination="aNL-ke-5rF" id="xDc-RU-q3y"/>
@@ -674,21 +674,21 @@
                                 <rect key="frame" x="20" y="78" width="751.5" height="748"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="uzN-hx-jts">
-                                        <rect key="frame" x="0.0" y="0.0" width="751.5" height="331.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="751.5" height="324"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hK5-dJ-sbA">
-                                                <rect key="frame" x="0.0" y="0.0" width="296.5" height="331.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="296.5" height="324"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uyZ-YF-OZU">
-                                                <rect key="frame" x="300.5" y="0.0" width="2" height="331.5"/>
+                                                <rect key="frame" x="300.5" y="0.0" width="2" height="324"/>
                                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="2" id="cZY-Ul-Q0t"/>
                                                 </constraints>
                                             </view>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="3DK-3C-Te3">
-                                                <rect key="frame" x="306.5" y="0.0" width="445" height="331.5"/>
+                                                <rect key="frame" x="306.5" y="0.0" width="445" height="324"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Efforts" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NCJ-zv-zuG">
                                                         <rect key="frame" x="0.0" y="0.0" width="445" height="20.5"/>
@@ -698,7 +698,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="OJh-QH-Qif" customClass="RVTableView" customModule="RideViewer" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="24.5" width="445" height="307"/>
+                                                        <rect key="frame" x="0.0" y="24.5" width="445" height="299.5"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <prototypes>
                                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="SegmentEffortCell" id="qaM-SX-WxP" customClass="EffortListForSegmentTableViewCell" customModule="RideViewer" customModuleProvider="target">
@@ -760,24 +760,24 @@
                                         </constraints>
                                     </stackView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EXd-Da-AdY">
-                                        <rect key="frame" x="0.0" y="335.5" width="751.5" height="2"/>
+                                        <rect key="frame" x="0.0" y="328" width="560" height="2"/>
                                         <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="2" id="DGT-Lu-ECO"/>
                                         </constraints>
                                     </view>
                                     <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="I9v-BY-Bm5" customClass="RideMapView" customModule="RideViewer" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="341.5" width="751.5" height="331"/>
+                                        <rect key="frame" x="0.0" y="334" width="751.5" height="324"/>
                                     </mapView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RBX-Gh-Kgt">
-                                        <rect key="frame" x="0.0" y="676.5" width="751.5" height="1"/>
+                                        <rect key="frame" x="0.0" y="662" width="751.5" height="1"/>
                                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="RQA-dT-Z60"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iFY-E7-0zS" customClass="RVRouteElevationView" customModule="RideViewer" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="681.5" width="751.5" height="66.5"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iFY-E7-0zS" customClass="RVRouteView" customModule="RideViewer" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="667" width="751.5" height="81"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </view>
                                 </subviews>
@@ -785,7 +785,7 @@
                                     <constraint firstItem="I9v-BY-Bm5" firstAttribute="leading" secondItem="JJp-aa-oQS" secondAttribute="leading" id="0gn-l6-ChR"/>
                                     <constraint firstAttribute="trailing" secondItem="RBX-Gh-Kgt" secondAttribute="trailing" id="3bO-aZ-g0M"/>
                                     <constraint firstItem="iFY-E7-0zS" firstAttribute="leading" secondItem="JJp-aa-oQS" secondAttribute="leading" id="D8C-db-fTm"/>
-                                    <constraint firstItem="iFY-E7-0zS" firstAttribute="height" secondItem="I9v-BY-Bm5" secondAttribute="height" multiplier="0.2" id="Ovc-Hi-ksG"/>
+                                    <constraint firstItem="iFY-E7-0zS" firstAttribute="height" secondItem="I9v-BY-Bm5" secondAttribute="height" multiplier="0.25" id="Ovc-Hi-ksG"/>
                                     <constraint firstItem="I9v-BY-Bm5" firstAttribute="height" secondItem="hK5-dJ-sbA" secondAttribute="height" id="Pj9-JH-Jv8"/>
                                     <constraint firstAttribute="trailing" secondItem="iFY-E7-0zS" secondAttribute="trailing" id="TmX-4q-O0x"/>
                                     <constraint firstAttribute="trailing" secondItem="uzN-hx-jts" secondAttribute="trailing" id="dcF-7z-Z6A"/>
@@ -808,7 +808,7 @@
                     <connections>
                         <outlet property="effortsLabel" destination="NCJ-zv-zuG" id="jAU-4c-j1u"/>
                         <outlet property="mapView" destination="I9v-BY-Bm5" id="G1F-Bq-5F8"/>
-                        <outlet property="routeElevationView" destination="iFY-E7-0zS" id="sSk-M9-Fs8"/>
+                        <outlet property="routeView" destination="iFY-E7-0zS" id="ua7-2v-VYe"/>
                         <outlet property="tableView" destination="OJh-QH-Qif" id="12e-1u-B9g"/>
                     </connections>
                 </viewController>
@@ -1222,7 +1222,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Strava" width="171" height="31"/>
+        <image name="Strava" width="171" height="31.5"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="WsX-zB-FM5"/>
