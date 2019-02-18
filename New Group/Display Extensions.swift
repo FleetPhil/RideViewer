@@ -78,7 +78,8 @@ extension ActivityType {
 }
 
 extension UIColor {
-	static var segmentMarkerStartColour : UIColor { return UIColor.red }
+	static var segmentMarkerStartColour : UIColor { return UIColor.darkGray }
 	static var segmentMarkerFinishColour : UIColor { return UIColor.green }
+    static var segmentMarkerSelectedColour : UIColor { return UIColor.red }
 
 }

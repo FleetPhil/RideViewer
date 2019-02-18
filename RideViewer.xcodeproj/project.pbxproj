@@ -44,6 +44,9 @@
 		F4C113D421D6790B00188A30 /* RVSegment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C113D021D6790B00188A30 /* RVSegment+CoreDataClass.swift */; };
 		F4C113D521D6790B00188A30 /* RVSegment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C113D121D6790B00188A30 /* RVSegment+CoreDataProperties.swift */; };
 		F4DC5A1921D4C7B50017983E /* Distance Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DC5A1821D4C7B50017983E /* Distance Utilities.swift */; };
+		F4ED1BE02208AEB600821D76 /* RVMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4ED1BDF2208AEB600821D76 /* RVMapView.swift */; };
+		F4ED1BE22208B02A00821D76 /* RVRouteProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4ED1BE12208B02A00821D76 /* RVRouteProfileView.swift */; };
+		F4ED1BE42208B09900821D76 /* RVTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4ED1BE32208B09900821D76 /* RVTableView.swift */; };
 		F4F5195021FB79C3005D3752 /* RVStreamData+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194C21FB79C3005D3752 /* RVStreamData+CoreDataClass.swift */; };
 		F4F5195121FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194D21FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift */; };
 		F4F5195221FB79C3005D3752 /* RVStream+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194E21FB79C3005D3752 /* RVStream+CoreDataClass.swift */; };
@@ -95,6 +98,9 @@
 		F4C113D021D6790B00188A30 /* RVSegment+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVSegment+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F4C113D121D6790B00188A30 /* RVSegment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVSegment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F4DC5A1821D4C7B50017983E /* Distance Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Distance Utilities.swift"; sourceTree = "<group>"; };
+		F4ED1BDF2208AEB600821D76 /* RVMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVMapView.swift; sourceTree = "<group>"; };
+		F4ED1BE12208B02A00821D76 /* RVRouteProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVRouteProfileView.swift; sourceTree = "<group>"; };
+		F4ED1BE32208B09900821D76 /* RVTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVTableView.swift; sourceTree = "<group>"; };
 		F4F5194C21FB79C3005D3752 /* RVStreamData+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStreamData+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F4F5194D21FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStreamData+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F4F5194E21FB79C3005D3752 /* RVStream+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStream+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -139,6 +145,9 @@
 				F44EA67E21F23ABA00BBABA0 /* ImageScrollView.swift */,
 				F44EA67D21F23ABA00BBABA0 /* PhotoView.xib */,
 				F40CC8AB21D666EE00EC3594 /* Views.swift */,
+				F4ED1BE32208B09900821D76 /* RVTableView.swift */,
+				F4ED1BE12208B02A00821D76 /* RVRouteProfileView.swift */,
+				F4ED1BDF2208AEB600821D76 /* RVMapView.swift */,
 				F44F19EC2204B6BA00A43723 /* RideMapAnnotationView.swift */,
 			);
 			path = Views;
@@ -421,6 +430,7 @@
 				F4DC5A1921D4C7B50017983E /* Distance Utilities.swift in Sources */,
 				F4F5195021FB79C3005D3752 /* RVStreamData+CoreDataClass.swift in Sources */,
 				F44EA68021F23ABA00BBABA0 /* ImageScrollView.swift in Sources */,
+				F4ED1BE02208AEB600821D76 /* RVMapView.swift in Sources */,
 				F4611B9F21F3935C00EDFC13 /* General Utilities.swift in Sources */,
 				F42ECF0121CFD25E0096F83B /* ActivityListViewController.swift in Sources */,
 				F4F5195121FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift in Sources */,
@@ -448,6 +458,7 @@
 				F41C7A3121D12EFA003A5C31 /* Display Extensions.swift in Sources */,
 				F42ECF0B21CFE1A50096F83B /* MOC Extensions.swift in Sources */,
 				F4C113D521D6790B00188A30 /* RVSegment+CoreDataProperties.swift in Sources */,
+				F4ED1BE22208B02A00821D76 /* RVRouteProfileView.swift in Sources */,
 				FA3F242C21DA7AC80048A828 /* RVMap+CoreDataProperties.swift in Sources */,
 				F4611B9D21F37FE800EDFC13 /* ScanPhotosViewController.swift in Sources */,
 				F42ECEFF21CFA6790096F83B /* RVActivity+CoreDataProperties.swift in Sources */,
@@ -455,6 +466,7 @@
 				F42ECF0921CFD5FF0096F83B /* DataManager.swift in Sources */,
 				F42ECEE421CF91130096F83B /* AppDelegate.swift in Sources */,
 				F42ECF1021CFEBC20096F83B /* Strava Manager.swift in Sources */,
+				F4ED1BE42208B09900821D76 /* RVTableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -14,32 +14,10 @@ private let multiWheelCycleClusterID = "multiWheelCycle"
 /// - Tag: Segment start and end annotation views
 class SegmentStartAnnotationView: MKMarkerAnnotationView {
 	
-	static let reuseID = "startAnnotation"
+	static let reuseID = "segmentAnnotation"
 
 	override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
 		super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
-		clusteringIdentifier = "start"
-	}
-	
-	required init?(coder aDecoder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-	
-	override func prepareForDisplay() {
-		super.prepareForDisplay()
-		displayPriority = .defaultLow
-		markerTintColor = UIColor.segmentMarkerStartColour
-		glyphText = "🏳️"
-	}
-}
-
-class SegmentFinishAnnotationView: MKMarkerAnnotationView {
-	
-	static let reuseID = "finishAnnotation"
-	
-	override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
-		super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
-		clusteringIdentifier = "finish"
 	}
 	
 	required init?(coder aDecoder: NSCoder) {
@@ -49,8 +27,15 @@ class SegmentFinishAnnotationView: MKMarkerAnnotationView {
 	override func prepareForDisplay() {
 		super.prepareForDisplay()
 		displayPriority = .required
-		markerTintColor = UIColor.segmentMarkerFinishColour
-		glyphText = "🏁"
+
+		let annotation = self.annotation as! RouteEnd
+		if annotation.isStart {
+			markerTintColor = UIColor.segmentMarkerSelectedColour
+			glyphText = "🇬🇧"
+		} else {
+			markerTintColor = UIColor.segmentMarkerFinishColour
+			glyphText = "🏁"
+		}
 	}
 }
 

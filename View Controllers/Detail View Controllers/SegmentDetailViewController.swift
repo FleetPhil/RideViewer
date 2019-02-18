@@ -28,7 +28,7 @@ class SegmentDetailViewController: UIViewController {
 		}
 	}
 	
-	@IBOutlet weak var routeView: RVRouteView!
+	@IBOutlet weak var routeView: RVRouteProfileView!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
