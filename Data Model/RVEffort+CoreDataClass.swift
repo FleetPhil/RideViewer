@@ -50,6 +50,50 @@ enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
     }
 }
 
+enum EffortFilter : String, PopupSelectable, CaseIterable {
+	case short				= "Short"
+	case long				= "Long"
+	case flat				= "Flat"
+	case ascending			= "Ascending"
+	case descending			= "Descending"
+	case singleEffort		= "Single Effort"
+	case multipleEfforts	= "Multiple Effort"
+	
+	var displayString: String { return self.rawValue }
+	
+	var filterGroup: String {
+		switch self {
+		case .short, .long: 					return "Segment Length"
+		case .flat, .ascending, .descending:	return "Profile"
+		case .multipleEfforts, .singleEffort: 	return "Number of Efforts"
+		}
+	}
+	
+	func predicateForFilterOption() -> NSPredicate {
+		let longLimit = Settings.sharedInstance.segmentMinDistance
+		switch self {
+		case .short:			return NSPredicate(format: "distance < %f", argumentArray: [longLimit])
+		case .long:				return NSPredicate(format: "distance >= %f", argumentArray: [longLimit])
+		case .flat:				return NSPredicate(format: "segment.averageGrade = 0", argumentArray: nil)
+		case .ascending:		return NSPredicate(format: "segment.averageGrade > 0", argumentArray: nil)
+		case .descending:		return NSPredicate(format: "segment.averageGrade < 0", argumentArray: nil)
+		case .multipleEfforts:	return NSPredicate(format: "segment.effortCount > 1", argumentArray: nil)
+		case .singleEffort:		return NSPredicate(format: "segment.effortCount = 1", argumentArray: nil)
+		}
+	}
+	
+	static func predicateForFilters(_ filters : [EffortFilter]) -> NSCompoundPredicate {
+		var predicates : [NSCompoundPredicate] = []
+		let filterGroups = Dictionary(grouping: filters, by: { $0.filterGroup })
+		for group in filterGroups {
+			let subPred = group.value.map({ $0.predicateForFilterOption() })
+			let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subPred)
+			predicates.append(groupPredicate)
+		}
+		return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+	}
+	
+}
 
 @objc(RVEffort)
 public class RVEffort: NSManagedObject, RouteViewCompatible {

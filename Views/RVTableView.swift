@@ -62,16 +62,24 @@ class RVTableView : UITableView, UITableViewDelegate {
 		}
 	}
 	
+//	func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+//		let sortButton = UIButton(frame: CGRect(x: 20, y: 0, width: 44, height: view.bounds.maxY))
+//		sortButton.setTitle("Sort", for: .normal)
+//		sortButton.addTarget(self, action: #selector(sortButtonPressed), for: .touchUpInside)
+//		view.addSubview(sortButton)
+//
+//		let filterButton = UIButton(frame: CGRect(x: view.bounds.maxX - 64, y: 0, width: 44, height: view.bounds.maxY))
+//		filterButton.setTitle("Filter", for: .normal)
+//		filterButton.addTarget(self, action: #selector(filterButtonPressed), for: .touchUpInside)
+//		view.addSubview(filterButton)
+//	}
+	
 	func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-		let sortButton = UIButton(frame: CGRect(x: 20, y: 0, width: 44, height: view.bounds.maxY))
-		sortButton.setTitle("Sort", for: .normal)
-		sortButton.addTarget(self, action: #selector(sortButtonPressed), for: .touchUpInside)
-		view.addSubview(sortButton)
-		
-		let filterButton = UIButton(frame: CGRect(x: view.bounds.maxX - 64, y: 0, width: 44, height: view.bounds.maxY))
-		filterButton.setTitle("Filter", for: .normal)
-		filterButton.addTarget(self, action: #selector(filterButtonPressed), for: .touchUpInside)
-		view.addSubview(filterButton)
+		let header = SortFilterHeaderView(frame: view.bounds)
+		header.sortButton.addTarget(self, action: #selector(sortButtonPressed), for: .touchUpInside)
+		header.filterButton.addTarget(self, action: #selector(filterButtonPressed), for: .touchUpInside)
+		header.headerLabel.text = "\(tableView.numberOfRows(inSection: 0))"
+		view.addSubview(header)
 	}
 	
 	@IBAction func sortButtonPressed(sender : UIButton) {
@@ -103,4 +111,36 @@ class RVTableView : UITableView, UITableViewDelegate {
 			alert.dismiss(animated: true, completion: nil)
 		}
 	}
+}
+
+class SortFilterHeaderView : UIView {
+	var sortButton : UIButton!
+	var filterButton : UIButton!
+	var headerLabel : UILabel!
+	
+	required init?(coder aDecoder: NSCoder) {
+		super.init(coder: aDecoder)
+		initSubviews()
+	}
+	
+	override init(frame: CGRect) {
+		super.init(frame: frame)
+		initSubviews()
+	}
+	
+	func initSubviews() {
+		sortButton = UIButton(frame: CGRect(x: 8, y: 0, width: 44, height: self.bounds.maxY))
+		sortButton.setTitle("Sort", for: .normal)
+		self.addSubview(sortButton)
+		
+		filterButton = UIButton(frame: CGRect(x: self.bounds.maxX - 52, y: 0, width: 44, height: self.bounds.maxY))
+		filterButton.setTitle("Filter", for: .normal)
+		self.addSubview(filterButton)
+		
+		headerLabel = UILabel(frame: CGRect(x: self.bounds.midX - 20, y: 0, width: 40, height: self.bounds.maxY))
+		headerLabel.textColor = .white
+		self.addSubview(headerLabel)
+	}
+	
+
 }

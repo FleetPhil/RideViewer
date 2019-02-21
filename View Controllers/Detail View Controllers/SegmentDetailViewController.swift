@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import StravaSwift
 
 class SegmentDetailViewController: UIViewController {
 	
@@ -100,15 +101,13 @@ extension SegmentDetailViewController : SortFilterDelegate {
 	func tableRowSelectedAtIndex(_ index: IndexPath) {
 		let effort = dataManager.objectAtIndexPath(index)!
 		self.mapView.addRoute(effort.activity, type: .highlightSegment)
-		
-		routeView.drawForActivity(effort.activity, streamType: .altitude)		// Will draw blank if no streams for this activity
-		routeView.highlightEffort(effort)
+
+		setViewforEffort(effort)
 		if effort.activity.streams.count == 0 {
 			// Get streams
 			StravaManager.sharedInstance.streamsForActivity(effort.activity, context: effort.managedObjectContext!, completionHandler: { [ weak self] success in
 				if success {
-					self?.routeView.drawForActivity(effort.activity, streamType: .altitude)
-					self?.routeView.highlightEffort(effort)
+					self?.setViewforEffort(effort)
 				} else {
 					appLog.debug("Failed to get stream data for activity \(effort.activity) ")
 				}
@@ -116,6 +115,18 @@ extension SegmentDetailViewController : SortFilterDelegate {
 		}
 		
 //		performSegue(withIdentifier: "SegmentEffortListToSegmentDetail", sender: self)
+	}
+	
+	private func setViewforEffort(_ effort : RVEffort) {
+		var profileData = ViewProfileData(profileDataSets: [], highlightRange: nil, rangeChangedHandler: nil)
+		
+		if let altitudeStream = (effort.activity.streams.filter { $0.type == StravaSwift.StreamType.altitude.rawValue }).first {
+			let dataStream = altitudeStream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
+			profileData.profileDataSets.append(ViewProfileDataSet(profileDataType: .altitude, profileDataPoints: dataStream ))
+		}
+		routeView.profileData = profileData
+		
+		routeView.profileData?.highlightRange = effort.indexRange
 	}
     
     func didScrollToVisiblePaths(_ paths : [IndexPath]?) {

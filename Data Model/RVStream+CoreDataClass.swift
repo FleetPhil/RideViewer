@@ -55,6 +55,4 @@ public class RVStream: NSManagedObject {
 //		appLog.debug("Stream \(self.type!): \(failCount) fails, \(self.dataPoints.count) stored")
 		return self
 	}
-
-
 }

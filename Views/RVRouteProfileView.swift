@@ -8,79 +8,72 @@
 
 import Foundation
 import UIKit
-import StravaSwift
 
-protocol ProfileViewDelegate : class {
-	func newIndexRange(_ range : RouteIndexRange)
+enum ViewProfileDataType {
+	case altitude
+	case heartRate
+	case power
 }
 
-//struct ViewProfile {
-//	
-//}
+struct ViewProfileDataSet {
+	var profileDataType : ViewProfileDataType
+	var profileDataPoints : [Double]
+}
+
+struct ViewProfileData {
+	var profileDataSets: [ViewProfileDataSet]
+	var highlightRange: RouteIndexRange?
+	var rangeChangedHandler: ((RouteIndexRange) -> Void)?
+}
 
 class RVRouteProfileView : UIView {
-	weak var delegate : ProfileViewDelegate?
-	
-	public var viewRange : RouteIndexRange! {
+	var profileData: ViewProfileData? {
+		didSet {
+			let maxCount = profileData!.profileDataSets.reduce(0) { max($0, $1.profileDataPoints.count) }
+			self.fullRange = RouteIndexRange(from: 0, to: maxCount-1)
+			self.viewRange = self.fullRange
+			setNeedsDisplay()
+		}
+	}
+	private var fullRange : RouteIndexRange!
+	var viewRange: RouteIndexRange! {
 		didSet {
 			setNeedsDisplay()
 		}
 	}
-	
-	private var dataPoints : [Double] = []
-	
-	private var highlightRange : RouteIndexRange? = nil
-	private var fullRange : RouteIndexRange? = nil
-	private var viewPoints : Int {
-		return viewRange == nil ? 0 : viewRange!.to - viewRange!.from
-	}
-	
-	//	required init?(coder aDecoder: NSCoder) {
-	//		super.init(coder: aDecoder)
-	//		self.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(didPinch)))
-	//		self.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
-	//		self.isUserInteractionEnabled = true
-	//	}
-	
-	func highlightEffort(_ effort : RVEffort?) {
-		self.highlightRange = effort == nil ? nil : effort!.indexRange
-		self.setNeedsDisplay()
-	}
-	
-	func drawForActivity(_ activity : RVActivity, streamType : StravaSwift.StreamType) {
-		if let stream = activity.streams.filter({ $0.type == streamType.rawValue }).first {
-			self.dataPoints = stream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
-			self.fullRange = RouteIndexRange(from: 0, to: dataPoints.count)
-			self.viewRange = self.fullRange			// Setting view range will trigger redraw
-		} else {
-			dataPoints = []
-			highlightRange = nil
-		}
+
+	required init?(coder aDecoder: NSCoder) {
+		super.init(coder: aDecoder)
+		self.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(didPinch)))
+		self.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
+		self.isUserInteractionEnabled = true
 	}
 	
 	@IBAction func didPinch(_ gestureRecognizer : UIPinchGestureRecognizer) {
-		guard gestureRecognizer.view != nil else { return }
+		guard gestureRecognizer.view != nil, profileData != nil else { return }
+		
+		// NOTE: if profileData is set then data ranges are too
 		
 		if gestureRecognizer.state == .ended {
-			delegate?.newIndexRange(self.viewRange)
+			if let handler = profileData?.rangeChangedHandler {
+				handler(viewRange)
+			}
 		}
 		
 		guard gestureRecognizer.state == .began || gestureRecognizer.state == .changed else { return }
 		
-		let visiblePoints = CGFloat(self.viewRange.to - self.viewRange.from)
-		let newVisiblePoints = CGFloat(self.viewRange.to - self.viewRange.from) / gestureRecognizer.scale
+		let visiblePoints = CGFloat(viewRange.to - viewRange.from)
+		let newVisiblePoints = CGFloat(viewRange.to - viewRange.from) / gestureRecognizer.scale
 		let change = Int(newVisiblePoints - visiblePoints)
 		viewRange = RouteIndexRange(from: viewRange.from - change/2, to: viewRange.to + change/2)
 		if viewRange.from < 0 {
 			viewRange.to += -viewRange.from
 			viewRange.from += -viewRange.from
 		}
-		
-		if Int(newVisiblePoints) > dataPoints.count {
-			viewRange = RouteIndexRange(from: 0, to: dataPoints.count)
+		if Int(newVisiblePoints) > fullRange.to {
+			viewRange = RouteIndexRange(from: 0, to: fullRange.to)
 		}
 		gestureRecognizer.scale = 1.0
-		
 		self.setNeedsDisplay()
 	}
 	
@@ -89,7 +82,9 @@ class RVRouteProfileView : UIView {
 		
 		switch gestureRecognizer.state {
 		case .ended:
-			delegate?.newIndexRange(viewRange)
+			if let handler = profileData?.rangeChangedHandler {
+				handler(viewRange!)
+			}
 		case .began, .changed:
 			let widthPerDataPoint = self.bounds.width / CGFloat(self.viewRange.to - self.viewRange.from)
 			viewRange.from -= Int(gestureRecognizer.translation(in: self).x / widthPerDataPoint)
@@ -97,9 +92,9 @@ class RVRouteProfileView : UIView {
 			if viewRange.from < 0 { viewRange.from = 0 }
 			
 			viewRange.to = viewRange.from + Int(self.bounds.width / widthPerDataPoint)
-			if viewRange.to > dataPoints.count {
-				viewRange.from -= (viewRange.to - dataPoints.count)
-				viewRange.to -= (viewRange.to - dataPoints.count)
+			if viewRange.to > fullRange.to {
+				viewRange.from -= (viewRange.to - fullRange.to)
+				viewRange.to -= (viewRange.to - fullRange.to)
 			}
 			gestureRecognizer.setTranslation(CGPoint(x: 0, y: 0), in: self)
 			self.setNeedsDisplay()
@@ -109,12 +104,12 @@ class RVRouteProfileView : UIView {
 		}
 	}
 	
-	private func createPath() -> UIBezierPath? {
-		guard dataPoints.count > 0, viewRange.to - viewRange.from > 0 else { return nil }
+	private func pathForDataSet(_ dataSet: ViewProfileDataSet) -> UIBezierPath? {
+		guard fullRange.to > 0, viewRange.to - viewRange.from > 0 else { return nil }
 		
 		//        appLog.debug("Create path: bounds are \(self.bounds)")
 		
-		let dataPointsInScope = dataPoints.enumerated().filter({ $0.offset >= viewRange.from && $0.offset <= viewRange.to })
+		let dataPointsInScope = dataSet.profileDataPoints.enumerated().filter({ $0.offset >= viewRange.from && $0.offset <= viewRange.to })
 		let dataMin = dataPointsInScope.reduce(Double.greatestFiniteMagnitude, { min($0, $1.element) })
 		let dataMax = dataPointsInScope.reduce(0.0, { max($0, $1.element) })
 		let dataRange = max( CGFloat(dataMax - dataMin), 1.0)       // Cannot be zero
@@ -132,7 +127,7 @@ class RVRouteProfileView : UIView {
 		}
 		
 		let path = UIBezierPath()
-		for (index, point) in dataPoints.enumerated() {
+		for (index, point) in dataSet.profileDataPoints.enumerated() {
 			if index == viewRange.from {
 				path.move(to: pointForData(point, index: 0))
 			} else if index > viewRange.from {
@@ -148,7 +143,7 @@ class RVRouteProfileView : UIView {
 	}
 	
 	private func createHighlight() -> UIBezierPath? {
-		guard let highlight = highlightRange, viewRange.to - viewRange.from > 0 else { return nil }
+		guard let highlight = profileData?.highlightRange, viewRange.to - viewRange.from > 0 else { return nil }
 		
 		let widthPerDataPoint = self.bounds.width / CGFloat(self.viewRange.to - self.viewRange.from)
 		
@@ -160,11 +155,14 @@ class RVRouteProfileView : UIView {
 	}
 	
 	override func draw(_ rect: CGRect) {
+		// TODO: draw multiple data sets
+		guard let dataSet = profileData?.profileDataSets.first else { return }
+		
 		if let path = createHighlight() {
 			UIColor.lightGray.setFill()
 			path.fill()
 		}
-		if let path = createPath() {
+		if let path = pathForDataSet(dataSet) {
 			path.lineWidth = 1.0
 			UIColor.blue.setStroke()
 			path.stroke()
