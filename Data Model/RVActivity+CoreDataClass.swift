@@ -75,12 +75,12 @@ enum ActivityFilter : PopupSelectable, CaseIterable {
 	func predicateForFilterOption() -> NSPredicate {
 		let longRideLimit = Settings.sharedInstance.activityMinDistance
 		switch self {
-		case .cycleRide:		return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.ride.rawValue])
-		case .virtualRide:		return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.virtualRide.rawValue])
+		case .cycleRide:		return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Ride.rawValue])
+		case .virtualRide:		return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.VirtualRide.rawValue])
 		case .longRide:			return NSPredicate(format: "distance >= %f", 	argumentArray: [longRideLimit])
 		case .shortRide:		return NSPredicate(format: "distance < %f", 	argumentArray: [longRideLimit])
-		case .walk:				return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.walk.rawValue])
-		case .other:			return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.workout.rawValue])
+		case .walk:				return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Walk.rawValue])
+		case .other:			return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Workout.rawValue])
 
 		}
 	}
@@ -107,6 +107,10 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
     var endLocation : CLLocationCoordinate2D	{
         return CLLocationCoordinate2D(latitude: self.endLat, longitude: self.endLong)
     }
+    var coordinates: [CLLocationCoordinate2D]? {
+        return self.map?.polylineLocations(summary: false)
+    }
+    
     var activityDate : Date {
         return self.startDate as Date
     }
@@ -126,6 +130,10 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
     }
     
     func update(activity : Activity) -> RVActivity {
+		if activity.type == nil {
+			appLog.debug("Activity type is nil")
+		}
+		
         self.id						= Int64(activity.id!)
         self.name					= activity.name ?? "No name"
         self.activityDescription	= activity.description

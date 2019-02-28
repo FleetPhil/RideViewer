@@ -39,6 +39,7 @@ enum SegmentSort : String, PopupSelectable, CaseIterable {
 }
 
 enum SegmentFilter : String, PopupSelectable, CaseIterable {
+    case starred            = "Starred"
 	case short				= "Short"
 	case long				= "Long"
 	case flat				= "Flat"
@@ -51,6 +52,7 @@ enum SegmentFilter : String, PopupSelectable, CaseIterable {
 	
 	var filterGroup: String {
 		switch self {
+        case .starred:                          return "Starred"
 		case .short, .long: 					return "Segment Length"
 		case .flat, .ascending, .descending:	return "Profile"
 		case .multipleEfforts, .singleEffort: 	return "Number of Efforts"
@@ -60,6 +62,7 @@ enum SegmentFilter : String, PopupSelectable, CaseIterable {
 	func predicateForFilterOption() -> NSPredicate {
 		let longLimit = Settings.sharedInstance.segmentMinDistance
 		switch self {
+        case .starred:          return NSPredicate(format: "starred == %@", NSNumber(value: true))
 		case .short:			return NSPredicate(format: "distance < %f", argumentArray: [longLimit])
 		case .long:				return NSPredicate(format: "distance >= %f", argumentArray: [longLimit])
 		case .flat:				return NSPredicate(format: "averageGrade = 0", argumentArray: nil)
@@ -94,6 +97,9 @@ public class RVSegment: NSManagedObject, RouteViewCompatible {
 	var endLocation : CLLocationCoordinate2D	{
 		return CLLocationCoordinate2D(latitude: self.endLat, longitude: self.endLong)
 	}
+    var coordinates: [CLLocationCoordinate2D]? {
+        return self.map?.polylineLocations(summary: false)
+    }
 
 	// Class Methods
 	class func create(segment: Segment, context: NSManagedObjectContext) -> RVSegment {
@@ -163,8 +169,10 @@ class SegmentListTableViewCell : UITableViewCell, TableViewCompatibleCell {
 	func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell {
 		if let segment = withModel as? RVSegment {
 //			appLog.debug("Segment state is \(segment.resourceState.rawValue)")
+            
+            let segmentStarText = segment.starred ? "★" : "☆"
 			
-            nameLabel.text		= "\(segment.efforts.count) " + segment.name!
+            nameLabel.text		= segmentStarText + " " + "\(segment.efforts.count) " + segment.name!
 			nameLabel.textColor	= segment.resourceState.resourceStateColour
 			distanceLabel.text	= segment.distance.distanceDisplayString
 			gradeLabel.text	= segment.averageGrade.fixedFraction(digits: 1) + "%"

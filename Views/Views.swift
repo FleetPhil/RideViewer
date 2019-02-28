@@ -16,7 +16,7 @@ import StravaSwift
 protocol RouteViewCompatible : class {
 	var startLocation : CLLocationCoordinate2D { get }
 	var endLocation : CLLocationCoordinate2D { get }
-	var map : RVMap? { get }
+	var coordinates : [CLLocationCoordinate2D]? { get }
 }
 
 extension UIImage {

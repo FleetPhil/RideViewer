@@ -62,18 +62,6 @@ class RVTableView : UITableView, UITableViewDelegate {
 		}
 	}
 	
-//	func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-//		let sortButton = UIButton(frame: CGRect(x: 20, y: 0, width: 44, height: view.bounds.maxY))
-//		sortButton.setTitle("Sort", for: .normal)
-//		sortButton.addTarget(self, action: #selector(sortButtonPressed), for: .touchUpInside)
-//		view.addSubview(sortButton)
-//
-//		let filterButton = UIButton(frame: CGRect(x: view.bounds.maxX - 64, y: 0, width: 44, height: view.bounds.maxY))
-//		filterButton.setTitle("Filter", for: .normal)
-//		filterButton.addTarget(self, action: #selector(filterButtonPressed), for: .touchUpInside)
-//		view.addSubview(filterButton)
-//	}
-	
 	func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
 		let header = SortFilterHeaderView(frame: view.bounds)
 		header.sortButton.addTarget(self, action: #selector(sortButtonPressed), for: .touchUpInside)

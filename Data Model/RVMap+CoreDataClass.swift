@@ -55,7 +55,7 @@ public class RVMap: NSManagedObject {
 	}
 }
 
-extension Optional where Wrapped == String {
+fileprivate extension Optional where Wrapped == String {
 	func isValid() -> Bool {
 		switch self {
 		case .none: return false

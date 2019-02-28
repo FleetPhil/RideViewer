@@ -33,14 +33,13 @@ fileprivate class RoutePath : MKPolyline {
 	var rideRoute : RideRoute!
 	
 	convenience init?(rideRoute : RideRoute) {
-		if let locations = rideRoute.route.map?.polylineLocations(summary: false) {
+        if let locations = rideRoute.route.coordinates {
 			self.init(coordinates: UnsafePointer(locations), count: locations.count)
 			self.rideRoute = rideRoute
 		} else {
 			return nil
 		}
 	}
-	
 }
 
 class RouteEnd : NSObject, MKAnnotation {

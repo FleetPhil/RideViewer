@@ -50,6 +50,10 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 		_ = dataManager.fetchObjects()
 	}
 	
+	@IBAction func doneButtonPressed(_ sender: UIBarButtonItem) {
+		self.presentingViewController?.dismiss(animated: true, completion: nil)
+	}
+	
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		performSegue(withIdentifier: "SegmentListToSegmentDetail", sender: self)
 	}

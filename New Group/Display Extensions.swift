@@ -63,15 +63,15 @@ extension FloatingPoint {
 extension ActivityType {
 	var emoji : String {
 		switch self {
-		case .ride: return "🚴‍♂️"
-		case .run: return  "🏃‍♂️"
-		case .swim: return  "🏊‍♂️"
-		case .virtualRide: return  "🚲"
-		case .walk: return "🚶‍♂️"
-		case .rowing: return "🚣‍♀️"
-		case .alpineSki, .nordicSki: return  "⛷"
-		case .snowboard: return  "🏂"
-		case .weightTraining: return "🏋️‍♀️"
+		case .Ride: return "🚴‍♂️"
+		case .Run: return  "🏃‍♂️"
+		case .Swim: return  "🏊‍♂️"
+		case .VirtualRide: return  "🚲"
+		case .Walk: return "🚶‍♂️"
+		case .Rowing: return "🚣‍♀️"
+		case .AlpineSki, .NordicSki: return  "⛷"
+		case .Snowboard: return  "🏂"
+		case .WeightTraining: return "🏋️‍♀️"
 		default: return "❤️"
 		}
 	}
