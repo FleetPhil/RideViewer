@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 
 
-extension RVActivity {
+extension RVActivity : StreamOwner {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<RVActivity> {
         return NSFetchRequest<RVActivity>(entityName: "RVActivity")

@@ -9,22 +9,6 @@
 import Foundation
 import UIKit
 
-enum ViewProfileDataType {
-	case altitude
-	case heartRate
-	case power
-}
-
-struct ViewProfileDataSet {
-	var profileDataType : ViewProfileDataType
-	var profileDataPoints : [Double]
-}
-
-struct ViewProfileData {
-	var profileDataSets: [ViewProfileDataSet]
-	var highlightRange: RouteIndexRange?
-	var rangeChangedHandler: ((RouteIndexRange) -> Void)?
-}
 
 class RVRouteProfileView : UIView {
 	var profileData: ViewProfileData? {

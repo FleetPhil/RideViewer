@@ -15,24 +15,34 @@ import StravaSwift
 public class RVStream: NSManagedObject {
 	
 	// Class Methods
-	class func create(stream: StravaSwift.Stream, activity : RVActivity, context: NSManagedObjectContext) -> RVStream {
-		if let stream = RVStream.get(activity: activity, type: stream.type!.rawValue, inContext: context) {
-			return stream
+	class func createForActivity(_ activity: RVActivity, stream: StravaSwift.Stream, context: NSManagedObjectContext) -> RVStream {
+		if let dataStream = activity.streams.filter({ $0.type! == stream.type!.rawValue }).first {		// Exists
+			return dataStream.update(stream: stream)
 		}
 		let newStream = RVStream(context: context)
 		newStream.activity = activity
 		return newStream.update(stream: stream)
 	}
-	
-	class func get(activity : RVActivity, type: String, inContext context: NSManagedObjectContext) -> RVStream? {
-		// Get the stream with the specified type for this activity
-		if let stream = activity.streams.filter({ $0.type! == type }).first {
-			return stream
-		} else {			// Not found
-			return nil
+
+	class func createForSegment(_ segment: RVSegment, stream: StravaSwift.Stream, context: NSManagedObjectContext) -> RVStream {
+		if let dataStream = segment.streams.filter({ $0.type! == stream.type!.rawValue }).first {		// Exists
+			return dataStream.update(stream: stream)
 		}
+		let newStream = RVStream(context: context)
+		newStream.segment = segment
+		appLog.debug("Stream \(stream.type!) created for \(segment.name!)")
+		return newStream.update(stream: stream)
 	}
-	
+
+	class func createForEffort(_ effort: RVEffort, stream: StravaSwift.Stream, context: NSManagedObjectContext) -> RVStream {
+		if let dataStream = effort.streams.filter({ $0.type! == stream.type!.rawValue }).first {		// Exists
+			return dataStream.update(stream: stream)
+		}
+		let newStream = RVStream(context: context)
+		newStream.effort = effort
+		return newStream.update(stream: stream)
+	}
+
 	func update(stream : StravaSwift.Stream) -> RVStream {
 		self.type			= stream.type!.rawValue
 		self.seriesType		= stream.seriesType!
@@ -40,6 +50,7 @@ public class RVStream: NSManagedObject {
 
 		guard let data = stream.data else { return self }
 		
+		// Replace data points
 		if self.dataPoints.count > 0 {
 			_ = self.managedObjectContext?.deleteObjects(self.dataPoints)
 		}

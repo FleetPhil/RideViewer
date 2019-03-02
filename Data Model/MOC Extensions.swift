@@ -146,6 +146,7 @@ extension NSManagedObjectContext {
     func saveContext () {
         if self.hasChanges {
             do {
+				appLog.debug("Saving changes to MOC")
                 try self.save()
             } catch {
                 // Replace this implementation with code to handle the error appropriately.

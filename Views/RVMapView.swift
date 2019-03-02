@@ -140,6 +140,7 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 				self.addOverlay(path)
 			}
 		}
+		setMapRegion()
 		setNeedsDisplay()
 	}
 	

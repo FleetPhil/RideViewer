@@ -53,6 +53,7 @@
 		F4F5195221FB79C3005D3752 /* RVStream+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194E21FB79C3005D3752 /* RVStream+CoreDataClass.swift */; };
 		F4F5195321FB79C4005D3752 /* RVStream+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194F21FB79C3005D3752 /* RVStream+CoreDataProperties.swift */; };
 		F4F5AFC421F0DDDB005DB8B1 /* PhotoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5AFC221F0DDDB005DB8B1 /* PhotoManager.swift */; };
+		F4FD52E52229AB850005CFC9 /* RVRouteProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FD52E42229AB850005CFC9 /* RVRouteProfileViewController.swift */; };
 		FA3F242B21DA7AC80048A828 /* RVMap+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3F242921DA7AC80048A828 /* RVMap+CoreDataClass.swift */; };
 		FA3F242C21DA7AC80048A828 /* RVMap+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3F242A21DA7AC80048A828 /* RVMap+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
@@ -108,6 +109,7 @@
 		F4F5194E21FB79C3005D3752 /* RVStream+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStream+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F4F5194F21FB79C3005D3752 /* RVStream+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStream+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F4F5AFC221F0DDDB005DB8B1 /* PhotoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoManager.swift; sourceTree = "<group>"; };
+		F4FD52E42229AB850005CFC9 /* RVRouteProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVRouteProfileViewController.swift; sourceTree = "<group>"; };
 		FA3F242921DA7AC80048A828 /* RVMap+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVMap+CoreDataClass.swift"; sourceTree = "<group>"; };
 		FA3F242A21DA7AC80048A828 /* RVMap+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVMap+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -170,6 +172,7 @@
 				F4DC5A1A21D4C7CC0017983E /* Utilities */,
 				F41C7A3221D12F0C003A5C31 /* Display Extensions */,
 				F40CC8AD21D666F500EC3594 /* Views */,
+				F4FD52E32229AB5A0005CFC9 /* View Controllers */,
 				F42ECEE221CF91130096F83B /* RideViewer */,
 				F42ECF0221CFD28C0096F83B /* List View Controllers */,
 				F42ECF0521CFD3130096F83B /* Detail View Controllers */,
@@ -287,6 +290,15 @@
 				F4611B9E21F3935C00EDFC13 /* General Utilities.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		F4FD52E32229AB5A0005CFC9 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				F4FD52E42229AB850005CFC9 /* RVRouteProfileViewController.swift */,
+			);
+			name = "View Controllers";
+			path = "View Controllers/View Controllers";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -438,6 +450,7 @@
 				F4C113D221D6790B00188A30 /* RVEffort+CoreDataClass.swift in Sources */,
 				F42ECEFE21CFA6790096F83B /* RVActivity+CoreDataClass.swift in Sources */,
 				F41C7A2F21D0E820003A5C31 /* StravaConnectViewController.swift in Sources */,
+				F4FD52E52229AB850005CFC9 /* RVRouteProfileViewController.swift in Sources */,
 				F4BDDFBD21DFD19300E4668B /* PopupChooser.swift in Sources */,
 				F46C126E21F200F7007438DB /* RVPhotoAsset+CoreDataProperties.swift in Sources */,
 				F44F19ED2204B6BA00A43723 /* RideMapAnnotationView.swift in Sources */,
@@ -604,7 +617,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 55XQEY82D5;
 				INFOPLIST_FILE = RideViewer/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.diggens.RideViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
@@ -620,7 +636,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 55XQEY82D5;
 				INFOPLIST_FILE = RideViewer/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.diggens.RideViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;

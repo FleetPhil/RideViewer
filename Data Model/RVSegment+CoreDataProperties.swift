@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 
 
-extension RVSegment {
+extension RVSegment : StreamOwner {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<RVSegment> {
         return NSFetchRequest<RVSegment>(entityName: "RVSegment")
@@ -37,6 +37,8 @@ extension RVSegment {
     @NSManaged public var athleteCount: Int64
 	@NSManaged public var map : RVMap?
     @NSManaged public var efforts: Set<RVEffort>
+	@NSManaged public var streams: Set<RVStream>
+
 
 }
 

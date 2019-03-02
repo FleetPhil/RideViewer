@@ -29,7 +29,7 @@ class SegmentDetailViewController: UIViewController {
         }
     }
     
-    @IBOutlet weak var routeView: RVRouteProfileView!
+    @IBOutlet weak var routeViewController: RVRouteProfileViewController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,10 +46,11 @@ class SegmentDetailViewController: UIViewController {
         
         self.effortsLabel.text	= "\(tableView.numberOfRows(inSection: 0)) Efforts"
         self.effortsLabel.textColor = segment.resourceState.resourceStateColour
-        
-        mapView!.addRoute(segment, type: .highlightSegment)
-        
-        if segment.resourceState != .detailed {
+		
+		// Update map
+        if segment.map != nil {
+			self.mapView.addRoute(segment, type: .highlightSegment)
+		} else {
             // Get segment details including route
             StravaManager.sharedInstance.getSegment(segment, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] success in
                 guard self != nil else { return }
@@ -60,13 +61,30 @@ class SegmentDetailViewController: UIViewController {
         }
         
         // Get all efforts for this segment if we don't have them
-        if !self.segment.allEfforts {
+        if !segment.allEfforts {
             StravaManager.sharedInstance.effortsForSegment(self.segment, page: 1, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [ weak self ] success in
                 self?.effortsLabel.text    = "\(self?.tableView.numberOfRows(inSection: 0) ?? 0) Efforts"
             })
         }
+		// Fetched results controller will update the table once it is set up
         setupEfforts(segment)
+		
+		
+		// Get the route altitude profile
+		if segment.streams.filter({ $0.type! == StreamType.altitude.rawValue }).first != nil {
+			routeViewController.setProfile(dataStream: segment, profileType: .altitude)
+		}
+		
     }
+	
+	// MARK: - Navigation
+	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+		if let destination = segue.destination as? RVRouteProfileViewController {
+			self.routeViewController = destination
+		}
+		
+	}
+
 }
 
 extension SegmentDetailViewController : SortFilterDelegate {
@@ -122,9 +140,10 @@ extension SegmentDetailViewController : SortFilterDelegate {
             let dataStream = altitudeStream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
             profileData.profileDataSets.append(ViewProfileDataSet(profileDataType: .altitude, profileDataPoints: dataStream ))
         }
-        routeView.profileData = profileData
-        
-        routeView.profileData?.highlightRange = effort.indexRange
+		routeViewController.setProfile(dataStream: effort, profileType: .altitude)
+		
+		// TODO: set up highglight
+//        routeView.profileData?.highlightRange = effort.indexRange
     }
     
     func didScrollToVisiblePaths(_ paths : [IndexPath]?) {

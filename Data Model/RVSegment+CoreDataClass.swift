@@ -141,7 +141,7 @@ public class RVSegment: NSManagedObject, RouteViewCompatible {
 
         self.resourceState = self.resourceState.newState(returnedState: segment.resourceState)
 
-		self.allEfforts				= false
+		// Don't change allEfforts - defaults to No
 		
 		return self
 	}

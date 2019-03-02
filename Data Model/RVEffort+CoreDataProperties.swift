@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 
 
-extension RVEffort {
+extension RVEffort : StreamOwner {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<RVEffort> {
         return NSFetchRequest<RVEffort>(entityName: "RVEffort")
@@ -36,6 +36,7 @@ extension RVEffort {
 	@NSManaged public var photoScanDate : NSDate?
     @NSManaged public var segment: RVSegment
     @NSManaged public var activity: RVActivity
+	@NSManaged public var streams: Set<RVStream>
 	
 	@NSManaged public var photos: Set<RVPhotoAsset>
 

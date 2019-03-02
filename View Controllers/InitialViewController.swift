@@ -9,7 +9,7 @@
 import UIKit
 
 class InitialViewController: UIViewController {
-
+	
 	@IBOutlet weak var connectButton: UIButton!
 	
 	override func viewDidLoad() {
@@ -19,6 +19,8 @@ class InitialViewController: UIViewController {
 											   selector: #selector(self.performAuth(notification:)),
 											   name: NSNotification.Name("code"),
 											   object: nil)
+		showStats()
+
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
@@ -38,20 +40,28 @@ class InitialViewController: UIViewController {
 			let _ = StravaManager.sharedInstance.getToken(code: code) { success in
 				if success {
 					appLog.debug("Have token")
-                    let context = CoreDataManager.sharedManager().persistentContainer.newBackgroundContext()
+					// Alamofire executes completion handler on the main queue so need to stay on main queue context here
+					let context = CoreDataManager.sharedManager().viewContext
+					
 					StravaManager.sharedInstance.getAthleteActivities(page: 1, context: context, completionHandler: { newActivities in
-						appLog.debug("\(newActivities) new activities")
+						appLog.debug("\(newActivities) new activities - getting starred segments")
+						StravaManager.sharedInstance.getStarredSegments(page: 1, context: context, completionHandler: {
+							appLog.debug("Got starred segments")
+							self.showStats()
+						})
 					})
-                    StravaManager.sharedInstance.getStarredSegments(page: 1, context: context, completionHandler: {
-                        appLog.debug("Got starred segments")
-                    })
+					
 				} else {
 					appLog.debug("getToken failed")
 				}
 			}
 		}
 	}
-
-
 	
+	func showStats() {
+		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVActivity.self) ?? -1) activities")
+		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVSegment.self) ?? -1) segments")
+		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVEffort.self) ?? -1) efforts")
+		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVStream.self) ?? -1) streams")
+	}
 }
