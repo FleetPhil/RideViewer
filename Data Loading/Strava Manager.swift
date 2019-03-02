@@ -188,8 +188,8 @@ class StravaManager : TokenDelegate {
 			appLog.debug("Efforts called but already have them")
 		}
 		
-		try? StravaClient.sharedInstance.request(Router.segmentsEfforts(id: Router.Id(segment.id), params: ["page":page, "per_page" : 100]), result: { [weak self ] (efforts : [Effort]?) in
-			guard let `self` = self, let efforts = efforts else {
+		try? StravaClient.sharedInstance.request(Router.segmentsEfforts(id: Router.Id(segment.id), params: ["page":page, "per_page" : 100]), result: { (efforts : [Effort]?) in
+			guard let efforts = efforts else {
 				completionHandler(false)
 				return
 			}

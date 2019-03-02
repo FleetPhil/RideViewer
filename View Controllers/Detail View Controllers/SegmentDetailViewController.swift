@@ -72,7 +72,7 @@ class SegmentDetailViewController: UIViewController {
 		
 		// Get the route altitude profile
 		if segment.streams.filter({ $0.type! == StreamType.altitude.rawValue }).first != nil {
-			routeViewController.setProfile(dataStream: segment, profileType: .altitude)
+            routeViewController.setProfile(streamOwner: segment, profileType: .altitude)
 		}
 		
     }
@@ -140,7 +140,7 @@ extension SegmentDetailViewController : SortFilterDelegate {
             let dataStream = altitudeStream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
             profileData.profileDataSets.append(ViewProfileDataSet(profileDataType: .altitude, profileDataPoints: dataStream ))
         }
-		routeViewController.setProfile(dataStream: effort, profileType: .altitude)
+        routeViewController.setProfile(streamOwner: effort, profileType: .altitude)
 		
 		// TODO: set up highglight
 //        routeView.profileData?.highlightRange = effort.indexRange

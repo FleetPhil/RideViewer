@@ -39,7 +39,7 @@ enum SegmentSort : String, PopupSelectable, CaseIterable {
 }
 
 enum SegmentFilter : String, PopupSelectable, CaseIterable {
-    case starred            = "Starred"
+    case starred            = "Only Starred"
 	case short				= "Short"
 	case long				= "Long"
 	case flat				= "Flat"

@@ -56,9 +56,9 @@ class RVRouteProfileViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
-	func setProfile<S> (dataStream: S, profileType: StravaSwift.StreamType, range: RouteIndexRange? = nil) where S : StreamOwner {
+	func setProfile<S> (streamOwner: S, profileType: StravaSwift.StreamType, range: RouteIndexRange? = nil) where S : StreamOwner {
 		CoreDataManager.sharedManager().persistentContainer.performBackgroundTask { (context) in
-			let asyncActivity = context.object(with: dataStream.objectID) as! S
+			let asyncActivity = context.object(with: streamOwner.objectID) as! S
 			
 			var profileData = ViewProfileData(profileDataSets: [], highlightRange: nil, rangeChangedHandler: nil)
 			

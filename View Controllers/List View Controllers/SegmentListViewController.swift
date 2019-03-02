@@ -54,6 +54,7 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 		self.presentingViewController?.dismiss(animated: true, completion: nil)
 	}
 	
+    // TODO: Redundant as not table view delegate
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		performSegue(withIdentifier: "SegmentListToSegmentDetail", sender: self)
 	}

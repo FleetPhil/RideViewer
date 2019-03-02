@@ -109,12 +109,10 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
 	}
 	
 	// MARK: return functions
-    
     fileprivate func didSelectPaths(paths : [IndexPath]) {
-        self.sourceView.owningViewController()?.dismiss(animated: true, completion: nil)
-		
-		
-        handler(paths.map { itemsForSelection[sectionNumbers[$0.section]!]![$0.row] })
+        self.sourceView.owningViewController()?.dismiss(animated: true, completion: {
+            self.handler(paths.map { self.itemsForSelection[self.sectionNumbers[$0.section]!]![$0.row] })
+        })
     }
     
     fileprivate func didCancelSelection() {
@@ -135,8 +133,9 @@ class ItemSelectionViewController : UIViewController, UITableViewDelegate   {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if multipleSelection == false {         // If single item dismiss the view controller with this selection
-            delegate.didSelectPaths(paths: [indexPath])
-            tableView.owningViewController()?.dismiss(animated: true, completion: nil)
+            tableView.owningViewController()?.dismiss(animated: true, completion: {
+                self.delegate.didSelectPaths(paths: [indexPath])
+            })
         } else {
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }

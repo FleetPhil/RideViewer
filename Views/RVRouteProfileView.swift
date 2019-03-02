@@ -11,6 +11,8 @@ import UIKit
 
 
 class RVRouteProfileView : UIView {
+    
+    // Public model
 	var profileData: ViewProfileData? {
 		didSet {
 			let maxCount = profileData!.profileDataSets.reduce(0) { max($0, $1.profileDataPoints.count) }
@@ -98,8 +100,6 @@ class RVRouteProfileView : UIView {
 		let dataMax = dataPointsInScope.reduce(0.0, { max($0, $1.element) })
 		let dataRange = max( CGFloat(dataMax - dataMin), 1.0)       // Cannot be zero
 		
-		//        let dataMin = dataPoints.min()!
-		//        let dataRange = CGFloat(dataPoints.max()!) - CGFloat(dataPoints.min()!)
 		let yInset = self.bounds.height / 10
 		
 		let widthPerDataPoint = self.bounds.width / CGFloat(viewRange.to - viewRange.from)
