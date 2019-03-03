@@ -8,21 +8,13 @@
 
 import Foundation
 import UIKit
+import StravaSwift
 
 
 class RVRouteProfileView : UIView {
     
     // Public model
 	var profileData: ViewProfileData? {
-		didSet {
-			let maxCount = profileData!.profileDataSets.reduce(0) { max($0, $1.profileDataPoints.count) }
-			self.fullRange = RouteIndexRange(from: 0, to: maxCount-1)
-			self.viewRange = self.fullRange
-			setNeedsDisplay()
-		}
-	}
-	private var fullRange : RouteIndexRange!
-	var viewRange: RouteIndexRange! {
 		didSet {
 			setNeedsDisplay()
 		}
@@ -42,45 +34,45 @@ class RVRouteProfileView : UIView {
 		
 		if gestureRecognizer.state == .ended {
 			if let handler = profileData?.rangeChangedHandler {
-				handler(viewRange)
+				handler(profileData!.viewRange)
 			}
 		}
 		
 		guard gestureRecognizer.state == .began || gestureRecognizer.state == .changed else { return }
 		
-		let visiblePoints = CGFloat(viewRange.to - viewRange.from)
-		let newVisiblePoints = CGFloat(viewRange.to - viewRange.from) / gestureRecognizer.scale
+		let visiblePoints = CGFloat(profileData!.viewRange.to - profileData!.viewRange.from)
+		let newVisiblePoints = CGFloat(profileData!.viewRange.to - profileData!.viewRange.from) / gestureRecognizer.scale
 		let change = Int(newVisiblePoints - visiblePoints)
-		viewRange = RouteIndexRange(from: viewRange.from - change/2, to: viewRange.to + change/2)
-		if viewRange.from < 0 {
-			viewRange.to += -viewRange.from
-			viewRange.from += -viewRange.from
+		profileData!.viewRange = RouteIndexRange(from: profileData!.viewRange.from - change/2, to: profileData!.viewRange.to + change/2)
+		if profileData!.viewRange.from < 0 {
+			profileData!.viewRange.to += -profileData!.viewRange.from
+			profileData!.viewRange.from += -profileData!.viewRange.from
 		}
-		if Int(newVisiblePoints) > fullRange.to {
-			viewRange = RouteIndexRange(from: 0, to: fullRange.to)
+		if Int(newVisiblePoints) > profileData!.fullRange.to {
+			profileData!.viewRange = RouteIndexRange(from: 0, to: profileData!.fullRange.to)
 		}
 		gestureRecognizer.scale = 1.0
 		self.setNeedsDisplay()
 	}
 	
 	@IBAction func didPan(_ gestureRecognizer : UIPanGestureRecognizer) {
-		guard gestureRecognizer.view != nil else { return }
+		guard gestureRecognizer.view != nil, profileData != nil else { return }
 		
 		switch gestureRecognizer.state {
 		case .ended:
 			if let handler = profileData?.rangeChangedHandler {
-				handler(viewRange!)
+				handler(profileData!.viewRange)
 			}
 		case .began, .changed:
-			let widthPerDataPoint = self.bounds.width / CGFloat(self.viewRange.to - self.viewRange.from)
-			viewRange.from -= Int(gestureRecognizer.translation(in: self).x / widthPerDataPoint)
+			let widthPerDataPoint = self.bounds.width / CGFloat(profileData!.viewRange.to - profileData!.viewRange.from)
+			profileData!.viewRange.from -= Int(gestureRecognizer.translation(in: self).x / widthPerDataPoint)
 			
-			if viewRange.from < 0 { viewRange.from = 0 }
+			if profileData!.viewRange.from < 0 { profileData!.viewRange.from = 0 }
 			
-			viewRange.to = viewRange.from + Int(self.bounds.width / widthPerDataPoint)
-			if viewRange.to > fullRange.to {
-				viewRange.from -= (viewRange.to - fullRange.to)
-				viewRange.to -= (viewRange.to - fullRange.to)
+			profileData!.viewRange.to = profileData!.viewRange.from + Int(self.bounds.width / widthPerDataPoint)
+			if profileData!.viewRange.to > profileData!.fullRange.to {
+				profileData!.viewRange.from -= (profileData!.viewRange.to - profileData!.fullRange.to)
+				profileData!.viewRange.to -= (profileData!.viewRange.to - profileData!.fullRange.to)
 			}
 			gestureRecognizer.setTranslation(CGPoint(x: 0, y: 0), in: self)
 			self.setNeedsDisplay()
@@ -91,35 +83,32 @@ class RVRouteProfileView : UIView {
 	}
 	
 	private func pathForDataSet(_ dataSet: ViewProfileDataSet) -> UIBezierPath? {
-		guard fullRange.to > 0, viewRange.to - viewRange.from > 0 else { return nil }
-		
-		//        appLog.debug("Create path: bounds are \(self.bounds)")
-		
-		let dataPointsInScope = dataSet.profileDataPoints.enumerated().filter({ $0.offset >= viewRange.from && $0.offset <= viewRange.to })
-		let dataMin = dataPointsInScope.reduce(Double.greatestFiniteMagnitude, { min($0, $1.element) })
-		let dataMax = dataPointsInScope.reduce(0.0, { max($0, $1.element) })
-		let dataRange = max( CGFloat(dataMax - dataMin), 1.0)       // Cannot be zero
+		guard profileData != nil else { return nil }
+		guard profileData!.fullRange.to > 0, profileData!.viewRange.to - profileData!.viewRange.from > 0 else { return nil }
 		
 		let yInset = self.bounds.height / 10
 		
-		let widthPerDataPoint = self.bounds.width / CGFloat(viewRange.to - viewRange.from)
+		let widthPerDataPoint = self.bounds.width / CGFloat(profileData!.viewRange.to - profileData!.viewRange.from)
+		let dataMin = dataSet.dataMin(viewRange: profileData!.viewRange)
+		let dataMax = dataSet.dataMax(viewRange: profileData!.viewRange)
+		let dataRange = max(dataMax-dataMin, 1.0)
 		
 		func pointForData(_ data : Double, index : Int) -> CGPoint {
 			let x = CGFloat(index) * widthPerDataPoint
-			let y = self.bounds.height - (((CGFloat(data-dataMin) / dataRange) * (self.bounds.height-yInset)) + yInset/2)
+			let y = self.bounds.height - (((CGFloat((data-dataMin) / dataRange)) * (self.bounds.height-yInset)) + yInset/2)
 			return CGPoint(x: x, y: y)
 		}
 		
 		let path = UIBezierPath()
 		for (index, point) in dataSet.profileDataPoints.enumerated() {
-			if index == viewRange.from {
+			if index == profileData!.viewRange.from {
 				path.move(to: pointForData(point, index: 0))
-			} else if index > viewRange.from {
+			} else if index > profileData!.viewRange.from {
 				if path.currentPoint == CGPoint.zero {
 					appLog.severe("no current point")
 					fatalError()
 				}
-				path.addLine(to: pointForData(point, index: index-viewRange.from))
+				path.addLine(to: pointForData(point, index: index-profileData!.viewRange.from))
 			}
 		}
 		
@@ -127,11 +116,11 @@ class RVRouteProfileView : UIView {
 	}
 	
 	private func createHighlight() -> UIBezierPath? {
-		guard let highlight = profileData?.highlightRange, viewRange.to - viewRange.from > 0 else { return nil }
+		guard let highlight = profileData?.highlightRange, profileData!.viewRange.to - profileData!.viewRange.from > 0 else { return nil }
 		
-		let widthPerDataPoint = self.bounds.width / CGFloat(self.viewRange.to - self.viewRange.from)
+		let widthPerDataPoint = self.bounds.width / CGFloat(profileData!.viewRange.to - profileData!.viewRange.from)
 		
-		let rect = CGRect(x:( CGFloat(highlight.from) - CGFloat(viewRange.from)) * widthPerDataPoint, y: 0,
+		let rect = CGRect(x:( CGFloat(highlight.from) - CGFloat(profileData!.viewRange.from)) * widthPerDataPoint, y: 0,
 						  width: CGFloat(highlight.to - highlight.from) * widthPerDataPoint, height: self.bounds.height)
 		
 		let path = UIBezierPath(rect: rect)
@@ -140,7 +129,7 @@ class RVRouteProfileView : UIView {
 	
 	override func draw(_ rect: CGRect) {
 		// TODO: draw multiple data sets
-		guard let dataSet = profileData?.profileDataSets.first else { return }
+		guard let dataSet = profileData?.dataSetOfType(.altitude) else { return }
 		
 		if let path = createHighlight() {
 			UIColor.lightGray.setFill()

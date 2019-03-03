@@ -134,11 +134,11 @@ extension SegmentDetailViewController : SortFilterDelegate {
     }
     
     private func setViewforEffort(_ effort : RVEffort) {
-        var profileData = ViewProfileData(profileDataSets: [], highlightRange: nil, rangeChangedHandler: nil)
+		var profileData = ViewProfileData(handler: nil)
         
         if let altitudeStream = (effort.activity.streams.filter { $0.type == StravaSwift.StreamType.altitude.rawValue }).first {
             let dataStream = altitudeStream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
-            profileData.profileDataSets.append(ViewProfileDataSet(profileDataType: .altitude, profileDataPoints: dataStream ))
+            profileData.addDataSet(ViewProfileDataSet(profileDataType: .altitude, profileDataPoints: dataStream ))
         }
         routeViewController.setProfile(streamOwner: effort, profileType: .altitude)
 		
