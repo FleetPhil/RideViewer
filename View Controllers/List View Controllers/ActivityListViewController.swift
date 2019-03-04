@@ -20,9 +20,10 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 	@IBOutlet weak var tableView: RVTableView!
 	
 	// Properties
-	var filters : [ActivityFilter]!
-	var sortKey : ActivitySort!
-	var sortOrderAscending : Bool!
+	private var filters : [ActivityFilter]!
+	private var sortKey : ActivitySort!
+	private var sortOrderAscending : Bool!
+	private var popupController : UIViewController?
 
 	// MARK: Lifecycle
 	override func viewDidLoad() {
@@ -86,9 +87,10 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 		// Popup the list of fields to select sort order
 		let chooser = PopupupChooser<ActivitySort>()
 		chooser.title = "Select sort order"
-		chooser.showSelectionPopup(items: ActivitySort.allCases,
-								   sourceView: sender,
-								   updateHandler: newSortOrder)
+		popupController = chooser.showSelectionPopup(items: ActivitySort.allCases, sourceView: sender, updateHandler: newSortOrder)
+		if popupController != nil {
+			present(popupController!, animated: true, completion: nil)
+		}
 	}
 	
 	func filterButtonPressed(sender: UIView) {
@@ -96,11 +98,15 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 		chooser.title = "Include"
 		chooser.multipleSelection = true
 		chooser.selectedItems = self.filters
-		chooser.showSelectionPopup(items: ActivityFilter.allCases, sourceView: sender, updateHandler: newFilters)
+		popupController = chooser.showSelectionPopup(items: ActivityFilter.allCases, sourceView: sender, updateHandler: newFilters)
+		if popupController != nil {
+			present(popupController!, animated: true, completion: nil)
+		}
 	}
 	
-	private func newSortOrder(newOrder : [ActivitySort]) {
-		if let newSort = newOrder.first {
+	private func newSortOrder(newOrder : [ActivitySort]?) {
+		popupController?.dismiss(animated: true, completion: nil)
+		if let newSort = newOrder?.first {
 			self.sortKey = newSort
 			self.sortOrderAscending = newSort.defaultAscending
 			setDataManager()
@@ -108,10 +114,13 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 		}
 	}
 	
-	private func newFilters(_ newFilters : [ActivityFilter])  {
-		self.filters = newFilters
-		setDataManager()
-		tableView.reloadData()
+	private func newFilters(_ newFilters : [ActivityFilter]?)  {
+		popupController?.dismiss(animated: true, completion: nil)
+		if let returnedFilters = newFilters {			// nil means cancelled
+			self.filters = returnedFilters
+			setDataManager()
+			tableView.reloadData()
+		}
 	}
 	
 	func tableRowSelectedAtIndex(_ index: IndexPath) {

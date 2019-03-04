@@ -20,9 +20,10 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 	@IBOutlet weak var sortButton: UIBarButtonItem!
 	
 	// Properties
-	var filters : [SegmentFilter]!
-	var sortKey : SegmentSort!
-	var sortOrderAscending : Bool!
+	private var filters : [SegmentFilter]!
+	private var sortKey : SegmentSort!
+	private var sortOrderAscending : Bool!
+	private var popupController : UIViewController?
 	
 	// MARK: Lifecycle
 	override func viewDidLoad() {
@@ -54,18 +55,19 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 		self.presentingViewController?.dismiss(animated: true, completion: nil)
 	}
 	
-    // TODO: Redundant as not table view delegate
-	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		performSegue(withIdentifier: "SegmentListToSegmentDetail", sender: self)
-	}
+//    // TODO: Redundant as not table view delegate
+//	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//		performSegue(withIdentifier: "SegmentListToSegmentDetail", sender: self)
+//	}
 
 	func sortButtonPressed(sender: UIView) {
 		// Popup the list of fields to select sort order
 		let chooser = PopupupChooser<SegmentSort>()
 		chooser.title = "Select sort order"
-		chooser.showSelectionPopup(items: SegmentSort.allCases,
-								   sourceView: sender,
-								   updateHandler: newSortOrder)
+		popupController = chooser.showSelectionPopup(items: SegmentSort.allCases, sourceView: sender, updateHandler: newSortOrder)
+		if popupController != nil {
+			present(popupController!, animated: true, completion: nil)
+		}
 	}
 	
 	func filterButtonPressed(sender: UIView) {
@@ -73,17 +75,25 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 		chooser.title = "Include"
 		chooser.multipleSelection = true
 		chooser.selectedItems = self.filters
-		chooser.showSelectionPopup(items: SegmentFilter.allCases, sourceView: sender, updateHandler: newFilters)
+		popupController = chooser.showSelectionPopup(items: SegmentFilter.allCases, sourceView: sender, updateHandler: newFilters)
+		if popupController != nil {
+			present(popupController!, animated: true, completion: nil)
+		}
 	}
 	
-	private func newFilters(_ newFilters : [SegmentFilter])  {
-		self.filters = newFilters
-		setDataManager()
-		tableView.reloadData()
+	private func newFilters(_ newFilters : [SegmentFilter]?)  {
+		popupController?.dismiss(animated: true, completion: nil)
+		
+		if let returnedFilters = newFilters {		// Will be nil if cancelled
+			self.filters = returnedFilters
+			setDataManager()
+			tableView.reloadData()
+		}
 	}
 	
-	private func newSortOrder(newOrder : [SegmentSort]) {
-		if let newSort = newOrder.first {
+	private func newSortOrder(newOrder : [SegmentSort]?) {
+		popupController?.dismiss(animated: true, completion: nil)
+		if let newSort = newOrder?.first {
 			self.sortKey = newSort
 			self.sortOrderAscending = self.sortKey.defaultAscending
 			setDataManager()

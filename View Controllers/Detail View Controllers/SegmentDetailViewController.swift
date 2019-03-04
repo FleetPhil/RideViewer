@@ -30,6 +30,8 @@ class SegmentDetailViewController: UIViewController {
     }
     
     @IBOutlet weak var routeViewController: RVRouteProfileViewController!
+	
+	private var popupController : UIViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,7 +73,7 @@ class SegmentDetailViewController: UIViewController {
 		
 		
 		// Get the route altitude profile
-		if segment.streams.filter({ $0.type! == StreamType.altitude.rawValue }).first != nil {
+		if segment.streams.filter({ $0.type! == ViewProfileDataType.altitude.stravaValue }).first != nil {
             routeViewController.setProfile(streamOwner: segment, profileType: .altitude)
 		}
 		
@@ -154,17 +156,19 @@ extension SegmentDetailViewController : SortFilterDelegate {
         // Popup the list of fields to select sort order
         let chooser = PopupupChooser<EffortSort>()
         chooser.title = "Select sort order"
-        chooser.showSelectionPopup(items: EffortSort.allCases,
-                                   sourceView: sender,
-                                   updateHandler: newSortOrder)
+        popupController = chooser.showSelectionPopup(items: EffortSort.allCases, sourceView: sender, updateHandler: newSortOrder)
+		if popupController != nil {
+			present(popupController!, animated: true, completion: nil)
+		}
     }
     
     func filterButtonPressed(sender: UIView) {
         
     }
     
-    private func newSortOrder(newOrder : [EffortSort]) {
-        if let newSort = newOrder.first {
+    private func newSortOrder(newOrder : [EffortSort]?) {
+		popupController?.dismiss(animated: true, completion: nil)
+        if let newSort = newOrder?.first {
             setDataManager(sortKey: newSort, ascending: newSort.defaultAscending)
             tableView.reloadData()
         }

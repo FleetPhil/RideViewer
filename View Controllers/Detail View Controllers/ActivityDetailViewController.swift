@@ -45,6 +45,9 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	// MARK: Photos
 	private var photoAssets : [PHAsset] = []
 	
+	// MARK: Properties
+	private var popupController : UIViewController?
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -90,55 +93,6 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		}
 	}
 	
-//	private func setProfile<S> (dataStream: S, profileType: StravaSwift.StreamType, range: RouteIndexRange? = nil) where S : StreamOwner {
-//		CoreDataManager.sharedManager().persistentContainer.performBackgroundTask { (context) in
-//			let asyncActivity = context.object(with: self.activity.objectID) as! S
-//
-//			var profileData = ViewProfileData(profileDataSets: [], highlightRange: nil, rangeChangedHandler: self.newIndexRange)
-//
-//			if let stream = (asyncActivity.streams.filter { $0.type == profileType.rawValue }).first {
-//				appLog.debug("Start sort \(stream.dataPoints.count)")
-//
-//				let dataStream = stream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
-//				appLog.debug("End sort")
-//				profileData.profileDataSets.append(ViewProfileDataSet(profileDataType: ViewProfileDataType(rawValue: profileType.rawValue)!, profileDataPoints: dataStream ))
-//			}
-//
-//			DispatchQueue.main.async {
-//				self.routeView.profileData = profileData
-//				if range != nil {
-//					self.routeView.viewRange = range
-//				}
-//			}
-//
-//
-//		}
-//	}
-	
-//	private func setProfileData(range: RouteIndexRange? = nil) {
-//		guard routeView != nil else { return }
-//		
-//		CoreDataManager.sharedManager().persistentContainer.performBackgroundTask { (context) in
-//			let asyncActivity = context.object(with: self.activity.objectID) as! RVActivity
-//
-//			var profileData = ViewProfileData(profileDataSets: [], highlightRange: nil, rangeChangedHandler: self.newIndexRange)
-//			
-//			if let altitudeStream = (asyncActivity.streams.filter { $0.type == StravaSwift.StreamType.altitude.rawValue }).first {
-//				appLog.debug("Start sort \(altitudeStream.dataPoints.count)")
-//				
-//				let dataStream = altitudeStream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
-//				appLog.debug("End sort")
-//				profileData.profileDataSets.append(ViewProfileDataSet(profileDataType: .altitude, profileDataPoints: dataStream ))
-//			}
-//			
-//			DispatchQueue.main.async {
-//				self.routeView.profileData = profileData
-//				if range != nil {
-//					self.routeView.viewRange = range
-//				}
-//			}
-//		}
-//	}
 	
 	func updateView() {
 		self.title 			= activity.name
@@ -354,9 +308,10 @@ extension ActivityDetailViewController : SortFilterDelegate {
 		// Popup the list of fields to select sort order
 		let chooser = PopupupChooser<EffortSort>()
 		chooser.title = "Sort order"
-		chooser.showSelectionPopup(items: EffortSort.allCases,
-								   sourceView: sender,
-								   updateHandler: newSortOrder)
+		popupController	= chooser.showSelectionPopup(items: EffortSort.allCases, sourceView: sender, updateHandler: newSortOrder)
+		if popupController != nil {
+			present(popupController!, animated: true, completion: nil)
+		}
 	}
 	
 	func filterButtonPressed(sender: UIView) {
@@ -364,23 +319,30 @@ extension ActivityDetailViewController : SortFilterDelegate {
 		chooser.title = "Include"
 		chooser.multipleSelection = true
 		chooser.selectedItems = EffortFilter.allCases		// self.filters
-		chooser.showSelectionPopup(items: EffortFilter.allCases, sourceView: sender, updateHandler: newFilters)
+		popupController = chooser.showSelectionPopup(items: EffortFilter.allCases, sourceView: sender, updateHandler: newFilters)
+		if popupController != nil {
+			present(popupController!, animated: true, completion: nil)
+		}
 	}
 	
 	func contentChanged() {
 		
 	}
 	
-	private func newFilters(_ newFilters : [EffortFilter])  {
-		dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [RVEffort.filterPredicate(activity: activity, range: nil),
-																						  EffortFilter.predicateForFilters(newFilters)])
-		_ = dataManager.fetchObjects()
-		tableView.reloadData()
+	private func newFilters(_ newFilters : [EffortFilter]?)  {
+		popupController?.dismiss(animated: true, completion: nil)
+		if let selectedFilters = newFilters {
+			dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [RVEffort.filterPredicate(activity: activity, range: nil),
+																						  EffortFilter.predicateForFilters(selectedFilters)])
+			_ = dataManager.fetchObjects()
+			tableView.reloadData()
+		}
 	}
 	
 	
-	private func newSortOrder(newOrder : [EffortSort]) {
-		if let newSort = newOrder.first {
+	private func newSortOrder(newOrder : [EffortSort]?) {
+		popupController?.dismiss(animated: true, completion: nil)
+		if let newSort = newOrder?.first {
 			dataManager.sortDescriptor = NSSortDescriptor(key: newSort.rawValue, ascending: newSort.defaultAscending)
 			_ = dataManager.fetchObjects()
 			tableView.reloadData()

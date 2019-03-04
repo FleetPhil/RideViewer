@@ -37,14 +37,14 @@ fileprivate protocol PopupDelegate {
 class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationControllerDelegate, UITableViewDataSource, PopupDelegate {
 	private var itemsForSelection : [String : [T]]!
 	private var sectionNumbers : [Int : String] = [:]
-	private var handler : (([T]) -> Void)!
+	private var handler : (([T]?) -> Void)!
     private var sourceView : UIView!
 
     public var title : String!
     public var multipleSelection : Bool = false
 	public var selectedItems : [T] = []
 	
-	func showSelectionPopup(items : [T], sourceView : UIView, updateHandler : @escaping ([T]) -> Void) {
+	func showSelectionPopup(items : [T], sourceView : UIView, updateHandler : @escaping ([T]?) -> Void) -> UIViewController? {
 		itemsForSelection = Dictionary(grouping: items, by: { $0.filterGroup })	// Section (aka group) : Items
 		var i = 0
 		for key in itemsForSelection.keys {
@@ -56,7 +56,7 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
         self.sourceView = sourceView
 		
 		guard let popoverContent = UIStoryboard(name: "PopupChooser", bundle: nil).instantiateViewController(withIdentifier: "MappingSelection") as? ItemSelectionViewController else {
-			return
+			return nil
 		}
 
 		popoverContent.multipleSelection = multipleSelection
@@ -72,8 +72,10 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
 		popover.sourceRect = CGRect(x: sourceView.bounds.maxX, y: sourceView.bounds.midY, width: 1, height: 1)
 		popoverContent.navigationItem.title = title
 		popoverContent.delegate = self
-		
-		self.sourceView.owningViewController()?.present(navigationController, animated: true, completion: nil)
+
+		return navigationController
+
+//		self.sourceView.owningViewController()?.present(navigationController, animated: true, completion: nil)
 	}
 	
 	// MARK: Table view functions
@@ -110,13 +112,11 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
 	
 	// MARK: return functions
     fileprivate func didSelectPaths(paths : [IndexPath]) {
-        self.sourceView.owningViewController()?.dismiss(animated: true, completion: {
-            self.handler(paths.map { self.itemsForSelection[self.sectionNumbers[$0.section]!]![$0.row] })
-        })
+    	self.handler(paths.map { self.itemsForSelection[self.sectionNumbers[$0.section]!]![$0.row] })
     }
     
     fileprivate func didCancelSelection() {
-        self.sourceView.owningViewController()?.dismiss(animated: true, completion: nil)
+        self.handler(nil)
     }
 }
 
@@ -133,9 +133,7 @@ class ItemSelectionViewController : UIViewController, UITableViewDelegate   {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if multipleSelection == false {         // If single item dismiss the view controller with this selection
-            tableView.owningViewController()?.dismiss(animated: true, completion: {
-                self.delegate.didSelectPaths(paths: [indexPath])
-            })
+            self.delegate.didSelectPaths(paths: [indexPath])
         } else {
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }
@@ -165,15 +163,4 @@ class ItemSelectionViewController : UIViewController, UITableViewDelegate   {
     }
 }
 
-extension UIResponder {
-	fileprivate func owningViewController() -> UIViewController? {
-		var nextResponser = self
-		while let next = nextResponser.next {
-			nextResponser = next
-			if let vc = nextResponser as? UIViewController {
-				return vc
-			}
-		}
-		return nil
-	}
-}
+

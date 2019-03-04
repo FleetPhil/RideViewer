@@ -30,7 +30,7 @@ class RideRoute {
 
 fileprivate class RoutePath : MKPolyline {
 	
-	var rideRoute : RideRoute!
+	weak var rideRoute : RideRoute?
 	
 	convenience init?(rideRoute : RideRoute) {
         if let locations = rideRoute.route.coordinates {
@@ -44,7 +44,7 @@ fileprivate class RoutePath : MKPolyline {
 
 class RouteEnd : NSObject, MKAnnotation {
 	internal var coordinate: CLLocationCoordinate2D
-	var rideRoute: RideRoute
+	weak var rideRoute: RideRoute?
 	var isStart : Bool
 	
 	fileprivate init(rideRoute : RideRoute, coordinate: CLLocationCoordinate2D, isStart :  Bool) {
@@ -199,7 +199,7 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 		guard let annotation = annotation as? RouteEnd else { return nil }
 		let view = SegmentStartAnnotationView(annotation: annotation, reuseIdentifier: SegmentStartAnnotationView.reuseID)
 		
-		if annotation.rideRoute.type == .highlightSegment {
+		if annotation.rideRoute?.type == .highlightSegment {
 			view.isHidden = false
 			view.isSelected = true
 			view.clusteringIdentifier = nil
@@ -217,7 +217,7 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 	}
 	
 	func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-		guard let type = (overlay as? RoutePath)?.rideRoute.type else { return MKOverlayPathRenderer() }
+		guard let type = (overlay as? RoutePath)?.rideRoute?.type else { return MKOverlayPathRenderer() }
 		
 		let renderer = MKPolylineRenderer(overlay: overlay)
 		renderer.strokeColor = type.colour
@@ -227,20 +227,20 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 	
 	func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
 		let visibleRouteEnds = self.annotations(in: mapView.visibleMapRect).filter({ $0 is RouteEnd }) as! Set<RouteEnd>
-		let visibleRoutes = visibleRouteEnds.compactMap({ $0.rideRoute.route })
+		let visibleRoutes = visibleRouteEnds.compactMap({ $0.rideRoute?.route })
 		
 		viewDelegate?.didChangeVisibleRoutes(Array(visibleRoutes))
 	}
 	
 	func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-		if let routeEnd = view.annotation as? RouteEnd {
-			viewDelegate?.didSelectRoute(route: routeEnd.rideRoute.route)
+		if let routeEnd = view.annotation as? RouteEnd, routeEnd.rideRoute != nil {
+			viewDelegate?.didSelectRoute(route: routeEnd.rideRoute!.route)
 		}
 	}
 	
 	func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-		if let routeEnd = view.annotation as? RouteEnd {
-			viewDelegate?.didDeselectRoute(route: routeEnd.rideRoute.route)
+		if let routeEnd = view.annotation as? RouteEnd, routeEnd.rideRoute != nil {
+			viewDelegate?.didDeselectRoute(route: routeEnd.rideRoute!.route)
 		}
 	}
 }

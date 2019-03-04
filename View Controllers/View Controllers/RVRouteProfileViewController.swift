@@ -11,8 +11,6 @@
 
 import UIKit
 import CoreData
-import StravaSwift
-
 
 // Class objects that own streams adopt this protocol
 protocol StreamOwner where Self : NSManagedObject {
@@ -26,6 +24,10 @@ enum ViewProfileDataType : String {
 	case watts
 	case distance
 	case cadence
+	
+	var stravaValue : String {
+		return self.rawValue
+	}
 }
 
 struct ViewProfileDataSet {
@@ -94,7 +96,7 @@ class RVRouteProfileViewController: UIViewController {
         super.viewDidLoad()
     }
     
-	func setProfile<S> (streamOwner: S, profileType: StravaSwift.StreamType, range: RouteIndexRange? = nil) where S : StreamOwner {
+	func setProfile<S> (streamOwner: S, profileType: ViewProfileDataType, range: RouteIndexRange? = nil) where S : StreamOwner {
 		CoreDataManager.sharedManager().persistentContainer.performBackgroundTask { [weak self] (context) in
 			let asyncActivity = context.object(with: streamOwner.objectID) as! S
 			
@@ -127,7 +129,6 @@ class RVRouteProfileViewController: UIViewController {
 		
 		let minDistance = distanceProfileSet.dataMin(viewRange: profileData.fullRange)
 		let maxDistance = distanceProfileSet.dataMax(viewRange: profileData.fullRange)
-		appLog.debug("Distance axis from \(minDistance) to \(maxDistance)")
 		
 		horiz0Label.text		= minDistance.distanceDisplayString
 		horiz25Label.text		= ((maxDistance-minDistance)*0.25 + minDistance).distanceDisplayString
@@ -143,10 +144,14 @@ class RVRouteProfileViewController: UIViewController {
 		vert100Label.text		= ((maxValue-minValue) + minValue).fixedFraction(digits: 0)
 	}
 	
-	private func profileDataSet<S>(forOwner owner : S, ofType: StravaSwift.StreamType) -> ViewProfileDataSet? where S : StreamOwner {
-		if let stream = (owner.streams.filter { $0.type == ofType.rawValue }).first {
+	private func profileDataSet<S>(forOwner owner : S, ofType: ViewProfileDataType) -> ViewProfileDataSet? where S : StreamOwner {
+		let startTime = Date()
+		if let stream = (owner.streams.filter { $0.type == ofType.stravaValue }).first {
 			let dataStream = stream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
-			return ViewProfileDataSet(profileDataType: ViewProfileDataType(rawValue: ofType.rawValue)!, profileDataPoints: dataStream )
+			let dataSet = ViewProfileDataSet(profileDataType: ViewProfileDataType(rawValue: ofType.rawValue)!, profileDataPoints: dataStream )
+			let endTime = Date()
+			appLog.debug("Time: \(endTime.timeIntervalSince(startTime)) for \(dataSet.profileDataPoints.count) points")
+			return dataSet
 		} else {
 			return nil
 		}
