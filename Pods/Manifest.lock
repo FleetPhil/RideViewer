@@ -1,0 +1,48 @@
+PODS:
+  - Alamofire (4.8.1)
+  - ObjcExceptionBridging (1.0.1):
+    - ObjcExceptionBridging/ObjcExceptionBridging (= 1.0.1)
+  - ObjcExceptionBridging/ObjcExceptionBridging (1.0.1)
+  - Polyline (4.2.0)
+  - StravaSwift (0.7.0):
+    - Alamofire (~> 4)
+    - SwiftyJSON (~> 4.0)
+  - SwiftyJSON (4.2.0)
+  - XCGLogger (6.1.0):
+    - XCGLogger/Core (= 6.1.0)
+  - XCGLogger/Core (6.1.0):
+    - ObjcExceptionBridging
+
+DEPENDENCIES:
+  - Polyline (~> 4.0)
+  - StravaSwift (from `https://github.com/FleetPhil/StravaSwift.git`)
+  - XCGLogger
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - ObjcExceptionBridging
+    - Polyline
+    - SwiftyJSON
+    - XCGLogger
+
+EXTERNAL SOURCES:
+  StravaSwift:
+    :git: https://github.com/FleetPhil/StravaSwift.git
+
+CHECKOUT OPTIONS:
+  StravaSwift:
+    :commit: 4d372f5c612b6ba4a2b94dc7edbd92e4eb8bdfcc
+    :git: https://github.com/FleetPhil/StravaSwift.git
+
+SPEC CHECKSUMS:
+  Alamofire: 16ce2c353fb72865124ddae8a57c5942388f4f11
+  ObjcExceptionBridging: c30e00eb3700467e695faeea30e26e18bd445001
+  Polyline: 3d69f75bb136357e27291d439d0436c6ebda57a4
+  StravaSwift: 4d9fd4f167185fd76a43b7f8cae70d436031d9ad
+  SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
+  XCGLogger: 7f7f43f15dfe3a305fa1342b7dc29af656289abd
+
+PODFILE CHECKSUM: e00f49cb355baaf5736fcaee38cd3f48dc28c7ea
+
+COCOAPODS: 1.5.3

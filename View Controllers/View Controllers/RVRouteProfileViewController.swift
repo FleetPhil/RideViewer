@@ -13,6 +13,7 @@ import UIKit
 import CoreData
 import StravaSwift
 
+
 // Class objects that own streams adopt this protocol
 protocol StreamOwner where Self : NSManagedObject {
 	var streams: Set<RVStream> { get }
