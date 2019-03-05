@@ -67,6 +67,26 @@ public class RVStream: NSManagedObject {
 		return self
 	}
 	
+	private var dataPointData : String = ""
 	
-	
+	var dataPoints2 : [Double]? {
+		get {
+			if let jsonData = dataPointData.data(using: .utf8) {
+				let dataPoints = try? JSONDecoder().decode([Double].self, from: jsonData)
+				return dataPoints
+			}
+			return []
+		}
+		set {
+			if newValue != nil {
+				if let jsonData = try? JSONEncoder().encode(newValue!) {
+					dataPointData = String(data: jsonData, encoding: .utf8)!
+				} else {
+					dataPointData = ""
+				}
+			} else {
+				dataPointData = ""
+			}
+		}
+	}
 }
