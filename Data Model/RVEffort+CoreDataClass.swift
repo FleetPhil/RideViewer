@@ -253,8 +253,9 @@ class EffortListForActivityTableViewCell : UITableViewCell, TableViewCompatibleC
 	
 	func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell {
 		if let effort = withModel as? RVEffort {
-            
-			segmentName.text = effort.segment.name! + " " + ["","\u{2463}","\u{2462}","\u{2461}","\u{2460}", ""][5 - Int(effort.segment.climbCategory)]
+			
+			let segmentStarText = effort.segment.starred ? "★" : "☆"
+			segmentName.text = segmentStarText + " " + effort.segment.name!
             segmentName.textColor = effort.segment.resourceState.resourceStateColour
 			
 			segmentData.text = "➡️ " + effort.distance.distanceDisplayString

@@ -18,6 +18,8 @@ protocol SortFilterDelegate : class {
 	
 	func sortButtonPressed(sender : UIView)
 	func filterButtonPressed(sender : UIView)
+	
+	var tableDataIsComplete : Bool { get }
 }
 
 // Default behaviour for optional functions
@@ -29,7 +31,6 @@ extension SortFilterDelegate {
 
 class RVTableView : UITableView, UITableViewDelegate {
 	weak var sortFilterDelegate : SortFilterDelegate?
-	var activityIndicator : UIActivityIndicatorView!
 	
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
@@ -66,7 +67,7 @@ class RVTableView : UITableView, UITableViewDelegate {
 		let header = SortFilterHeaderView(frame: view.bounds)
 		header.sortButton.addTarget(self, action: #selector(sortButtonPressed), for: .touchUpInside)
 		header.filterButton.addTarget(self, action: #selector(filterButtonPressed), for: .touchUpInside)
-		header.headerLabel.text = "\(tableView.numberOfRows(inSection: 0))"
+		header.headerLabel.text = "\(tableView.numberOfRows(inSection: 0))" + (sortFilterDelegate?.tableDataIsComplete == false ? "+" : "")
 		view.addSubview(header)
 	}
 	
@@ -78,27 +79,6 @@ class RVTableView : UITableView, UITableViewDelegate {
 		sortFilterDelegate?.filterButtonPressed(sender: sender)
 	}
 	
-	func startDataRetrieval() {
-		activityIndicator = UIActivityIndicatorView(style: .gray)
-		activityIndicator.center = CGPoint(x: self.bounds.width/2, y: self.bounds.height/2)
-		self.addSubview(activityIndicator)
-		activityIndicator.startAnimating()
-		self.bringSubviewToFront(activityIndicator)
-	}
-	
-	func endDataRetrieval() {
-		activityIndicator.stopAnimating()
-	}
-	
-	func dataRetrievalFailed() {
-		activityIndicator.stopAnimating()
-		// Display an alert view
-		let alert = UIAlertController(title: "", message: "Unable to get Strava Update", preferredStyle: .alert)
-		UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
-		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1){
-			alert.dismiss(animated: true, completion: nil)
-		}
-	}
 }
 
 class SortFilterHeaderView : UIView {

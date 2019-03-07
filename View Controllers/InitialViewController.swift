@@ -20,7 +20,7 @@ class InitialViewController: UIViewController {
 											   name: NSNotification.Name("code"),
 											   object: nil)
 		showStats()
-
+		
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
@@ -45,12 +45,11 @@ class InitialViewController: UIViewController {
 					
 					StravaManager.sharedInstance.getAthleteActivities(page: 1, context: context, completionHandler: { newActivities in
 						appLog.debug("\(newActivities) new activities - getting starred segments")
-						StravaManager.sharedInstance.getStarredSegments(page: 1, context: context, completionHandler: {
-							appLog.debug("Got starred segments")
-							self.showStats()
+						StravaManager.sharedInstance.getStarredSegments(page: 1, context: context, completionHandler: { segments in
+							appLog.debug("\(segments.count) segments - getting efforts")
+							self.effortsForSegments(segments)
 						})
 					})
-					
 				} else {
 					appLog.debug("getToken failed")
 				}
@@ -63,5 +62,17 @@ class InitialViewController: UIViewController {
 		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVSegment.self) ?? -1) segments")
 		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVEffort.self) ?? -1) efforts")
 		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVStream.self) ?? -1) streams")
+	}
+	
+	func effortsForSegments(_ segments : [RVSegment]) {
+		segments.forEach { segment in
+			if !segment.allEfforts {
+				StravaManager.sharedInstance.effortsForSegment(segment, page: 1, context: segment.managedObjectContext!, completionHandler: { success in
+					if !success {
+						appLog.debug("Efforts failed for segment \(segment.name!)")
+					}
+				})
+			}
+		}
 	}
 }

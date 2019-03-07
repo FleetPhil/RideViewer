@@ -21,7 +21,7 @@ extension RVStream {
     @NSManaged public var seriesType: String?
     @NSManaged public var originalSize: Int64
     @NSManaged public var resolution: String?
-    @NSManaged public var dataPoints: Set<RVStreamData>
+	@NSManaged public var dataPointData: String?
     @NSManaged public var activity: RVActivity?
 	@NSManaged public var segment: RVSegment?
 	@NSManaged public var effort: RVEffort?

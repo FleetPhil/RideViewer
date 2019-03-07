@@ -10,9 +10,9 @@ import Foundation
 import MapKit
 
 // Route objects: RideRoute, RouteEndPoint, RoutePath
-class RideRoute {
+fileprivate class RideRoute {
 	var type: RouteViewType
-	fileprivate var route : RouteViewCompatible
+	fileprivate weak var route : RouteViewCompatible?
 	fileprivate var endPoints : [RouteEnd] = []
 	fileprivate var path : RoutePath?
 	
@@ -33,7 +33,7 @@ fileprivate class RoutePath : MKPolyline {
 	weak var rideRoute : RideRoute?
 	
 	convenience init?(rideRoute : RideRoute) {
-        if let locations = rideRoute.route.coordinates {
+        if let locations = rideRoute.route?.coordinates {
 			self.init(coordinates: UnsafePointer(locations), count: locations.count)
 			self.rideRoute = rideRoute
 		} else {
@@ -42,7 +42,7 @@ fileprivate class RoutePath : MKPolyline {
 	}
 }
 
-class RouteEnd : NSObject, MKAnnotation {
+fileprivate class RouteEnd : NSObject, MKAnnotation {
 	internal var coordinate: CLLocationCoordinate2D
 	weak var rideRoute: RideRoute?
 	var isStart : Bool
@@ -162,7 +162,7 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 	}
 	
 	func routes(ofTypes: [RouteViewType]) -> [RouteViewCompatible] {
-		return routes.filter({ ofTypes.contains($0.type) }).map({ $0.route })
+		return routes.filter({ ofTypes.contains($0.type) }).compactMap({ $0.route })
 	}
 	
 	func setMapRegion() {
@@ -233,14 +233,43 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 	}
 	
 	func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-		if let routeEnd = view.annotation as? RouteEnd, routeEnd.rideRoute != nil {
-			viewDelegate?.didSelectRoute(route: routeEnd.rideRoute!.route)
+		if let routeEnd = view.annotation as? RouteEnd, routeEnd.rideRoute?.route != nil {
+			viewDelegate?.didSelectRoute(route: routeEnd.rideRoute!.route!)
 		}
 	}
 	
 	func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-		if let routeEnd = view.annotation as? RouteEnd, routeEnd.rideRoute != nil {
-			viewDelegate?.didDeselectRoute(route: routeEnd.rideRoute!.route)
+		if let routeEnd = view.annotation as? RouteEnd, routeEnd.rideRoute?.route != nil {
+			viewDelegate?.didDeselectRoute(route: routeEnd.rideRoute!.route!)
 		}
 	}
 }
+
+/// - Tag: Segment start and end annotation views
+class SegmentStartAnnotationView: MKMarkerAnnotationView {
+	
+	static let reuseID = "segmentAnnotation"
+	
+	override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
+		super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
+	}
+	
+	required init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
+	override func prepareForDisplay() {
+		super.prepareForDisplay()
+		displayPriority = .required
+		
+		let annotation = self.annotation as! RouteEnd
+		if annotation.isStart {
+			markerTintColor = UIColor.segmentMarkerSelectedColour
+			glyphText = "🇬🇧"
+		} else {
+			markerTintColor = UIColor.segmentMarkerFinishColour
+			glyphText = "🏁"
+		}
+	}
+}
+

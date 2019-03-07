@@ -541,7 +541,33 @@
                                             </view>
                                             <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yH2-i7-ezs" customClass="RVRouteProfileView" customModule="RideViewer" customModuleProvider="target">
                                                 <rect key="frame" x="30.5" y="0.0" width="763.5" height="97.5"/>
+                                                <subviews>
+                                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="☹️" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QMV-oG-mWZ">
+                                                        <rect key="frame" x="360" y="27" width="43.5" height="43"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="43.5" id="pBQ-SR-il0"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="36"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="⏳" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ck5-zW-zmv">
+                                                        <rect key="frame" x="360" y="27" width="43.5" height="43"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="43.5" id="mVS-JK-HQb"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="36"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
                                                 <color key="backgroundColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstItem="Ck5-zW-zmv" firstAttribute="centerY" secondItem="yH2-i7-ezs" secondAttribute="centerY" id="bU1-RJ-890"/>
+                                                    <constraint firstItem="Ck5-zW-zmv" firstAttribute="centerX" secondItem="yH2-i7-ezs" secondAttribute="centerX" id="gd2-N5-Tqd"/>
+                                                    <constraint firstItem="QMV-oG-mWZ" firstAttribute="centerY" secondItem="yH2-i7-ezs" secondAttribute="centerY" id="wF6-hW-s2c"/>
+                                                    <constraint firstItem="QMV-oG-mWZ" firstAttribute="centerX" secondItem="yH2-i7-ezs" secondAttribute="centerX" id="y2J-Ff-HAd"/>
+                                                </constraints>
                                             </view>
                                         </subviews>
                                         <constraints>
@@ -634,10 +660,12 @@
                         <outlet property="horiz25Label" destination="Ibm-HN-4l8" id="jGk-YA-3bR"/>
                         <outlet property="horiz50Label" destination="437-pr-wp0" id="pbr-qV-d0n"/>
                         <outlet property="horiz75Label" destination="YCY-r3-M0v" id="U38-PT-aO9"/>
+                        <outlet property="noDataLabel" destination="QMV-oG-mWZ" id="Bmp-f4-CUk"/>
                         <outlet property="routeView" destination="yH2-i7-ezs" id="Oh6-Ah-JK9"/>
                         <outlet property="vert0Label" destination="g8K-1E-rcn" id="7on-hw-OTA"/>
                         <outlet property="vert100Label" destination="yT9-Rm-gtx" id="jbg-dK-Oki"/>
                         <outlet property="vert50Label" destination="I7p-3L-ujb" id="135-vF-Tf8"/>
+                        <outlet property="waitingLabel" destination="Ck5-zW-zmv" id="prS-9Y-cGq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CiT-Cj-Khi" userLabel="First Responder" sceneMemberID="firstResponder"/>

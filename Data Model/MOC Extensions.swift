@@ -146,7 +146,7 @@ extension NSManagedObjectContext {
     func saveContext () {
         if self.hasChanges {
             do {
-				appLog.debug("Saving changes to MOC")
+				appLog.debug("Saving changes: \(Thread.isMainThread ? "is" : "is not") main thread, context \(self == CoreDataManager.sharedManager().viewContext ? "is" : "is not") view context")
                 try self.save()
             } catch {
                 // Replace this implementation with code to handle the error appropriately.

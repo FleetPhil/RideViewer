@@ -18,6 +18,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	weak var activity : RVActivity!
 	
 	@IBOutlet weak var tableView: RVTableView!
+	var tableDataIsComplete = false
 	
 	@IBOutlet weak var distance: UILabel!
 	@IBOutlet weak var startTime: UILabel!
@@ -47,6 +48,8 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	
 	// MARK: Properties
 	private var popupController : UIViewController?
+	private var activityIndicator : UIActivityIndicatorView!
+
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -57,31 +60,31 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		
 		// Set scrolling photo view delegate
 		photoView?.delegate = self
-		
-		// Set the route view controller
-		
-		
+
 		// Get Strava details
-		if activity.resourceState != .detailed {
-			tableView.startDataRetrieval()
+		if activity.resourceState == .detailed {
+			tableDataIsComplete = true
+		} else {
+			startDataRetrieval()
 			StravaManager.sharedInstance.updateActivity(activity, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] success in
 				if success {
-					self?.tableView.endDataRetrieval()
+					self?.endDataRetrieval()
+					self?.tableDataIsComplete = true
 				} else {
-					self?.tableView.dataRetrievalFailed()
+					self?.dataRetrievalFailed()
 				}
 			})
 		}
-		if activity.streams.count == 0 {
+		
+		if activity.hasStreamOfType(.altitude) {
+			self.routeViewController.setProfile(streamOwner: activity, profileType: .altitude)
+		} else {
 			appLog.verbose("Getting streams")
 			StravaManager.sharedInstance.streamsForActivity(activity, context: activity.managedObjectContext!, completionHandler: { [weak self] success in
 				if success, let streams = self?.activity.streams {
 					appLog.verbose("Streams call result: success = \(success), \(streams.count) streams")
-					for stream in streams {
-						appLog.verbose("Stream \(stream.type!): \(stream.seriesType!), \(stream.dataPoints.count) data points")
-					}
 				} else {
-					appLog.debug("Get streams failed for activity")
+					appLog.verbose("Get streams failed for activity")
 				}
                 self?.routeViewController.setProfile(streamOwner: self!.activity, profileType: .altitude)
 			})
@@ -92,6 +95,29 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 			updateView()
 		}
 	}
+	
+	func startDataRetrieval() {
+		activityIndicator = UIActivityIndicatorView(style: .gray)
+		activityIndicator.center = CGPoint(x: tableView.bounds.width/2, y: tableView.bounds.height/2)
+		tableView.addSubview(activityIndicator)
+		activityIndicator.startAnimating()
+		tableView.bringSubviewToFront(activityIndicator)
+	}
+	
+	func endDataRetrieval() {
+		activityIndicator.stopAnimating()
+	}
+	
+	func dataRetrievalFailed() {
+		activityIndicator.stopAnimating()
+		// Display an alert view
+		let alert = UIAlertController(title: "", message: "Unable to get Strava Update", preferredStyle: .alert)
+		self.splitViewController?.present(alert, animated: true, completion: nil)
+		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+			alert.dismiss(animated: true, completion: nil)
+		}
+	}
+
 	
 	
 	func updateView() {
@@ -116,11 +142,9 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		
 		// Map view
 		mapView!.addRoute(activity, type: .mainActivity)
+		
 		let predicate = RVEffort.filterPredicate(activity: activity, range: nil)
 		let filteredEfforts = activity.efforts.filter { predicate.evaluate(with: $0) }
-		
-		appLog.debug("Filter reduces efforts from \(activity.efforts.count) to \(filteredEfforts.count)")
-		
 		filteredEfforts.forEach({
 			mapView!.addRoute($0, type: .backgroundSegment)
 		})
@@ -137,7 +161,14 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		//            }
 		//        })
 		
-        routeViewController.setProfile(streamOwner: activity!, profileType: .altitude)
+		if activity.streams.filter({ $0.type == ViewProfileDataType.altitude.stravaValue }).first != nil {
+			routeViewController.setProfile(streamOwner: activity!, profileType: .altitude)
+		} else {
+			StravaManager.sharedInstance.streamsForActivity(activity, context: activity.managedObjectContext!, completionHandler: { (success) in
+				self.activity.managedObjectContext?.saveContext()
+				self.routeViewController.setProfile(streamOwner: self.activity!, profileType: .altitude)
+			})
+		}
 		
 		setupEfforts(range: nil)
 	}

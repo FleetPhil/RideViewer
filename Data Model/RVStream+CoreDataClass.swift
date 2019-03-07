@@ -30,7 +30,7 @@ public class RVStream: NSManagedObject {
 		}
 		let newStream = RVStream(context: context)
 		newStream.segment = segment
-		appLog.debug("Stream \(stream.type!) created for \(segment.name!)")
+		appLog.verbose("Stream \(stream.type!) created for \(segment.name!)")
 		return newStream.update(stream: stream)
 	}
 
@@ -43,49 +43,57 @@ public class RVStream: NSManagedObject {
 		return newStream.update(stream: stream)
 	}
 
+//	func update(stream : StravaSwift.Stream) -> RVStream {
+//		self.type			= stream.type!.rawValue
+//		self.seriesType		= stream.seriesType!
+//		self.originalSize	= Int64(stream.originalSize ?? 0)
+//
+//		guard let data = stream.data else { return self }
+//
+//		// Replace data points
+//		if self.dataPoints.count > 0 {
+//			_ = self.managedObjectContext?.deleteObjects(self.dataPoints)
+//		}
+//
+//		var failCount : Int = 0
+//		for (index, dataPoint) in data.enumerated() {
+//			if let value = dataPoint as? Double {
+//				_ = RVStreamData.create(stream: self, index: index, dataPoint: value, context: self.managedObjectContext!)
+//			} else {
+//				failCount += 1
+//			}
+//		}
+////		appLog.debug("Stream \(self.type!): \(failCount) fails, \(self.dataPoints.count) stored")
+//		return self
+//	}
+	
 	func update(stream : StravaSwift.Stream) -> RVStream {
 		self.type			= stream.type!.rawValue
 		self.seriesType		= stream.seriesType!
 		self.originalSize	= Int64(stream.originalSize ?? 0)
-
+		
 		guard let data = stream.data else { return self }
 		
 		// Replace data points
-		if self.dataPoints.count > 0 {
-			_ = self.managedObjectContext?.deleteObjects(self.dataPoints)
-		}
-		
-		var failCount : Int = 0
-		for (index, dataPoint) in data.enumerated() {
-			if let value = dataPoint as? Double {
-				_ = RVStreamData.create(stream: self, index: index, dataPoint: value, context: self.managedObjectContext!)
-			} else {
-				failCount += 1
-			}
-		}
-//		appLog.debug("Stream \(self.type!): \(failCount) fails, \(self.dataPoints.count) stored")
+		dataPoints = data as? [Double] ?? []
 		return self
 	}
-	
-	private var dataPointData : String = ""
-	
-	var dataPoints2 : [Double]? {
+
+	var dataPoints : [Double] {
 		get {
-			if let jsonData = dataPointData.data(using: .utf8) {
+			guard let data = dataPointData else { return [] }
+			if let jsonData = data.data(using: .utf8) {
 				let dataPoints = try? JSONDecoder().decode([Double].self, from: jsonData)
-				return dataPoints
+				return dataPoints ?? []
+			} else {
+				return []
 			}
-			return []
 		}
 		set {
-			if newValue != nil {
-				if let jsonData = try? JSONEncoder().encode(newValue!) {
-					dataPointData = String(data: jsonData, encoding: .utf8)!
-				} else {
-					dataPointData = ""
-				}
+			if let jsonData = try? JSONEncoder().encode(newValue) {
+				dataPointData = String(data: jsonData, encoding: .utf8)!
 			} else {
-				dataPointData = ""
+				dataPointData = nil
 			}
 		}
 	}

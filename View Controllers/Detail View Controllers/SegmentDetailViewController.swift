@@ -19,7 +19,8 @@ class SegmentDetailViewController: UIViewController {
     private lazy var dataManager = DataManager<RVEffort>()
     
     @IBOutlet weak var tableView: RVTableView!
-    
+	var tableDataIsComplete = false
+	
     @IBOutlet weak var effortsLabel: UILabel!
     
     @IBOutlet weak var mapView: RideMapView! {
@@ -63,30 +64,41 @@ class SegmentDetailViewController: UIViewController {
         }
         
         // Get all efforts for this segment if we don't have them
-        if !segment.allEfforts {
+        if segment.allEfforts {
+			tableDataIsComplete = true
+		} else {
             StravaManager.sharedInstance.effortsForSegment(self.segment, page: 1, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [ weak self ] success in
-                self?.effortsLabel.text    = "\(self?.tableView.numberOfRows(inSection: 0) ?? 0) Efforts"
+				if success {
+                	self?.effortsLabel.text    = "\(self?.tableView.numberOfRows(inSection: 0) ?? 0) Efforts"
+					self?.tableDataIsComplete = true
+				}
             })
         }
 		// Fetched results controller will update the table once it is set up
         setupEfforts(segment)
 		
-		
 		// Get the route altitude profile
-		if segment.streams.filter({ $0.type! == ViewProfileDataType.altitude.stravaValue }).first != nil {
+		if segment.hasStreamOfType(.altitude) {
             routeViewController.setProfile(streamOwner: segment, profileType: .altitude)
+		} else {
+			appLog.verbose("Getting streams")
+			StravaManager.sharedInstance.streamsForSegment(segment, context: segment.managedObjectContext!, completionHandler: { [weak self] success in
+				if success, let streams = self?.segment.streams {
+					appLog.verbose("Streams call result: success = \(success), \(streams.count) streams")
+				} else {
+					appLog.verbose("Get streams failed for activity")
+				}
+				self?.routeViewController.setProfile(streamOwner: self!.segment, profileType: .altitude)
+			})
 		}
-		
     }
 	
 	// MARK: - Navigation
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-		if let destination = segue.destination as? RVRouteProfileViewController {
+		if let destination = segue.destination as? RVRouteProfileViewController {		// Embed segue
 			self.routeViewController = destination
 		}
-		
 	}
-
 }
 
 extension SegmentDetailViewController : SortFilterDelegate {
@@ -139,8 +151,9 @@ extension SegmentDetailViewController : SortFilterDelegate {
 		var profileData = ViewProfileData(handler: nil)
         
         if let altitudeStream = (effort.activity.streams.filter { $0.type == StravaSwift.StreamType.altitude.rawValue }).first {
-            let dataStream = altitudeStream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
-            profileData.addDataSet(ViewProfileDataSet(profileDataType: .altitude, profileDataPoints: dataStream ))
+			
+//            let dataStream = altitudeStream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
+            profileData.addDataSet(ViewProfileDataSet(profileDataType: .altitude, profileDataPoints: altitudeStream.dataPoints ))
         }
         routeViewController.setProfile(streamOwner: effort, profileType: .altitude)
 		

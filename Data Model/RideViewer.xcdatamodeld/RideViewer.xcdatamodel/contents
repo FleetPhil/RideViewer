@@ -97,19 +97,14 @@
         <relationship name="streams" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVStream" inverseName="segment" inverseEntity="RVStream" syncable="YES"/>
     </entity>
     <entity name="RVStream" representedClassName="RVStream" syncable="YES">
+        <attribute name="dataPointData" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="originalSize" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="resolution" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="seriesType" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="activity" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVActivity" inverseName="streams" inverseEntity="RVActivity" syncable="YES"/>
-        <relationship name="dataPoints" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVStreamData" inverseName="stream" inverseEntity="RVStreamData" syncable="YES"/>
         <relationship name="effort" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVEffort" inverseName="streams" inverseEntity="RVEffort" syncable="YES"/>
         <relationship name="segment" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVSegment" inverseName="streams" inverseEntity="RVSegment" syncable="YES"/>
-    </entity>
-    <entity name="RVStreamData" representedClassName="RVStreamData" syncable="YES">
-        <attribute name="dataPoint" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="index" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <relationship name="stream" maxCount="1" deletionRule="Nullify" destinationEntity="RVStream" inverseName="dataPoints" inverseEntity="RVStream" syncable="YES"/>
     </entity>
     <elements>
         <element name="RVActivity" positionX="-613.76953125" positionY="202.71875" width="128" height="525"/>
@@ -118,6 +113,5 @@
         <element name="RVPhotoAsset" positionX="-431.28515625" positionY="198.04296875" width="128" height="135"/>
         <element name="RVSegment" positionX="38.171875" positionY="232.7578125" width="128" height="360"/>
         <element name="RVStream" positionX="33.37890625" positionY="704.015625" width="128" height="165"/>
-        <element name="RVStreamData" positionX="260.0625" positionY="716.359375" width="128" height="90"/>
     </elements>
 </model>

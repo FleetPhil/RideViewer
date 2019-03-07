@@ -18,7 +18,8 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 	
 	// Outlets
 	@IBOutlet weak var tableView: RVTableView!
-	
+	var tableDataIsComplete = true
+
 	// Properties
 	private var filters : [ActivityFilter]!
 	private var sortKey : ActivitySort!

@@ -40,7 +40,7 @@ protocol TableViewCompatibleCell {
 		case .undefined: 	return UIColor.red
 		case .meta:			return UIColor.darkGray
 		case .summary: 		return UIColor.blue
-		case .detailed:		return UIColor.green
+		case .detailed:		return UIColor.black
 		}
 	}
 }

@@ -17,6 +17,12 @@ protocol StreamOwner where Self : NSManagedObject {
 	var streams: Set<RVStream> { get }
 }
 
+extension StreamOwner {
+	func hasStreamOfType(_ type : ViewProfileDataType) -> Bool {
+		return self.streams.filter({ $0.type == type.stravaValue }).first != nil
+	}
+}
+
 // Data structures for the view
 enum ViewProfileDataType : String {
 	case altitude
@@ -69,12 +75,18 @@ struct ViewProfileData {
 	func dataSetOfType(_ dataType : ViewProfileDataType) -> ViewProfileDataSet? {
 		return self.profileDataSets.filter({ $0.profileDataType == dataType }).first
 	}
+	
+	var dataSetCount : Int {
+		return profileDataSets.count
+	}
 }
 
 class RVRouteProfileViewController: UIViewController {
 	
 	// View that is managed by this controller
 	@IBOutlet weak var routeView: RVRouteProfileView!
+	@IBOutlet weak var noDataLabel: UILabel!
+	@IBOutlet weak var waitingLabel: UILabel!
 	
 	// Vertical axis labels
 	@IBOutlet weak var vert0Label: UILabel!
@@ -103,21 +115,26 @@ class RVRouteProfileViewController: UIViewController {
 			var profileData = ViewProfileData(handler: nil)
 			
 			let streams = asyncActivity.streams.map { $0.type! }
-			appLog.debug("Streams are \(streams)")
+			appLog.verbose("Streams are \(streams)")
 
-			if let dataSet = self?.profileDataSet(forOwner: asyncActivity, ofType: profileType) {
-				profileData.addDataSet(dataSet)
-			} else {
-				appLog.debug("Failed to find data stream type \(profileType)")
+			if let dataSet = (asyncActivity.streams.filter { $0.type == profileType.stravaValue }).first {
+				profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDataPoints: dataSet.dataPoints))
 			}
 			// Always include distance set
-			if let distanceDataSet = self?.profileDataSet(forOwner: asyncActivity, ofType: .distance) {
-				profileData.addDataSet(distanceDataSet)
+			if let dataSet = (asyncActivity.streams.filter { $0.type == ViewProfileDataType.distance.stravaValue }).first {
+				profileData.addDataSet(ViewProfileDataSet(profileDataType: .distance, profileDataPoints: dataSet.dataPoints))
 			}
 			
 			DispatchQueue.main.async {
-				self?.routeView.profileData = profileData
-				self?.setAxisLabelsWithData(profileData, forType: ViewProfileDataType.altitude)
+				if profileData.dataSetCount == 2 {
+					self?.noDataLabel.isHidden = true
+					self?.waitingLabel.isHidden = true
+					self?.routeView.profileData = profileData
+					self?.setAxisLabelsWithData(profileData, forType: ViewProfileDataType.altitude)
+				} else {
+					self?.waitingLabel.isHidden = true
+					self?.noDataLabel.isHidden = false
+				}
 			}
 		}
 	}
@@ -142,18 +159,5 @@ class RVRouteProfileViewController: UIViewController {
 		vert0Label.text			= minValue.fixedFraction(digits: 0)
 		vert50Label.text		= ((maxValue-minValue)*0.5 + minValue).fixedFraction(digits: 0)
 		vert100Label.text		= ((maxValue-minValue) + minValue).fixedFraction(digits: 0)
-	}
-	
-	private func profileDataSet<S>(forOwner owner : S, ofType: ViewProfileDataType) -> ViewProfileDataSet? where S : StreamOwner {
-		let startTime = Date()
-		if let stream = (owner.streams.filter { $0.type == ofType.stravaValue }).first {
-			let dataStream = stream.dataPoints.sorted(by: { $0.index < $1.index }).map({ $0.dataPoint })
-			let dataSet = ViewProfileDataSet(profileDataType: ViewProfileDataType(rawValue: ofType.rawValue)!, profileDataPoints: dataStream )
-			let endTime = Date()
-			appLog.debug("Time: \(endTime.timeIntervalSince(startTime)) for \(dataSet.profileDataPoints.count) points")
-			return dataSet
-		} else {
-			return nil
-		}
 	}
 }

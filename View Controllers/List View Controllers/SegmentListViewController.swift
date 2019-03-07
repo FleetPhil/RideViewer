@@ -16,6 +16,7 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 	private lazy var dataManager = DataManager<RVSegment>()
 	
 	@IBOutlet weak var tableView: RVTableView!
+	var tableDataIsComplete = false
 	
 	@IBOutlet weak var sortButton: UIBarButtonItem!
 	

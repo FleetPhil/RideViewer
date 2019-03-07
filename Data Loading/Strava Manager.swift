@@ -119,7 +119,7 @@ class StravaManager : TokenDelegate {
                 return
             }
 			
-			//			appLog.debug("Retrieved activity details for \(activity.name ?? "None?")")
+			appLog.verbose("Retrieved activity details for \(activity.name ?? "None?")")
 			let _ = RVActivity.create(activity: activity, context: context)
 			completionHandler(true)
 		}, failure: { (error: NSError) in
@@ -128,37 +128,30 @@ class StravaManager : TokenDelegate {
 	}
 	
 	// TODO: only call completion handler when all data is retrieved
-    func getStarredSegments (page : Int, context : NSManagedObjectContext, completionHandler : @escaping (()->Void)) {
-        let params = ["per_page":5, "page":page]
+    func getStarredSegments (page : Int, context : NSManagedObjectContext, completionHandler : @escaping (([RVSegment])->Void)) {
+        let params = ["per_page":100, "page":page]
+		var starredSegments: [RVSegment] = []
         
         try? StravaClient.sharedInstance.request(Router.segmentsStarred(params: params), result: { [weak self] (segments: [Segment]?) in
             guard let `self` = self, let segments = segments else { return }
             
-            appLog.debug("Retrieved \(segments.count) segments for page \(page)")
+            appLog.debug("Retrieved \(segments.count) starred segments for page \(page)")
             if segments.count > 0 {
                 segments.forEach {
                     let createdSegment = RVSegment.create(segment: $0, context: context)
-                    if !createdSegment.allEfforts {
-                        self.effortsForSegment(createdSegment, page: 1, context: context, completionHandler: { success in
-							if success {
-								appLog.debug("Got all efforts for \(createdSegment.name!)")
-							} else {
-								appLog.debug("Failed to get efforts for \(createdSegment.name!)")
-							}
-                        })
-                    }
 					if createdSegment.streams.count == 0 {
 						self.streamsForSegment(createdSegment, context: context, completionHandler: { success in
-							appLog.debug("Got \(createdSegment.streams.count) streams for \(createdSegment.name!)")
+							appLog.verbose("Got \(createdSegment.streams.count) streams for \(createdSegment.name!)")
 						})
 					}
+					starredSegments.append(createdSegment)
                 }
             }
             if segments.count == 100 {
                 self.getStarredSegments(page: page + 1, context: context, completionHandler: completionHandler)        // get next page
             } else {
                 // No more segments to load
-                completionHandler()
+                completionHandler(starredSegments)
             }
         }, failure: { (error: NSError) in
             debugPrint(error)
@@ -200,11 +193,8 @@ class StravaManager : TokenDelegate {
 						let _ = RVEffort.create(effort: $0, forActivity: RVActivity.get(identifier: activityID, inContext: context)!, context: context)
 					}
 				}
-                appLog.debug("\(efforts.count) efforts for \(efforts.first!.segment!.name!) on page \(page)")
+                appLog.verbose("\(efforts.count) efforts for \(efforts.first!.segment!.name!) on page \(page)")
                 segment.allEfforts = true
-				completionHandler(true)
-
-//				self.effortsForSegment(segment, page: page + 1, context: context, completionHandler: completionHandler)
 			} else {			// Finished
 				// We have all current efforts for this segment
 				segment.allEfforts = true
@@ -216,7 +206,10 @@ class StravaManager : TokenDelegate {
 	}
 	
 	func streamsForActivity(_ activity : RVActivity, context: NSManagedObjectContext, completionHandler: @escaping ((Bool)->Void)) {
-		guard token != nil else { return }
+		guard token != nil else {
+			completionHandler(false)
+			return			
+		}
 		
 		try? StravaClient.sharedInstance.request(Router.activityStreams(id: Router.Id(activity.id), types: streamTypesForActivity), result: { (streams : [StravaSwift.Stream]?) in
 			streams?.forEach { _ = RVStream.createForActivity(activity, stream: $0, context: context) }

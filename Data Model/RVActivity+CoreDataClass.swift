@@ -191,6 +191,7 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
             return ""
         }
     }
+	
 }
 
 // Extension to support generic table view
@@ -257,9 +258,7 @@ class ActivityListTableViewCell : UITableViewCell, TableViewCompatibleCell {
     func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell {
         if let activity = withModel as? RVActivity {
 			
-            let effortCount = activity.efforts.count
-            
-            nameLabel.text		= "\(effortCount) " + activity.type.emoji + " " + activity.name + (activity.streams.count > 0 ? " 🔹" : "")
+            nameLabel.text		= activity.type.emoji + " " + activity.name
             nameLabel.textColor	= activity.resourceState.resourceStateColour
 			
 			photoIcon.text		= activity.photos.count > 0 ? "\u{1F4F7}" : ""
