@@ -23,7 +23,6 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 	// Properties
 	private var filters : [ActivityFilter]!
 	private var sortKey : ActivitySort!
-	private var sortOrderAscending : Bool!
 	private var popupController : UIViewController?
 
 	// MARK: Lifecycle
@@ -41,7 +40,6 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 		
 		self.filters = [.cycleRide, .longRide]
 		self.sortKey = .date
-		self.sortOrderAscending = false
         setDataManager()
 
 		if let activities : [RVActivity] = CoreDataManager.sharedManager().viewContext.fetchObjects() {
@@ -65,18 +63,8 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
     func setDataManager() {
 		guard sortKey != nil, filters != nil else { return }
 		dataManager.filterPredicate = ActivityFilter.predicateForFilters(self.filters)
-		dataManager.sortDescriptor = NSSortDescriptor(key: self.sortKey.rawValue, ascending: self.sortOrderAscending)
+		dataManager.sortDescriptor = NSSortDescriptor(key: self.sortKey.rawValue, ascending: self.sortKey.defaultAscending)
 		_ = dataManager.fetchObjects()
-	}
-	
-	func predicateForFilters(_ filters : [ActivityFilter]) -> NSCompoundPredicate {
-		var predicate = NSCompoundPredicate()
-		let filterGroups = Dictionary(grouping: filters, by: { $0.filterGroup })
-		for group in filterGroups {
-			let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: group.value.map({ $0.predicateForFilterOption() } ))
-			predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, groupPredicate])
-		}
-		return predicate
 	}
 
 	// MARK: Settings changed
@@ -109,7 +97,6 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 		popupController?.dismiss(animated: true, completion: nil)
 		if let newSort = newOrder?.first {
 			self.sortKey = newSort
-			self.sortOrderAscending = newSort.defaultAscending
 			setDataManager()
 			tableView.reloadData()
 		}

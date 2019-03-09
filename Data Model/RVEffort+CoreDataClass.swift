@@ -48,6 +48,13 @@ enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
         case .averageWatts:     return false
         }
     }
+	
+	static var sortOptionsForActivity : [EffortSort] {
+		return EffortSort.allCases
+	}
+	static var sortOptionsForSegment : [EffortSort] {
+		return [.speed, .movingTime, .elapsedTime, .date, .maxHR, .averageWatts]
+	}
 }
 
 enum EffortFilter : String, PopupSelectable, CaseIterable {
@@ -158,6 +165,15 @@ public class RVEffort: NSManagedObject, RouteViewCompatible {
         }
         return filterPredicate
     }
+
+	class func filterPredicate(segment : RVSegment, range : RouteIndexRange?) -> NSCompoundPredicate {
+		var filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "segment.id == %@", argumentArray: [segment.id])])
+		if let routeRange = range {     // Only show efforts in specified index range
+			let rangePredicate = NSPredicate(format: "startIndex >= %d && startIndex <= %d", argumentArray: [routeRange.from, routeRange.to])
+			filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [filterPredicate, rangePredicate])
+		}
+		return filterPredicate
+	}
 
 	// Route view compatible
 	var startLocation: CLLocationCoordinate2D {

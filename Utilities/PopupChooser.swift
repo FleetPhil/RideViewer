@@ -45,6 +45,11 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
 	public var selectedItems : [T] = []
 	
 	func showSelectionPopup(items : [T], sourceView : UIView, updateHandler : @escaping ([T]?) -> Void) -> UIViewController? {
+		// If selection is empty do nothing
+		if items.count == 0 {
+			return nil
+		}
+		
 		itemsForSelection = Dictionary(grouping: items, by: { $0.filterGroup })	// Section (aka group) : Items
 		var i = 0
 		for key in itemsForSelection.keys {

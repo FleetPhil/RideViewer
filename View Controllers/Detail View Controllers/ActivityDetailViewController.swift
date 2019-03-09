@@ -32,6 +32,8 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	// MARK: Model for effort table
 	private lazy var dataManager = DataManager<RVEffort>()
 	var selectedEffort : RVEffort? = nil
+	private var effortFilters : [EffortFilter] = EffortFilter.allCases
+	private var effortSortKey : EffortSort = .sequence
 	
 	@IBOutlet weak var mapView: RideMapView! {
 		didSet {
@@ -142,13 +144,6 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		
 		// Map view
 		mapView!.addRoute(activity, type: .mainActivity)
-		
-//		let predicate = RVEffort.filterPredicate(activity: activity, range: nil)
-//		let filteredEfforts = activity.efforts.filter { predicate.evaluate(with: $0) }
-//		filteredEfforts.forEach({
-//			mapView!.addRoute($0, type: .backgroundSegment)
-//		})
-
 		mapView!.setMapRegion()
 		
 		// Get photos for this activity
@@ -305,14 +300,19 @@ extension ActivityDetailViewController : SortFilterDelegate {
 		tableView.tag = EffortTableViewType.effortsForActivity.rawValue
 		
 		dataManager.tableView = tableView
-		
-		dataManager.sortDescriptor = NSSortDescriptor(key: EffortSort.sequence.rawValue, ascending: EffortSort.sequence.defaultAscending)
-		dataManager.filterPredicate = RVEffort.filterPredicate(activity: activity, range: nil)
-		
-		_ = dataManager.fetchObjects()
+
+		setDataManager()
 		tableView.reloadData()
 		self.selectedEffort = nil
 	}
+	
+	func setDataManager() {
+		dataManager.sortDescriptor = NSSortDescriptor(key: self.effortSortKey.rawValue, ascending: self.effortSortKey.defaultAscending)
+		let activityPredicate = NSPredicate(format: "activity.id == %@", argumentArray: [activity.id])
+		dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [EffortFilter.predicateForFilters(self.effortFilters), activityPredicate])
+		_ = dataManager.fetchObjects()
+	}
+
 	
 	func tableRowSelectedAtIndex(_ index: IndexPath) {
 		guard let effort = dataManager.objectAtIndexPath(index) else { return }
@@ -339,7 +339,7 @@ extension ActivityDetailViewController : SortFilterDelegate {
 		// Popup the list of fields to select sort order
 		let chooser = PopupupChooser<EffortSort>()
 		chooser.title = "Sort order"
-		popupController	= chooser.showSelectionPopup(items: EffortSort.allCases, sourceView: sender, updateHandler: newSortOrder)
+		popupController	= chooser.showSelectionPopup(items: EffortSort.sortOptionsForActivity, sourceView: sender, updateHandler: newSortOrder)
 		if popupController != nil {
 			present(popupController!, animated: true, completion: nil)
 		}
@@ -349,7 +349,7 @@ extension ActivityDetailViewController : SortFilterDelegate {
 		let chooser = PopupupChooser<EffortFilter>()
 		chooser.title = "Include"
 		chooser.multipleSelection = true
-		chooser.selectedItems = EffortFilter.allCases		// self.filters
+		chooser.selectedItems = self.effortFilters		// self.filters
 		popupController = chooser.showSelectionPopup(items: EffortFilter.allCases, sourceView: sender, updateHandler: newFilters)
 		if popupController != nil {
 			present(popupController!, animated: true, completion: nil)
@@ -363,19 +363,17 @@ extension ActivityDetailViewController : SortFilterDelegate {
 	private func newFilters(_ newFilters : [EffortFilter]?)  {
 		popupController?.dismiss(animated: true, completion: nil)
 		if let selectedFilters = newFilters {
-			dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [RVEffort.filterPredicate(activity: activity, range: nil),
-																						  EffortFilter.predicateForFilters(selectedFilters)])
-			_ = dataManager.fetchObjects()
+			self.effortFilters = selectedFilters
+			setDataManager()
 			tableView.reloadData()
 		}
 	}
-	
-	
+
 	private func newSortOrder(newOrder : [EffortSort]?) {
 		popupController?.dismiss(animated: true, completion: nil)
 		if let newSort = newOrder?.first {
-			dataManager.sortDescriptor = NSSortDescriptor(key: newSort.rawValue, ascending: newSort.defaultAscending)
-			_ = dataManager.fetchObjects()
+			self.effortSortKey = newSort
+			setDataManager()
 			tableView.reloadData()
 		}
 	}
