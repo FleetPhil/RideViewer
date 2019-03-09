@@ -169,7 +169,7 @@ class SegmentListTableViewCell : UITableViewCell, TableViewCompatibleCell {
 	func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell {
 		if let segment = withModel as? RVSegment {
 //			appLog.debug("Segment state is \(segment.resourceState.rawValue)")
-            
+			
             let segmentStarText = segment.starred ? "★" : "☆"
 			
             nameLabel.text		= segmentStarText + " " + "\(segment.efforts.count) " + segment.name!

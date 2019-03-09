@@ -19,7 +19,7 @@ protocol TableViewCompatibleCell {
     func configure(withModel : TableViewCompatibleEntity) -> TableViewCompatibleCell
 }
 
-@objc public enum RVResourceState : Int16 {
+@objc public enum RVResourceState : Int16, CaseIterable {
 	case undefined 	= 0
 	case meta 		= 1
 	case summary	= 2
@@ -42,5 +42,15 @@ protocol TableViewCompatibleCell {
 		case .summary: 		return UIColor.blue
 		case .detailed:		return UIColor.black
 		}
+	}
+	
+	var resourceStateName : String {
+		switch self {
+		case .undefined: 	return "Undefined"
+		case .meta:			return "Meta"
+		case .summary: 		return "Summary"
+		case .detailed:		return "Detailed"
+		}
+
 	}
 }

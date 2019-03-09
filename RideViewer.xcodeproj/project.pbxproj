@@ -29,12 +29,14 @@
 		F42ECF1021CFEBC20096F83B /* Strava Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECF0F21CFEBC20096F83B /* Strava Manager.swift */; };
 		F44EA67F21F23ABA00BBABA0 /* PhotoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F44EA67D21F23ABA00BBABA0 /* PhotoView.xib */; };
 		F44EA68021F23ABA00BBABA0 /* ImageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44EA67E21F23ABA00BBABA0 /* ImageScrollView.swift */; };
+		F4551A0722328386004F0767 /* MapKit extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4551A0622328386004F0767 /* MapKit extensions.swift */; };
 		F461168F21E0A4BF00E2693C /* PopupChooser.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F461168E21E0A4BF00E2693C /* PopupChooser.storyboard */; };
 		F4611B9D21F37FE800EDFC13 /* ScanPhotosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4611B9C21F37FE800EDFC13 /* ScanPhotosViewController.swift */; };
 		F4611B9F21F3935C00EDFC13 /* General Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4611B9E21F3935C00EDFC13 /* General Utilities.swift */; };
 		F46C126D21F200F7007438DB /* RVPhotoAsset+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C126B21F200F7007438DB /* RVPhotoAsset+CoreDataClass.swift */; };
 		F46C126E21F200F7007438DB /* RVPhotoAsset+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C126C21F200F7007438DB /* RVPhotoAsset+CoreDataProperties.swift */; };
 		F475B72721D232BC0028F2AF /* StravaSwift Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F475B72621D232BC0028F2AF /* StravaSwift Extensions.swift */; };
+		F47B92632232CF0000B83303 /* RVSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F47B92622232CF0000B83303 /* RVSplitViewController.swift */; };
 		F49E07DC21E1244000A0D678 /* SegmentDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49E07DB21E1244000A0D678 /* SegmentDetailViewController.swift */; };
 		F4AAD80B21DCF788006ED5DD /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AAD80A21DCF788006ED5DD /* SettingsTableViewController.swift */; };
 		F4AAD80D21DD251C006ED5DD /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AAD80C21DD251C006ED5DD /* Settings.swift */; };
@@ -84,12 +86,14 @@
 		F42ECF0F21CFEBC20096F83B /* Strava Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Strava Manager.swift"; sourceTree = "<group>"; };
 		F44EA67D21F23ABA00BBABA0 /* PhotoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoView.xib; sourceTree = "<group>"; };
 		F44EA67E21F23ABA00BBABA0 /* ImageScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageScrollView.swift; sourceTree = "<group>"; };
+		F4551A0622328386004F0767 /* MapKit extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MapKit extensions.swift"; path = "Display Extensions/MapKit extensions.swift"; sourceTree = SOURCE_ROOT; };
 		F461168E21E0A4BF00E2693C /* PopupChooser.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PopupChooser.storyboard; sourceTree = "<group>"; };
 		F4611B9C21F37FE800EDFC13 /* ScanPhotosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ScanPhotosViewController.swift; path = "Detail View Controllers/ScanPhotosViewController.swift"; sourceTree = "<group>"; };
 		F4611B9E21F3935C00EDFC13 /* General Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "General Utilities.swift"; sourceTree = "<group>"; };
 		F46C126B21F200F7007438DB /* RVPhotoAsset+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVPhotoAsset+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F46C126C21F200F7007438DB /* RVPhotoAsset+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVPhotoAsset+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F475B72621D232BC0028F2AF /* StravaSwift Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StravaSwift Extensions.swift"; sourceTree = "<group>"; };
+		F47B92622232CF0000B83303 /* RVSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVSplitViewController.swift; sourceTree = "<group>"; };
 		F49E07DB21E1244000A0D678 /* SegmentDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SegmentDetailViewController.swift; path = "Detail View Controllers/SegmentDetailViewController.swift"; sourceTree = "<group>"; };
 		F4AAD80A21DCF788006ED5DD /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		F4AAD80C21DD251C006ED5DD /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -158,6 +162,7 @@
 			isa = PBXGroup;
 			children = (
 				F41C7A3021D12EFA003A5C31 /* Display Extensions.swift */,
+				F4551A0622328386004F0767 /* MapKit extensions.swift */,
 			);
 			name = "Display Extensions";
 			path = "New Group";
@@ -292,6 +297,7 @@
 		F4FD52E32229AB5A0005CFC9 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				F47B92622232CF0000B83303 /* RVSplitViewController.swift */,
 				F4FD52E42229AB850005CFC9 /* RVRouteProfileViewController.swift */,
 			);
 			name = "View Controllers";
@@ -456,9 +462,11 @@
 				F4C113D521D6790B00188A30 /* RVSegment+CoreDataProperties.swift in Sources */,
 				F4ED1BE22208B02A00821D76 /* RVRouteProfileView.swift in Sources */,
 				FA3F242C21DA7AC80048A828 /* RVMap+CoreDataProperties.swift in Sources */,
+				F47B92632232CF0000B83303 /* RVSplitViewController.swift in Sources */,
 				F4611B9D21F37FE800EDFC13 /* ScanPhotosViewController.swift in Sources */,
 				F42ECEFF21CFA6790096F83B /* RVActivity+CoreDataProperties.swift in Sources */,
 				F429A6F621D7ECF500A053DE /* SegmentListViewController.swift in Sources */,
+				F4551A0722328386004F0767 /* MapKit extensions.swift in Sources */,
 				F42ECF0921CFD5FF0096F83B /* DataManager.swift in Sources */,
 				F42ECEE421CF91130096F83B /* AppDelegate.swift in Sources */,
 				F42ECF1021CFEBC20096F83B /* Strava Manager.swift in Sources */,

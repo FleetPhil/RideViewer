@@ -139,6 +139,12 @@ class StravaManager : TokenDelegate {
             if segments.count > 0 {
                 segments.forEach {
                     let createdSegment = RVSegment.create(segment: $0, context: context)
+					if createdSegment.resourceState != .detailed {
+						self.getSegment(createdSegment, context: context, completionHandler: { success in
+							appLog.debug("Got detailed: \(createdSegment.name!)")
+						})
+					}
+					
 					if createdSegment.streams.count == 0 {
 						self.streamsForSegment(createdSegment, context: context, completionHandler: { success in
 							appLog.verbose("Got \(createdSegment.streams.count) streams for \(createdSegment.name!)")

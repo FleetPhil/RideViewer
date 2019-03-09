@@ -17,12 +17,13 @@ class SegmentDetailViewController: UIViewController {
     
     // MARK: Model for effort table
     private lazy var dataManager = DataManager<RVEffort>()
-    
+	
+	@IBOutlet weak var distanceLabel: UILabel!
+	@IBOutlet weak var elevationLabel: UILabel!
+	
     @IBOutlet weak var tableView: RVTableView!
 	var tableDataIsComplete = false
 	
-    @IBOutlet weak var effortsLabel: UILabel!
-    
     @IBOutlet weak var mapView: RideMapView! {
         didSet {
             mapView.mapType = .standard
@@ -45,10 +46,12 @@ class SegmentDetailViewController: UIViewController {
     }
     
     func updateView() {
-        self.title 				= segment.name
+		
+		let segmentStarText = segment.starred ? "★" : "☆"
+        self.title 				= segmentStarText + " " + segment.name!
         
-        self.effortsLabel.text	= "\(tableView.numberOfRows(inSection: 0)) Efforts"
-        self.effortsLabel.textColor = segment.resourceState.resourceStateColour
+		distanceLabel.text = segment.distance.distanceDisplayString
+		elevationLabel.text	= " ↗️ " + segment.elevationGain.heightDisplayString + " " + segment.averageGrade.fixedFraction(digits: 1) + "%"
 		
 		// Update map
         if segment.map != nil {
@@ -59,7 +62,9 @@ class SegmentDetailViewController: UIViewController {
                 guard self != nil else { return }
                 if success {
                     self!.mapView!.addRoute(self!.segment, type: .highlightSegment)
-                }
+				} else {		// If route not found will zoom to start/end annotations
+					self?.mapView.addRoute(self!.segment, type: .highlightSegment)
+				}
             })
         }
         
@@ -69,7 +74,6 @@ class SegmentDetailViewController: UIViewController {
 		} else {
             StravaManager.sharedInstance.effortsForSegment(self.segment, page: 1, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [ weak self ] success in
 				if success {
-                	self?.effortsLabel.text    = "\(self?.tableView.numberOfRows(inSection: 0) ?? 0) Efforts"
 					self?.tableDataIsComplete = true
 				}
             })
@@ -119,30 +123,29 @@ extension SegmentDetailViewController : SortFilterDelegate {
         let settingsPredicate = Settings.sharedInstance.segmentSettingsPredicate
         let filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "segment.id == %@", argumentArray: [segment.id]), settingsPredicate])
         dataManager.filterPredicate = filterPredicate
-        let efforts = dataManager.fetchObjects()
-        self.effortsLabel.text = "\(efforts.count) Efforts"
+        let _ = dataManager.fetchObjects()
     }
     
     func tableRowDeselectedAtIndex(_ index: IndexPath) {
         let activity = dataManager.objectAtIndexPath(index)!.activity
-        self.mapView.setTypeForRoute(activity, type: .backgroundSegment)
+        self.mapView.setTypeForRoute(activity, type: nil)
     }
     
     func tableRowSelectedAtIndex(_ index: IndexPath) {
         let effort = dataManager.objectAtIndexPath(index)!
         self.mapView.addRoute(effort.activity, type: .highlightSegment)
         
-        setViewforEffort(effort)
-        if effort.activity.streams.count == 0 {
-            // Get streams
-            StravaManager.sharedInstance.streamsForActivity(effort.activity, context: effort.managedObjectContext!, completionHandler: { [ weak self] success in
-                if success {
-                    self?.setViewforEffort(effort)
-                } else {
-                    appLog.debug("Failed to get stream data for activity \(effort.activity) ")
-                }
-            })
-        }
+//        setViewforEffort(effort)
+//        if effort.activity.streams.count == 0 {
+//            // Get streams
+//            StravaManager.sharedInstance.streamsForActivity(effort.activity, context: effort.managedObjectContext!, completionHandler: { [ weak self] success in
+//                if success {
+//                    self?.setViewforEffort(effort)
+//                } else {
+//                    appLog.verbose("Failed to get stream data for activity \(effort.activity) ")
+//                }
+//            })
+//        }
         
         //		performSegue(withIdentifier: "SegmentEffortListToSegmentDetail", sender: self)
     }

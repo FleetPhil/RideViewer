@@ -129,6 +129,8 @@ class RVRouteProfileView : UIView {
 		// TODO: draw multiple data sets
 		guard let dataSet = profileData?.dataSetOfType(.altitude) else { return }
 		
+		self.backgroundColor = UIColor.white
+		
 		if let path = createHighlight() {
 			UIColor.lightGray.setFill()
 			path.fill()

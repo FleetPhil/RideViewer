@@ -41,7 +41,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	}
 	
 	// MARK: Profile View and data
-	weak var routeViewController: RVRouteProfileViewController!
+	var routeViewController: RVRouteProfileViewController!
 
 	// MARK: Photos
 	private var photoAssets : [PHAsset] = []
@@ -143,11 +143,12 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		// Map view
 		mapView!.addRoute(activity, type: .mainActivity)
 		
-		let predicate = RVEffort.filterPredicate(activity: activity, range: nil)
-		let filteredEfforts = activity.efforts.filter { predicate.evaluate(with: $0) }
-		filteredEfforts.forEach({
-			mapView!.addRoute($0, type: .backgroundSegment)
-		})
+//		let predicate = RVEffort.filterPredicate(activity: activity, range: nil)
+//		let filteredEfforts = activity.efforts.filter { predicate.evaluate(with: $0) }
+//		filteredEfforts.forEach({
+//			mapView!.addRoute($0, type: .backgroundSegment)
+//		})
+
 		mapView!.setMapRegion()
 		
 		// Get photos for this activity
@@ -317,18 +318,17 @@ extension ActivityDetailViewController : SortFilterDelegate {
 		guard let effort = dataManager.objectAtIndexPath(index) else { return }
 		self.selectedEffort = effort
 		
-		mapView.setTypeForRoute(effort, type: .highlightSegment)
-		
-//		routeView.profileData?.highlightRange = effort.indexRange
+		mapView.addRoute(effort, type: .highlightSegment)
+		mapView.zoomToRoute(effort)
+		routeViewController.setHighLightRange(effort.indexRange)
 	}
 	
 	func tableRowDeselectedAtIndex(_ index : IndexPath) {
 		guard let effort = dataManager.objectAtIndexPath(index) else { return }
 		self.selectedEffort = nil
 		
-		mapView.setTypeForRoute(effort, type: .backgroundSegment)
-		
-//		routeView.profileData?.highlightRange = nil
+		mapView.setTypeForRoute(effort, type: nil)
+		routeViewController.setHighLightRange(nil)
 	}
 	
 	func didScrollToVisiblePaths(_ paths : [IndexPath]?) {

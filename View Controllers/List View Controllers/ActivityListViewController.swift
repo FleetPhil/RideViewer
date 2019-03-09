@@ -53,10 +53,10 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 		}
 	}
 	
-	override func viewWillAppear(_ animated: Bool) {
-		// Select the first row if no selected row and activate the detail view
-		performSegue(withIdentifier: "ActivityListToActivityDetail", sender: self)
-	}
+//	override func viewWillAppear(_ animated: Bool) {
+//		// Select the first row if no selected row and activate the detail view
+//		performSegue(withIdentifier: "ActivityListToActivityDetail", sender: self)
+//	}
 	
 	@IBAction func doneButtonPressed(_ sender: UIBarButtonItem) {
 		self.presentingViewController?.dismiss(animated: true, completion: nil)

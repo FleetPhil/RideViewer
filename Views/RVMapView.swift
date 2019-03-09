@@ -9,10 +9,13 @@
 import Foundation
 import MapKit
 
+
+
 // Route objects: RideRoute, RouteEndPoint, RoutePath
 fileprivate class RideRoute {
+	
 	var type: RouteViewType
-	fileprivate weak var route : RouteViewCompatible?
+	fileprivate var route : RouteViewCompatible
 	fileprivate var endPoints : [RouteEnd] = []
 	fileprivate var path : RoutePath?
 	
@@ -28,12 +31,13 @@ fileprivate class RideRoute {
 	var finishPoint : RouteEnd { return endPoints[1] }
 }
 
+
 fileprivate class RoutePath : MKPolyline {
 	
 	weak var rideRoute : RideRoute?
 	
 	convenience init?(rideRoute : RideRoute) {
-        if let locations = rideRoute.route?.coordinates {
+        if let locations = rideRoute.route.coordinates {
 			self.init(coordinates: UnsafePointer(locations), count: locations.count)
 			self.rideRoute = rideRoute
 		} else {
@@ -86,8 +90,8 @@ public enum RouteViewType {
 	}
 	var lineWidth : CGFloat {
 		switch self {
-		case .mainActivity, .activity, .backgroundSegment:     return 3
-		case .highlightSegment:                 return 5
+		case .mainActivity, .activity, .backgroundSegment:     return 2
+		case .highlightSegment:                 return 2
 		}
 	}
 	
@@ -116,7 +120,7 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 	
 	public weak var viewDelegate : RideMapViewDelegate?
 	
-	private var routes : [RideRoute] = []
+	private var rideRoutes : [RideRoute] = []
 	private let inset : Double = 200
 	
 	required init?(coder aDecoder: NSCoder) {
@@ -129,11 +133,13 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 	// Public functions
 	func addRoute(_ route : RouteViewCompatible, type : RouteViewType) {
 		let rideRoute = RideRoute(route: route, type: type)
-		self.routes.append(rideRoute)
+		self.rideRoutes.append(rideRoute)
 		
 		// Add start & finish annotations for this route
 		self.addAnnotation(rideRoute.startPoint)
-		self.addAnnotation(rideRoute.finishPoint)
+		if type != .activity {
+			self.addAnnotation(rideRoute.finishPoint)
+		}
 		
 		if type != .backgroundSegment {
 			if let path = rideRoute.path {
@@ -144,25 +150,39 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 		setNeedsDisplay()
 	}
 	
-	func setTypeForRoute(_ route : RouteViewCompatible, type : RouteViewType) {
-		guard let thisRoute = self.routes.filter({ $0.route === route }).first else {
+	func setTypeForRoute(_ route : RouteViewCompatible, type : RouteViewType?) {
+		guard let thisRouteIndex = rideRoutes.firstIndex(where: { $0.route.isEqual(to: route) }) else {
 			appLog.error("Unable to find route to update")
 			return
 		}
-		thisRoute.type = type
-		
+
 		// Update the annotations for this route to force redisplay
-		self.removeAnnotation(thisRoute.startPoint)
-		self.removeAnnotation(thisRoute.finishPoint)
+		self.removeAnnotation(rideRoutes[thisRouteIndex].startPoint)
+		self.removeAnnotation(rideRoutes[thisRouteIndex].finishPoint)
 		
-		self.addAnnotation(thisRoute.startPoint)
-		self.addAnnotation(thisRoute.finishPoint)
+		if type == nil {			// Remove from array
+			if let path = rideRoutes[thisRouteIndex].path {
+				self.removeOverlay(path)
+			}
+			rideRoutes.remove(at: thisRouteIndex)
+		} else {
+			rideRoutes[thisRouteIndex].type = type!
 		
-		//		self.showAnnotations([thisRoute.startPoint, thisRoute.finishPoint], animated: true)
+			self.addAnnotation(rideRoutes[thisRouteIndex].startPoint)
+			self.addAnnotation(rideRoutes[thisRouteIndex].finishPoint)
+		}
 	}
 	
 	func routes(ofTypes: [RouteViewType]) -> [RouteViewCompatible] {
-		return routes.filter({ ofTypes.contains($0.type) }).compactMap({ $0.route })
+		return rideRoutes.filter({ ofTypes.contains($0.type) }).compactMap({ $0.route })
+	}
+	
+	func zoomToRoute(_ route : RouteViewCompatible) {
+		guard let thisRoute = rideRoutes.filter({ $0.route.isEqual(to: route) }).first else {
+			appLog.error("Unable to find route to update")
+			return
+		}
+		self.zoomToAnnotations(thisRoute.endPoints)
 	}
 	
 	func setMapRegion() {
@@ -173,6 +193,7 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 			self.setVisibleMapRect(zoomRect.insetBy(dx: -inset*100, dy: -inset*100), animated: true)
 			return
 		}
+		
 		// Calculate the region that includes all of the routes
 		if self.overlays.count == 1 {
 			self.setRegion(MKCoordinateRegion(self.overlays[0].boundingMapRect.insetBy(dx: inset, dy: inset)), animated: true)
@@ -201,7 +222,7 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 		
 		if annotation.rideRoute?.type == .highlightSegment {
 			view.isHidden = false
-			view.isSelected = true
+//			view.isSelected = true
 			view.clusteringIdentifier = nil
 			return view
 		} else {
@@ -234,13 +255,13 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 	
 	func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
 		if let routeEnd = view.annotation as? RouteEnd, routeEnd.rideRoute?.route != nil {
-			viewDelegate?.didSelectRoute(route: routeEnd.rideRoute!.route!)
+			viewDelegate?.didSelectRoute(route: routeEnd.rideRoute!.route)
 		}
 	}
 	
 	func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
 		if let routeEnd = view.annotation as? RouteEnd, routeEnd.rideRoute?.route != nil {
-			viewDelegate?.didDeselectRoute(route: routeEnd.rideRoute!.route!)
+			viewDelegate?.didDeselectRoute(route: routeEnd.rideRoute!.route)
 		}
 	}
 }

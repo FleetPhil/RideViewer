@@ -84,21 +84,21 @@ struct ViewProfileData {
 class RVRouteProfileViewController: UIViewController {
 	
 	// View that is managed by this controller
-	@IBOutlet weak var routeView: RVRouteProfileView!
-	@IBOutlet weak var noDataLabel: UILabel!
-	@IBOutlet weak var waitingLabel: UILabel!
+	@IBOutlet private weak var routeView: RVRouteProfileView!
+	@IBOutlet private weak var noDataLabel: UILabel!
+	@IBOutlet private weak var waitingLabel: UILabel!
 	
 	// Vertical axis labels
-	@IBOutlet weak var vert0Label: UILabel!
-	@IBOutlet weak var vert50Label: UILabel!
-	@IBOutlet weak var vert100Label: UILabel!
+	@IBOutlet private weak var vert0Label: UILabel!
+	@IBOutlet private weak var vert50Label: UILabel!
+	@IBOutlet private weak var vert100Label: UILabel!
 	
 	// Horizontal Axis Labels
-	@IBOutlet weak var horiz0Label: UILabel!
-	@IBOutlet weak var horiz25Label: UILabel!
-	@IBOutlet weak var horiz50Label: UILabel!
-	@IBOutlet weak var horiz75Label: UILabel!
-	@IBOutlet weak var horiz100Label: UILabel!
+	@IBOutlet private weak var horiz0Label: UILabel!
+	@IBOutlet private weak var horiz25Label: UILabel!
+	@IBOutlet private weak var horiz50Label: UILabel!
+	@IBOutlet private weak var horiz75Label: UILabel!
+	@IBOutlet private weak var horiz100Label: UILabel!
 	
 	// Model - a NSManagedObject that has a 'streams' var
 	var streamOwner : StreamOwner!
@@ -137,6 +137,10 @@ class RVRouteProfileViewController: UIViewController {
 				}
 			}
 		}
+	}
+	
+	func setHighLightRange(_ range : RouteIndexRange?) {
+		routeView.profileData?.highlightRange = range
 	}
 	
 	private func setAxisLabelsWithData(_ profileData : ViewProfileData, forType : ViewProfileDataType) {

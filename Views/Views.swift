@@ -9,14 +9,23 @@
 import Foundation
 import MapKit
 import StravaSwift
+import CoreData
 
 // MARK: RideMapView
 
 // underlying objects
-protocol RouteViewCompatible : class {
+protocol RouteViewCompatible : class  {
 	var startLocation : CLLocationCoordinate2D { get }
 	var endLocation : CLLocationCoordinate2D { get }
 	var coordinates : [CLLocationCoordinate2D]? { get }
+}
+
+extension RouteViewCompatible {
+	func isEqual(to: RouteViewCompatible) -> Bool {
+		let ss = self as! NSObject
+		let tt = to as! NSObject
+		return ss === tt
+	}
 }
 
 extension UIImage {

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class InitialViewController: UIViewController {
 	
@@ -58,9 +59,39 @@ class InitialViewController: UIViewController {
 	}
 	
 	func showStats() {
-		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVActivity.self) ?? -1) activities")
-		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVSegment.self) ?? -1) segments")
-		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVEffort.self) ?? -1) efforts")
+		let activityRequest : NSFetchRequest<RVActivity> = RVActivity.fetchRequest()
+		if let activities = try? CoreDataManager.sharedManager().viewContext.fetch(activityRequest) {
+			var stateCounts = Dictionary(uniqueKeysWithValues: RVResourceState.allCases.map { ($0, 0) } )
+			activities.forEach { activity in
+				stateCounts[activity.resourceState] = stateCounts[activity.resourceState]! + 1
+			}
+			appLog.debug("\(activities.count) activities:")
+			for count in stateCounts {
+				appLog.debug("\(count.key.resourceStateName) : \(count.value)")
+			}
+		}
+		let segmentRequest : NSFetchRequest<RVSegment> = RVSegment.fetchRequest()
+		if let segments = try? CoreDataManager.sharedManager().viewContext.fetch(segmentRequest) {
+			var stateCounts = Dictionary(uniqueKeysWithValues: RVResourceState.allCases.map { ($0, 0) } )
+			segments.forEach { segment in
+				stateCounts[segment.resourceState] = stateCounts[segment.resourceState]! + 1
+			}
+			appLog.debug("\(segments.count) segments:")
+			for count in stateCounts {
+				appLog.debug("\(count.key.resourceStateName) : \(count.value)")
+			}
+		}
+		let effortRequest : NSFetchRequest<RVEffort> = RVEffort.fetchRequest()
+		if let efforts = try? CoreDataManager.sharedManager().viewContext.fetch(effortRequest) {
+			var stateCounts = Dictionary(uniqueKeysWithValues: RVResourceState.allCases.map { ($0, 0) } )
+			efforts.forEach { effort in
+				stateCounts[effort.resourceState] = stateCounts[effort.resourceState]! + 1
+			}
+			appLog.debug("\(efforts.count) efforts:")
+			for count in stateCounts {
+				appLog.debug("\(count.key.resourceStateName) : \(count.value)")
+			}
+		}
 		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVStream.self) ?? -1) streams")
 	}
 	
