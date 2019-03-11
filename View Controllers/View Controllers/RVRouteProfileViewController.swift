@@ -36,8 +36,16 @@ enum ViewProfileDataType : String {
 	}
 }
 
+enum ViewProfileDisplayType {
+	case primary
+	case secondary
+	case axis
+	case background
+}
+
 struct ViewProfileDataSet {
 	var profileDataType : ViewProfileDataType
+	var profileDisplayType : ViewProfileDisplayType
 	var profileDataPoints : [Double]
 
 	func dataPointsInScope(viewRange : RouteIndexRange) -> [(Int, Double)] {
@@ -52,13 +60,15 @@ struct ViewProfileDataSet {
 }
 
 struct ViewProfileData {
+	private(set) var streamOwner : StreamOwner
 	private var profileDataSets: [ViewProfileDataSet]
 	private(set) var fullRange : RouteIndexRange
 	var viewRange : RouteIndexRange
 	var highlightRange: RouteIndexRange?
 	private(set) var rangeChangedHandler: ((RouteIndexRange) -> Void)?
 	
-	init(handler : ((RouteIndexRange) -> Void)? = nil) {
+	init(streamOwner : StreamOwner, handler : ((RouteIndexRange) -> Void)? = nil) {
+		self.streamOwner			= streamOwner
 		self.profileDataSets 		= []
 		self.rangeChangedHandler	= handler
 		self.fullRange				= RouteIndexRange(from: 0, to: 0)
@@ -72,10 +82,13 @@ struct ViewProfileData {
 		self.viewRange				= self.fullRange
 	}
 	
-	func dataSetOfType(_ dataType : ViewProfileDataType) -> ViewProfileDataSet? {
+	func dataSetOfDataType(_ dataType : ViewProfileDataType) -> ViewProfileDataSet? {
 		return self.profileDataSets.filter({ $0.profileDataType == dataType }).first
 	}
-	
+	func dataSetOfDisplayType(_ displayType : ViewProfileDisplayType) -> ViewProfileDataSet? {
+		return self.profileDataSets.filter({ $0.profileDisplayType == displayType }).first
+	}
+
 	var dataSetCount : Int {
 		return profileDataSets.count
 	}
@@ -100,42 +113,49 @@ class RVRouteProfileViewController: UIViewController {
 	@IBOutlet private weak var horiz75Label: UILabel!
 	@IBOutlet private weak var horiz100Label: UILabel!
 	
-	// Model - a NSManagedObject that has a 'streams' var
-	var streamOwner : StreamOwner!
 	var viewRange : RouteIndexRange?
+	
+	// Properties
+	private var profileData : ViewProfileData!
 	
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
-	func setProfile<S> (streamOwner: S, profileType: ViewProfileDataType, range: RouteIndexRange? = nil) where S : StreamOwner {
+	func setPrimaryProfile<S> (streamOwner: S, profileType: ViewProfileDataType, range: RouteIndexRange? = nil) where S : StreamOwner {
 		CoreDataManager.sharedManager().persistentContainer.performBackgroundTask { [weak self] (context) in
 			let asyncActivity = context.object(with: streamOwner.objectID) as! S
 			
-			var profileData = ViewProfileData(handler: nil)
+			self?.profileData = ViewProfileData(streamOwner: streamOwner, handler: nil)
 			
 			let streams = asyncActivity.streams.map { $0.type! }
 			appLog.verbose("Streams are \(streams)")
 
 			if let dataSet = (asyncActivity.streams.filter { $0.type == profileType.stravaValue }).first {
-				profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDataPoints: dataSet.dataPoints))
+				self?.profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .primary, profileDataPoints: dataSet.dataPoints))
 			}
 			// Always include distance set
 			if let dataSet = (asyncActivity.streams.filter { $0.type == ViewProfileDataType.distance.stravaValue }).first {
-				profileData.addDataSet(ViewProfileDataSet(profileDataType: .distance, profileDataPoints: dataSet.dataPoints))
+				self?.profileData.addDataSet(ViewProfileDataSet(profileDataType: .distance, profileDisplayType: .axis, profileDataPoints: dataSet.dataPoints))
 			}
 			
 			DispatchQueue.main.async {
-				if profileData.dataSetCount == 2 {
-					self?.noDataLabel.isHidden = true
-					self?.waitingLabel.isHidden = true
-					self?.routeView.profileData = profileData
-					self?.setAxisLabelsWithData(profileData, forType: ViewProfileDataType.altitude)
+				if let `self` = self, self.profileData.dataSetCount >= 2 {
+					self.noDataLabel.isHidden = true
+					self.waitingLabel.isHidden = true
+					self.routeView.profileData = self.profileData
+					self.setAxisLabelsWithData(self.profileData, forType: profileType)
 				} else {
 					self?.waitingLabel.isHidden = true
 					self?.noDataLabel.isHidden = false
 				}
 			}
+		}
+	}
+	
+	func addSecondaryProfile(profileType: ViewProfileDataType) {
+		if let dataSet = (profileData?.streamOwner.streams.filter { $0.type == profileType.stravaValue })?.first {
+			profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .secondary, profileDataPoints: dataSet.dataPoints))
 		}
 	}
 	
@@ -145,8 +165,8 @@ class RVRouteProfileViewController: UIViewController {
 	
 	private func setAxisLabelsWithData(_ profileData : ViewProfileData, forType : ViewProfileDataType) {
 		// Horizontal axis is distance, vertical is selected data type
-		guard let distanceProfileSet = profileData.dataSetOfType(.distance) else { return }
-		guard let targetProfileSet = profileData.dataSetOfType(forType) else { return }
+		guard let distanceProfileSet = profileData.dataSetOfDisplayType(.axis) else { return }
+		guard let targetProfileSet = profileData.dataSetOfDataType(forType) else { return }
 		
 		let minDistance = distanceProfileSet.dataMin(viewRange: profileData.fullRange)
 		let maxDistance = distanceProfileSet.dataMax(viewRange: profileData.fullRange)
@@ -163,5 +183,10 @@ class RVRouteProfileViewController: UIViewController {
 		vert0Label.text			= minValue.fixedFraction(digits: 0)
 		vert50Label.text		= ((maxValue-minValue)*0.5 + minValue).fixedFraction(digits: 0)
 		vert100Label.text		= ((maxValue-minValue) + minValue).fixedFraction(digits: 0)
+	}
+	
+	override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
+		routeView.setNeedsDisplay()
 	}
 }

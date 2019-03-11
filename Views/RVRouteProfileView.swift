@@ -127,7 +127,7 @@ class RVRouteProfileView : UIView {
 	
 	override func draw(_ rect: CGRect) {
 		// TODO: draw multiple data sets
-		guard let dataSet = profileData?.dataSetOfType(.altitude) else { return }
+		guard let dataSet = profileData?.dataSetOfDisplayType(.primary) else { return }
 		
 		self.backgroundColor = UIColor.white
 		

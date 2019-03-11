@@ -85,7 +85,7 @@ class SegmentDetailViewController: UIViewController {
 		
 		// Get the route altitude profile
 		if segment.hasStreamOfType(.altitude) {
-            routeViewController.setProfile(streamOwner: segment, profileType: .altitude)
+            routeViewController.setPrimaryProfile(streamOwner: segment, profileType: .altitude)
 		} else {
 			appLog.verbose("Getting streams")
 			StravaManager.sharedInstance.streamsForSegment(segment, context: segment.managedObjectContext!, completionHandler: { [weak self] success in
@@ -94,7 +94,7 @@ class SegmentDetailViewController: UIViewController {
 				} else {
 					appLog.verbose("Get streams failed for activity")
 				}
-				self?.routeViewController.setProfile(streamOwner: self!.segment, profileType: .altitude)
+				self?.routeViewController.setPrimaryProfile(streamOwner: self!.segment, profileType: .altitude)
 			})
 		}
     }
@@ -103,6 +103,12 @@ class SegmentDetailViewController: UIViewController {
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if let destination = segue.destination as? RVRouteProfileViewController {		// Embed segue
 			self.routeViewController = destination
+			return
+		}
+		
+		if let destination = segue.destination as? SegmentAnalysisViewController {
+			destination.segment = segment
+			return
 		}
 	}
 }
@@ -137,18 +143,6 @@ extension SegmentDetailViewController : SortFilterDelegate {
     func tableRowSelectedAtIndex(_ index: IndexPath) {
         let effort = dataManager.objectAtIndexPath(index)!
         self.mapView.addRoute(effort.activity, type: .highlightSegment)
-    }
-    
-    private func setViewforEffort(_ effort : RVEffort) {
-		var profileData = ViewProfileData(handler: nil)
-
-        if let altitudeStream = (effort.activity.streams.filter { $0.type == StravaSwift.StreamType.altitude.rawValue }).first {
-            profileData.addDataSet(ViewProfileDataSet(profileDataType: .altitude, profileDataPoints: altitudeStream.dataPoints ))
-        }
-        routeViewController.setProfile(streamOwner: effort, profileType: .altitude)
-		
-		// TODO: set up highglight
-//        routeView.profileData?.highlightRange = effort.indexRange
     }
     
     func didScrollToVisiblePaths(_ paths : [IndexPath]?) {

@@ -79,7 +79,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		}
 		
 		if activity.hasStreamOfType(.altitude) {
-			self.routeViewController.setProfile(streamOwner: activity, profileType: .altitude)
+			self.routeViewController.setPrimaryProfile(streamOwner: activity, profileType: .altitude)
 		} else {
 			appLog.verbose("Getting streams")
 			StravaManager.sharedInstance.streamsForActivity(activity, context: activity.managedObjectContext!, completionHandler: { [weak self] success in
@@ -88,7 +88,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 				} else {
 					appLog.verbose("Get streams failed for activity")
 				}
-                self?.routeViewController.setProfile(streamOwner: self!.activity, profileType: .altitude)
+                self?.routeViewController.setPrimaryProfile(streamOwner: self!.activity, profileType: .altitude)
 			})
 		}
 		
@@ -158,11 +158,11 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		//        })
 		
 		if activity.streams.filter({ $0.type == ViewProfileDataType.altitude.stravaValue }).first != nil {
-			routeViewController.setProfile(streamOwner: activity!, profileType: .altitude)
+			routeViewController.setPrimaryProfile(streamOwner: activity!, profileType: .altitude)
 		} else {
 			StravaManager.sharedInstance.streamsForActivity(activity, context: activity.managedObjectContext!, completionHandler: { (success) in
 				self.activity.managedObjectContext?.saveContext()
-				self.routeViewController.setProfile(streamOwner: self.activity!, profileType: .altitude)
+				self.routeViewController.setPrimaryProfile(streamOwner: self.activity!, profileType: .altitude)
 			})
 		}
 		
