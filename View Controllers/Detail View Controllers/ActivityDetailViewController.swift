@@ -12,13 +12,11 @@ import Photos
 import StravaSwift
 import CoreData
 
-class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate {
+class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate, RVEffortTableDelegate {
 	
 	//MARK: Model
 	weak var activity : RVActivity!
 	
-	@IBOutlet weak var tableView: RVTableView!
-	var tableDataIsComplete = false
 	
 	@IBOutlet weak var distance: UILabel!
 	@IBOutlet weak var startTime: UILabel!
@@ -30,10 +28,8 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	@IBOutlet weak var photoView: ScrollingPhotoView!
 	
 	// MARK: Model for effort table
-	private lazy var dataManager = DataManager<RVEffort>()
-	var selectedEffort : RVEffort? = nil
-	private var effortFilters : [EffortFilter] = EffortFilter.allCases
-	private var effortSortKey : EffortSort = .sequence
+	private var effortTableViewController : RVEffortTableViewController!
+	var tableDataIsComplete = false
 	
 	@IBOutlet weak var mapView: RideMapView! {
 		didSet {
@@ -52,13 +48,10 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	private var popupController : UIViewController?
 	private var activityIndicator : UIActivityIndicatorView!
 
-	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		guard activity != nil else { return }
-		
-		mapView.viewDelegate = self
 		
 		// Set scrolling photo view delegate
 		photoView?.delegate = self
@@ -100,10 +93,9 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	
 	func startDataRetrieval() {
 		activityIndicator = UIActivityIndicatorView(style: .gray)
-		activityIndicator.center = CGPoint(x: tableView.bounds.width/2, y: tableView.bounds.height/2)
-		tableView.addSubview(activityIndicator)
+		activityIndicator.center = CGPoint(x: effortTableViewController.view.bounds.width/2, y: effortTableViewController.view.bounds.height/2)
+		effortTableViewController.view.addSubview(activityIndicator)
 		activityIndicator.startAnimating()
-		tableView.bringSubviewToFront(activityIndicator)
 	}
 	
 	func endDataRetrieval() {
@@ -165,8 +157,6 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 				self.routeViewController.setPrimaryProfile(streamOwner: self.activity!, profileType: .altitude)
 			})
 		}
-		
-		setupEfforts(range: nil)
 	}
 	
 	override func viewDidLayoutSubviews() {
@@ -185,12 +175,27 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	// MARK: - Navigation
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if let destination = segue.destination as? SegmentDetailViewController {
-			destination.segment = dataManager.objectAtIndexPath(tableView.indexPathForSelectedRow!)?.segment
+//			destination.segment = dataManager.objectAtIndexPath(tableView.indexPathForSelectedRow!)?.segment
 		}
+		// Embed segues
 		if let destination = segue.destination as? RVRouteProfileViewController {
 			self.routeViewController = destination
 		}
-
+		if let destination = segue.destination as? RVEffortTableViewController {
+			effortTableViewController = destination
+			effortTableViewController.delegate = self
+			effortTableViewController.ride = activity
+		}
+	}
+	
+	// MARK: Effort table delegate
+	func didSelectEffort(effort: RVEffort) {
+		mapView.addRoute(effort, type: .highlightSegment)
+		routeViewController.setHighLightRange(effort.indexRange)
+	}
+	
+	func didDeselectEffort(effort: RVEffort) {
+		mapView.setTypeForRoute(effort, type: nil)
 	}
 	
 	// MARK: Scrolling photo view delegate
@@ -205,178 +210,3 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		})
 	}
 }
-
-// MARK: Map view delegate
-extension ActivityDetailViewController : RideMapViewDelegate {
-	
-	func didSelectRoute(route: RouteViewCompatible) {
-		guard let effort = route as? RVEffort else {
-			appLog.error("Unknown route")
-			return
-		}
-		mapView.setTypeForRoute(route, type: .highlightSegment)
-		
-//		routeView.profileData?.highlightRange = effort.indexRange
-		
-		if let indexPathForSelectedRoute = dataManager.indexPathForObject(effort) {
-			tableView.selectRow(at: indexPathForSelectedRoute, animated: true, scrollPosition: .middle)
-		}
-	}
-	
-	func didDeselectRoute(route: RouteViewCompatible) {
-		guard route as? RVEffort != nil else {
-			appLog.error("Unknown route")
-			return
-		}
-		mapView.setTypeForRoute(route, type: .backgroundSegment)
-		
-//		routeView.profileData?.highlightRange = nil
-	}
-	
-	func newIndexRange(_ range : RouteIndexRange) {
-		appLog.verbose("Index range now \(range.from) to \(range.to)")
-		
-		dataManager.filterPredicate = RVEffort.filterPredicate(activity: activity, range: range)
-		_ = dataManager.fetchObjects()
-		tableView.reloadData()
-		
-		if let effort = self.selectedEffort {
-			if let path = dataManager.indexPathForObject(effort) {
-				tableView.selectRow(at: path, animated: true, scrollPosition: .middle)
-			}
-		}
-		
-		// Update the map view
-		for path in tableView.indexPathsForVisibleRows ?? [] {
-			if let effort = dataManager.objectAtIndexPath(path) {
-				if effort == self.selectedEffort {
-					mapView.addRoute(effort.segment, type: .highlightSegment)
-				} else {        // Not selected effort
-					mapView.addRoute(effort.segment, type: .backgroundSegment)
-				}
-			}
-		}
-	}
-	
-	func didChangeVisibleRoutes(_ routes: [RouteViewCompatible]) {
-		// TODO: 
-		return
-		
-		
-		// remember the selected effort if there is one
-//		var selectedEffort : RVEffort? = nil
-//		if let indexPath = tableView.indexPathForSelectedRow {
-//			selectedEffort = dataManager.objectAtIndexPath(indexPath)
-//		}
-//
-//		let efforts = routes.filter({ $0 is RVEffort }) as! [RVEffort]
-//		let range = RouteIndexRange(from: Int(efforts.reduce(Int64.max, { min($0, $1.startIndex) })), to: Int(efforts.reduce(0, { max($0, $1.startIndex)})))
-//
-//		dataManager.filterPredicate = RVEffort.filterPredicate(activity: activity, range: range)
-//		_ = dataManager.fetchObjects()
-//		tableView.reloadData()
-//
-//		// Reselect the effort if it's still in scope
-//		if let selectedEffort = selectedEffort {
-//			if let indexPath = dataManager.indexPathForObject(selectedEffort) {
-//				tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
-//			} else {
-//				mapView.setTypeForRoute(selectedEffort, type: .backgroundSegment)
-//			}
-//		}
-//		if routeView.profileData != nil {
-//			routeView.profileData!.highlightRange = range
-//		}
-	}
-}
-
-// MARK: Effort table support
-extension ActivityDetailViewController : SortFilterDelegate {
-	
-	func setupEfforts(range : RouteIndexRange?) {
-		tableView.dataSource    = dataManager
-		tableView.rowHeight 	= UITableView.automaticDimension
-		tableView.sortFilterDelegate = self
-		tableView.tag = EffortTableViewType.effortsForActivity.rawValue
-		
-		dataManager.tableView = tableView
-
-		setDataManager()
-		tableView.reloadData()
-		self.selectedEffort = nil
-	}
-	
-	func setDataManager() {
-		dataManager.sortDescriptor = NSSortDescriptor(key: self.effortSortKey.rawValue, ascending: self.effortSortKey.defaultAscending)
-		let activityPredicate = NSPredicate(format: "activity.id == %@", argumentArray: [activity.id])
-		dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [EffortFilter.predicateForFilters(self.effortFilters), activityPredicate])
-		_ = dataManager.fetchObjects()
-	}
-
-	
-	func tableRowSelectedAtIndex(_ index: IndexPath) {
-		guard let effort = dataManager.objectAtIndexPath(index) else { return }
-		self.selectedEffort = effort
-		
-		mapView.addRoute(effort, type: .highlightSegment)
-		mapView.zoomToRoute(effort)
-		routeViewController.setHighLightRange(effort.indexRange)
-	}
-	
-	func tableRowDeselectedAtIndex(_ index : IndexPath) {
-		guard let effort = dataManager.objectAtIndexPath(index) else { return }
-		self.selectedEffort = nil
-		
-		mapView.setTypeForRoute(effort, type: nil)
-		routeViewController.setHighLightRange(nil)
-	}
-	
-	func didScrollToVisiblePaths(_ paths : [IndexPath]?) {
-		
-	}
-	
-	func sortButtonPressed(sender: UIView) {
-		// Popup the list of fields to select sort order
-		let chooser = PopupupChooser<EffortSort>()
-		chooser.title = "Sort order"
-		popupController	= chooser.showSelectionPopup(items: EffortSort.sortOptionsForActivity, sourceView: sender, updateHandler: newSortOrder)
-		if popupController != nil {
-			present(popupController!, animated: true, completion: nil)
-		}
-	}
-	
-	func filterButtonPressed(sender: UIView) {
-		let chooser = PopupupChooser<EffortFilter>()
-		chooser.title = "Include"
-		chooser.multipleSelection = true
-		chooser.selectedItems = self.effortFilters		// self.filters
-		popupController = chooser.showSelectionPopup(items: EffortFilter.allCases, sourceView: sender, updateHandler: newFilters)
-		if popupController != nil {
-			present(popupController!, animated: true, completion: nil)
-		}
-	}
-	
-	func contentChanged() {
-		
-	}
-	
-	private func newFilters(_ newFilters : [EffortFilter]?)  {
-		popupController?.dismiss(animated: true, completion: nil)
-		if let selectedFilters = newFilters {
-			self.effortFilters = selectedFilters
-			setDataManager()
-			tableView.reloadData()
-		}
-	}
-
-	private func newSortOrder(newOrder : [EffortSort]?) {
-		popupController?.dismiss(animated: true, completion: nil)
-		if let newSort = newOrder?.first {
-			self.effortSortKey = newSort
-			setDataManager()
-			tableView.reloadData()
-		}
-	}
-}
-
-

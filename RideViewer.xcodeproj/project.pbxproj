@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1F7F7563C601199D9C01D301 /* Pods_RideViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC620C6C93D11AF021E27DB /* Pods_RideViewer.framework */; };
+		F4048CAA2236B88500502DA5 /* RVSortFilterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */; };
+		F4048CB02236BCB700502DA5 /* RVEffortTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CAF2236BCB700502DA5 /* RVEffortTableViewController.swift */; };
 		F405EE8F223589D4001636A0 /* SegmentAnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F405EE8E223589D4001636A0 /* SegmentAnalysisViewController.swift */; };
 		F40CC8AC21D666EE00EC3594 /* Views.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40CC8AB21D666EE00EC3594 /* Views.swift */; };
 		F41C7A2D21D0E7E5003A5C31 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F41C7A2C21D0E7E5003A5C31 /* Images.xcassets */; };
@@ -64,6 +66,8 @@
 		2DC620C6C93D11AF021E27DB /* Pods_RideViewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RideViewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		590E5ACF93A252F741663B7D /* Pods-RideViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.debug.xcconfig"; sourceTree = "<group>"; };
 		D272B46FE80E68DEE976D7CC /* Pods-RideViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.release.xcconfig"; sourceTree = "<group>"; };
+		F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVSortFilterTableView.swift; sourceTree = "<group>"; };
+		F4048CAF2236BCB700502DA5 /* RVEffortTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVEffortTableViewController.swift; sourceTree = "<group>"; };
 		F405EE8E223589D4001636A0 /* SegmentAnalysisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SegmentAnalysisViewController.swift; path = "Detail View Controllers/SegmentAnalysisViewController.swift"; sourceTree = "<group>"; };
 		F40CC8AB21D666EE00EC3594 /* Views.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views.swift; sourceTree = "<group>"; };
 		F41C7A2C21D0E7E5003A5C31 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -154,6 +158,7 @@
 				F44EA67D21F23ABA00BBABA0 /* PhotoView.xib */,
 				F40CC8AB21D666EE00EC3594 /* Views.swift */,
 				F4ED1BE32208B09900821D76 /* RVTableView.swift */,
+				F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */,
 				F4ED1BE12208B02A00821D76 /* RVRouteProfileView.swift */,
 				F4ED1BDF2208AEB600821D76 /* RVMapView.swift */,
 			);
@@ -300,6 +305,7 @@
 		F4FD52E32229AB5A0005CFC9 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				F4048CAF2236BCB700502DA5 /* RVEffortTableViewController.swift */,
 				F47B92622232CF0000B83303 /* RVSplitViewController.swift */,
 				F4FD52E42229AB850005CFC9 /* RVRouteProfileViewController.swift */,
 			);
@@ -446,6 +452,7 @@
 				F4C113D321D6790B00188A30 /* RVEffort+CoreDataProperties.swift in Sources */,
 				F405EE8F223589D4001636A0 /* SegmentAnalysisViewController.swift in Sources */,
 				F40CC8AC21D666EE00EC3594 /* Views.swift in Sources */,
+				F4048CAA2236B88500502DA5 /* RVSortFilterTableView.swift in Sources */,
 				F42ECF0421CFD3090096F83B /* ActivityDetailViewController.swift in Sources */,
 				F4F5195221FB79C3005D3752 /* RVStream+CoreDataClass.swift in Sources */,
 				F429A6F821D7F23000A053DE /* Data Model Extensions.swift in Sources */,
@@ -474,6 +481,7 @@
 				F42ECF0921CFD5FF0096F83B /* DataManager.swift in Sources */,
 				F42ECEE421CF91130096F83B /* AppDelegate.swift in Sources */,
 				F42ECF1021CFEBC20096F83B /* Strava Manager.swift in Sources */,
+				F4048CB02236BCB700502DA5 /* RVEffortTableViewController.swift in Sources */,
 				F4213A9B221EB94700FE8844 /* InitialViewController.swift in Sources */,
 				F4ED1BE42208B09900821D76 /* RVTableView.swift in Sources */,
 			);

@@ -10,21 +10,13 @@ import UIKit
 import CoreData
 import StravaSwift
 
-class SegmentDetailViewController: UIViewController {
-    
+class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
+	
     //MARK: Model
     var segment : RVSegment!
     
-    // MARK: Model for effort table
-    private lazy var dataManager = DataManager<RVEffort>()
-	private var effortFilters : [EffortFilter] = []
-	private var effortSort : EffortSort = .elapsedTime
-	
 	@IBOutlet weak var distanceLabel: UILabel!
 	@IBOutlet weak var elevationLabel: UILabel!
-	
-    @IBOutlet weak var tableView: RVTableView!
-	var tableDataIsComplete = false
 	
     @IBOutlet weak var mapView: RideMapView! {
         didSet {
@@ -32,15 +24,17 @@ class SegmentDetailViewController: UIViewController {
             mapView.delegate = mapView
         }
     }
-    
+
+	private var effortTableViewController : RVEffortTableViewController!
+	
     @IBOutlet weak var routeViewController: RVRouteProfileViewController!
 	
 	private var popupController : UIViewController?
-    
+	
+	private var tableDataIsComplete : Bool = false
+	
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        tableView.sortFilterDelegate = self
         
         if segment != nil {
             updateView()
@@ -48,7 +42,6 @@ class SegmentDetailViewController: UIViewController {
     }
     
     func updateView() {
-		
 		let segmentStarText = segment.starred ? "★" : "☆"
         self.title 				= segmentStarText + " " + segment.name!
         
@@ -80,8 +73,6 @@ class SegmentDetailViewController: UIViewController {
 				}
             })
         }
-		// Fetched results controller will update the table once it is set up
-        setupEfforts(segment)
 		
 		// Get the route altitude profile
 		if segment.hasStreamOfType(.altitude) {
@@ -110,85 +101,21 @@ class SegmentDetailViewController: UIViewController {
 			destination.segment = segment
 			return
 		}
+		
+		if let destination = segue.destination as? RVEffortTableViewController {
+			effortTableViewController = destination
+			effortTableViewController.delegate = self
+			effortTableViewController.ride = segment
+		}
 	}
-}
-
-extension SegmentDetailViewController : SortFilterDelegate {
-    // MARK: effort table view support
-    
-    func setupEfforts(_ forSegment : RVSegment) {
-        tableView.dataSource    = dataManager
-        tableView.rowHeight 	= UITableView.automaticDimension
-        
-        tableView.tag = EffortTableViewType.effortsForSegment.rawValue
-        dataManager.tableView = tableView
-        setDataManager()
-    }
-    
-    func setDataManager() {
-        dataManager.sortDescriptor = NSSortDescriptor(key: effortSort.rawValue, ascending: effortSort.defaultAscending)
-        
-        let settingsPredicate = Settings.sharedInstance.segmentSettingsPredicate
-        let segmentPredicate = NSPredicate(format: "segment.id == %@", argumentArray: [segment.id])
-		let effortPredicate = EffortFilter.predicateForFilters(self.effortFilters)
-        dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [settingsPredicate, segmentPredicate, effortPredicate])
-        let _ = dataManager.fetchObjects()
-    }
-    
-    func tableRowDeselectedAtIndex(_ index: IndexPath) {
-        let activity = dataManager.objectAtIndexPath(index)!.activity
-        self.mapView.setTypeForRoute(activity, type: nil)
-    }
-    
-    func tableRowSelectedAtIndex(_ index: IndexPath) {
-        let effort = dataManager.objectAtIndexPath(index)!
-        self.mapView.addRoute(effort.activity, type: .highlightSegment)
-    }
-    
-    func didScrollToVisiblePaths(_ paths : [IndexPath]?) {
-        
-    }
-    
-    func sortButtonPressed(sender: UIView) {
-        // Popup the list of fields to select sort order
-        let chooser = PopupupChooser<EffortSort>()
-        chooser.title = "Select sort order"
-        popupController = chooser.showSelectionPopup(items: EffortSort.sortOptionsForSegment, sourceView: sender, updateHandler: newSortOrder)
-		if popupController != nil {
-			present(popupController!, animated: true, completion: nil)
-		}
-    }
-    
-    func filterButtonPressed(sender: UIView) {
-		let chooser = PopupupChooser<EffortFilter>()
-		chooser.title = "Include"
-		chooser.multipleSelection = true
-		chooser.selectedItems = self.effortFilters
-		popupController = chooser.showSelectionPopup(items: [], sourceView: sender, updateHandler: newFilters)
-		if popupController != nil {
-			present(popupController!, animated: true, completion: nil)
-		}
-    }
-    
-    private func newSortOrder(newOrder : [EffortSort]?) {
-		popupController?.dismiss(animated: true, completion: nil)
-        if let newSort = newOrder?.first {
-			self.effortSort = newSort
-			setDataManager()
-            tableView.reloadData()
-        }
-    }
+		
+	// MARK: Effort table delegate
+	func didSelectEffort(effort: RVEffort) {
+		appLog.debug("Selected \(effort.activity.name)")
+	}
 	
-	private func newFilters(_ newFilters : [EffortFilter]?)  {
-		popupController?.dismiss(animated: true, completion: nil)
-		if let selectedFilters = newFilters {
-			self.effortFilters = selectedFilters
-			setDataManager()
-			tableView.reloadData()
-		}
+	func didDeselectEffort(effort: RVEffort) {
+		appLog.debug("Des75zaelected \(effort.activity.name)")
 	}
-
-    
-    
 }
 
