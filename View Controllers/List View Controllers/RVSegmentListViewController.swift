@@ -10,12 +10,12 @@ import UIKit
 import StravaSwift
 import CoreData
 
-class SegmentListViewController: UIViewController, SortFilterDelegate {
+class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 	
 	// MARK: Model
 	private lazy var dataManager = DataManager<RVSegment>()
 	
-	@IBOutlet weak var tableView: RVTableView!
+	@IBOutlet weak var tableView: RVSortFilterTableView!
 	var tableDataIsComplete = false
 	
 	@IBOutlet weak var sortButton: UIBarButtonItem!
@@ -23,7 +23,6 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 	// Properties
 	private var filters : [SegmentFilter]!
 	private var sortKey : SegmentSort!
-	private var sortOrderAscending : Bool!
 	private var popupController : UIViewController?
 	
 	// MARK: Lifecycle
@@ -31,24 +30,23 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 		super.viewDidLoad()
 		
 		self.title = "Segments"
+		
+		// Set table view parameters
 		tableView.dataSource    = dataManager
-		tableView.rowHeight = UITableView.automaticDimension
+		tableView.delegate		= self
 		
-		tableView.sortFilterDelegate = self
-		
+		// Setup the data source
 		dataManager.tableView = self.tableView
 		
 		self.filters = [.long, .flat, .ascending, .descending, .multipleEfforts]
 		self.sortKey = .distance
-		self.sortOrderAscending = false
-		
 		setDataManager()
 	}
 	
     func setDataManager() {
 		guard sortKey != nil, filters != nil else { return }
 		dataManager.filterPredicate = SegmentFilter.predicateForFilters(filters)
-		dataManager.sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: sortOrderAscending)
+		dataManager.sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: self.sortKey.defaultAscending)
 		_ = dataManager.fetchObjects()
 	}
 	
@@ -56,12 +54,23 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 		self.presentingViewController?.dismiss(animated: true, completion: nil)
 	}
 	
-//    // TODO: Redundant as not table view delegate
-//	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//		performSegue(withIdentifier: "SegmentListToSegmentDetail", sender: self)
-//	}
+	// MARK: Sort and filter
+	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+		let headerView = UIView()
+		headerView.backgroundColor = UIColor.lightGray
+		return headerView
+	}
+	
+	func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+		let sectionHeaderView = RVSortFilterHeaderView(frame: view.bounds)
+		sectionHeaderView.sortButton.addTarget(self, action: #selector(sortButtonPressed), for: .touchUpInside)
+		sectionHeaderView.filterButton.addTarget(self, action: #selector(filterButtonPressed), for: .touchUpInside)
+		sectionHeaderView.headerLabel.text = "Header"
+		view.addSubview(sectionHeaderView)
+	}
 
-	func sortButtonPressed(sender: UIView) {
+
+	@objc func sortButtonPressed(sender: UIView) {
 		// Popup the list of fields to select sort order
 		let chooser = PopupupChooser<SegmentSort>()
 		chooser.title = "Select sort order"
@@ -71,7 +80,7 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 		}
 	}
 	
-	func filterButtonPressed(sender: UIView) {
+	@objc func filterButtonPressed(sender: UIView) {
 		let chooser = PopupupChooser<SegmentFilter>()
 		chooser.title = "Include"
 		chooser.multipleSelection = true
@@ -96,7 +105,6 @@ class SegmentListViewController: UIViewController, SortFilterDelegate {
 		popupController?.dismiss(animated: true, completion: nil)
 		if let newSort = newOrder?.first {
 			self.sortKey = newSort
-			self.sortOrderAscending = self.sortKey.defaultAscending
 			setDataManager()
 			tableView.reloadData()
 		}

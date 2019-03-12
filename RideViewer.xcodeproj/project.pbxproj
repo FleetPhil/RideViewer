@@ -9,14 +9,14 @@
 /* Begin PBXBuildFile section */
 		1F7F7563C601199D9C01D301 /* Pods_RideViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC620C6C93D11AF021E27DB /* Pods_RideViewer.framework */; };
 		F4048CAA2236B88500502DA5 /* RVSortFilterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */; };
-		F4048CB02236BCB700502DA5 /* RVEffortTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CAF2236BCB700502DA5 /* RVEffortTableViewController.swift */; };
+		F4048CB02236BCB700502DA5 /* RVEffortListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CAF2236BCB700502DA5 /* RVEffortListViewController.swift */; };
 		F405EE8F223589D4001636A0 /* SegmentAnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F405EE8E223589D4001636A0 /* SegmentAnalysisViewController.swift */; };
 		F40CC8AC21D666EE00EC3594 /* Views.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40CC8AB21D666EE00EC3594 /* Views.swift */; };
 		F41C7A2D21D0E7E5003A5C31 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F41C7A2C21D0E7E5003A5C31 /* Images.xcassets */; };
 		F41C7A2F21D0E820003A5C31 /* StravaConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41C7A2E21D0E820003A5C31 /* StravaConnectViewController.swift */; };
 		F41C7A3121D12EFA003A5C31 /* Display Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41C7A3021D12EFA003A5C31 /* Display Extensions.swift */; };
 		F4213A9B221EB94700FE8844 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4213A9A221EB94700FE8844 /* InitialViewController.swift */; };
-		F429A6F621D7ECF500A053DE /* SegmentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429A6F521D7ECF500A053DE /* SegmentListViewController.swift */; };
+		F429A6F621D7ECF500A053DE /* RVSegmentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429A6F521D7ECF500A053DE /* RVSegmentListViewController.swift */; };
 		F429A6F821D7F23000A053DE /* Data Model Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429A6F721D7F23000A053DE /* Data Model Extensions.swift */; };
 		F42ECEE421CF91130096F83B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECEE321CF91130096F83B /* AppDelegate.swift */; };
 		F42ECEE921CF91130096F83B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F42ECEE721CF91130096F83B /* Main.storyboard */; };
@@ -25,7 +25,7 @@
 		F42ECEF121CF91150096F83B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F42ECEEF21CF91150096F83B /* LaunchScreen.storyboard */; };
 		F42ECEFE21CFA6790096F83B /* RVActivity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECEFC21CFA6790096F83B /* RVActivity+CoreDataClass.swift */; };
 		F42ECEFF21CFA6790096F83B /* RVActivity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECEFD21CFA6790096F83B /* RVActivity+CoreDataProperties.swift */; };
-		F42ECF0121CFD25E0096F83B /* ActivityListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECF0021CFD25E0096F83B /* ActivityListViewController.swift */; };
+		F42ECF0121CFD25E0096F83B /* RVActivityListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECF0021CFD25E0096F83B /* RVActivityListViewController.swift */; };
 		F42ECF0421CFD3090096F83B /* ActivityDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECF0321CFD3090096F83B /* ActivityDetailViewController.swift */; };
 		F42ECF0921CFD5FF0096F83B /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECF0821CFD5FF0096F83B /* DataManager.swift */; };
 		F42ECF0B21CFE1A50096F83B /* MOC Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECF0A21CFE1A50096F83B /* MOC Extensions.swift */; };
@@ -51,7 +51,6 @@
 		F4DC5A1921D4C7B50017983E /* Distance Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DC5A1821D4C7B50017983E /* Distance Utilities.swift */; };
 		F4ED1BE02208AEB600821D76 /* RVMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4ED1BDF2208AEB600821D76 /* RVMapView.swift */; };
 		F4ED1BE22208B02A00821D76 /* RVRouteProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4ED1BE12208B02A00821D76 /* RVRouteProfileView.swift */; };
-		F4ED1BE42208B09900821D76 /* RVTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4ED1BE32208B09900821D76 /* RVTableView.swift */; };
 		F4F5195021FB79C3005D3752 /* RVStreamData+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194C21FB79C3005D3752 /* RVStreamData+CoreDataClass.swift */; };
 		F4F5195121FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194D21FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift */; };
 		F4F5195221FB79C3005D3752 /* RVStream+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194E21FB79C3005D3752 /* RVStream+CoreDataClass.swift */; };
@@ -67,14 +66,14 @@
 		590E5ACF93A252F741663B7D /* Pods-RideViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.debug.xcconfig"; sourceTree = "<group>"; };
 		D272B46FE80E68DEE976D7CC /* Pods-RideViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.release.xcconfig"; sourceTree = "<group>"; };
 		F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVSortFilterTableView.swift; sourceTree = "<group>"; };
-		F4048CAF2236BCB700502DA5 /* RVEffortTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVEffortTableViewController.swift; sourceTree = "<group>"; };
+		F4048CAF2236BCB700502DA5 /* RVEffortListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVEffortListViewController.swift; sourceTree = "<group>"; };
 		F405EE8E223589D4001636A0 /* SegmentAnalysisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SegmentAnalysisViewController.swift; path = "Detail View Controllers/SegmentAnalysisViewController.swift"; sourceTree = "<group>"; };
 		F40CC8AB21D666EE00EC3594 /* Views.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views.swift; sourceTree = "<group>"; };
 		F41C7A2C21D0E7E5003A5C31 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F41C7A2E21D0E820003A5C31 /* StravaConnectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StravaConnectViewController.swift; path = "Detail View Controllers/StravaConnectViewController.swift"; sourceTree = "<group>"; };
 		F41C7A3021D12EFA003A5C31 /* Display Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Display Extensions.swift"; sourceTree = "<group>"; };
 		F4213A9A221EB94700FE8844 /* InitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
-		F429A6F521D7ECF500A053DE /* SegmentListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentListViewController.swift; sourceTree = "<group>"; };
+		F429A6F521D7ECF500A053DE /* RVSegmentListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVSegmentListViewController.swift; sourceTree = "<group>"; };
 		F429A6F721D7F23000A053DE /* Data Model Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data Model Extensions.swift"; sourceTree = "<group>"; };
 		F42ECEE021CF91130096F83B /* RideViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RideViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F42ECEE321CF91130096F83B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -85,7 +84,7 @@
 		F42ECEF221CF91150096F83B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../RideViewer/Info.plist; sourceTree = "<group>"; };
 		F42ECEFC21CFA6790096F83B /* RVActivity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVActivity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F42ECEFD21CFA6790096F83B /* RVActivity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVActivity+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		F42ECF0021CFD25E0096F83B /* ActivityListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityListViewController.swift; sourceTree = "<group>"; };
+		F42ECF0021CFD25E0096F83B /* RVActivityListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVActivityListViewController.swift; sourceTree = "<group>"; };
 		F42ECF0321CFD3090096F83B /* ActivityDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActivityDetailViewController.swift; path = "Detail View Controllers/ActivityDetailViewController.swift"; sourceTree = "<group>"; };
 		F42ECF0821CFD5FF0096F83B /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		F42ECF0A21CFE1A50096F83B /* MOC Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MOC Extensions.swift"; sourceTree = "<group>"; };
@@ -111,7 +110,6 @@
 		F4DC5A1821D4C7B50017983E /* Distance Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Distance Utilities.swift"; sourceTree = "<group>"; };
 		F4ED1BDF2208AEB600821D76 /* RVMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVMapView.swift; sourceTree = "<group>"; };
 		F4ED1BE12208B02A00821D76 /* RVRouteProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVRouteProfileView.swift; sourceTree = "<group>"; };
-		F4ED1BE32208B09900821D76 /* RVTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVTableView.swift; sourceTree = "<group>"; };
 		F4F5194C21FB79C3005D3752 /* RVStreamData+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStreamData+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F4F5194D21FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStreamData+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F4F5194E21FB79C3005D3752 /* RVStream+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStream+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -157,7 +155,6 @@
 				F44EA67E21F23ABA00BBABA0 /* ImageScrollView.swift */,
 				F44EA67D21F23ABA00BBABA0 /* PhotoView.xib */,
 				F40CC8AB21D666EE00EC3594 /* Views.swift */,
-				F4ED1BE32208B09900821D76 /* RVTableView.swift */,
 				F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */,
 				F4ED1BE12208B02A00821D76 /* RVRouteProfileView.swift */,
 				F4ED1BDF2208AEB600821D76 /* RVMapView.swift */,
@@ -259,8 +256,9 @@
 			isa = PBXGroup;
 			children = (
 				F42ECF0821CFD5FF0096F83B /* DataManager.swift */,
-				F42ECF0021CFD25E0096F83B /* ActivityListViewController.swift */,
-				F429A6F521D7ECF500A053DE /* SegmentListViewController.swift */,
+				F4048CAF2236BCB700502DA5 /* RVEffortListViewController.swift */,
+				F42ECF0021CFD25E0096F83B /* RVActivityListViewController.swift */,
+				F429A6F521D7ECF500A053DE /* RVSegmentListViewController.swift */,
 			);
 			name = "List View Controllers";
 			path = "View Controllers/List View Controllers";
@@ -305,7 +303,6 @@
 		F4FD52E32229AB5A0005CFC9 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				F4048CAF2236BCB700502DA5 /* RVEffortTableViewController.swift */,
 				F47B92622232CF0000B83303 /* RVSplitViewController.swift */,
 				F4FD52E42229AB850005CFC9 /* RVRouteProfileViewController.swift */,
 			);
@@ -443,7 +440,7 @@
 				F44EA68021F23ABA00BBABA0 /* ImageScrollView.swift in Sources */,
 				F4ED1BE02208AEB600821D76 /* RVMapView.swift in Sources */,
 				F4611B9F21F3935C00EDFC13 /* General Utilities.swift in Sources */,
-				F42ECF0121CFD25E0096F83B /* ActivityListViewController.swift in Sources */,
+				F42ECF0121CFD25E0096F83B /* RVActivityListViewController.swift in Sources */,
 				F4F5195121FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift in Sources */,
 				F4F5AFC421F0DDDB005DB8B1 /* PhotoManager.swift in Sources */,
 				F4AAD80D21DD251C006ED5DD /* Settings.swift in Sources */,
@@ -476,14 +473,13 @@
 				F47B92632232CF0000B83303 /* RVSplitViewController.swift in Sources */,
 				F4611B9D21F37FE800EDFC13 /* ScanPhotosViewController.swift in Sources */,
 				F42ECEFF21CFA6790096F83B /* RVActivity+CoreDataProperties.swift in Sources */,
-				F429A6F621D7ECF500A053DE /* SegmentListViewController.swift in Sources */,
+				F429A6F621D7ECF500A053DE /* RVSegmentListViewController.swift in Sources */,
 				F4551A0722328386004F0767 /* MapKit extensions.swift in Sources */,
 				F42ECF0921CFD5FF0096F83B /* DataManager.swift in Sources */,
 				F42ECEE421CF91130096F83B /* AppDelegate.swift in Sources */,
 				F42ECF1021CFEBC20096F83B /* Strava Manager.swift in Sources */,
-				F4048CB02236BCB700502DA5 /* RVEffortTableViewController.swift in Sources */,
+				F4048CB02236BCB700502DA5 /* RVEffortListViewController.swift in Sources */,
 				F4213A9B221EB94700FE8844 /* InitialViewController.swift in Sources */,
-				F4ED1BE42208B09900821D76 /* RVTableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

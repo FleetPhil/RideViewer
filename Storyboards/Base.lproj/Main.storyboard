@@ -14,12 +14,12 @@
         <!--Activity List View Controller-->
         <scene sceneID="Qyj-zd-G1I">
             <objects>
-                <viewController id="kHb-9h-vJU" customClass="ActivityListViewController" customModule="RideViewer" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="kHb-9h-vJU" customClass="RVActivityListViewController" customModule="RideViewer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="yD2-es-0yY">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="s7c-zU-qMq" customClass="RVTableView" customModule="RideViewer" customModuleProvider="target">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="s7c-zU-qMq" customClass="RVSortFilterTableView" customModule="RideViewer" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="88" width="375" height="690"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
@@ -121,7 +121,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="tableView" destination="s7c-zU-qMq" id="OfB-JO-kot"/>
+                        <outlet property="tableView" destination="s7c-zU-qMq" id="Azu-rp-KRs"/>
                         <segue destination="5tb-BD-4FY" kind="showDetail" identifier="ActivityListToActivityDetail" id="eDu-RD-yVF"/>
                     </connections>
                 </viewController>
@@ -132,12 +132,12 @@
         <!--Segment List View Controller-->
         <scene sceneID="nmt-pc-aLN">
             <objects>
-                <viewController id="bSQ-Mg-PlR" customClass="SegmentListViewController" customModule="RideViewer" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="bSQ-Mg-PlR" customClass="RVSegmentListViewController" customModule="RideViewer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ovw-bZ-fTM">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lo4-aL-AhB" customClass="RVTableView" customModule="RideViewer" customModuleProvider="target">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lo4-aL-AhB" customClass="RVSortFilterTableView" customModule="RideViewer" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="778"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
@@ -715,10 +715,10 @@
             </objects>
             <point key="canvasLocation" x="4428" y="485"/>
         </scene>
-        <!--Effort Table View Controller-->
+        <!--Effort List View Controller-->
         <scene sceneID="hqW-A2-wd2">
             <objects>
-                <viewController id="aXo-Y5-RMc" customClass="RVEffortTableViewController" customModule="RideViewer" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="aXo-Y5-RMc" customClass="RVEffortListViewController" customModule="RideViewer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pLL-q4-psw">
                         <rect key="frame" x="0.0" y="0.0" width="359" height="222.33333333333337"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

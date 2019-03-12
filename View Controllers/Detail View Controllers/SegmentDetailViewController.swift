@@ -25,12 +25,10 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
         }
     }
 
-	private var effortTableViewController : RVEffortTableViewController!
-	
+	private var effortTableViewController : RVEffortListViewController!
     @IBOutlet weak var routeViewController: RVRouteProfileViewController!
 	
 	private var popupController : UIViewController?
-	
 	private var tableDataIsComplete : Bool = false
 	
     override func viewDidLoad() {
@@ -92,17 +90,17 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
 	
 	// MARK: - Navigation
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-		if let destination = segue.destination as? RVRouteProfileViewController {		// Embed segue
-			self.routeViewController = destination
-			return
-		}
-		
 		if let destination = segue.destination as? SegmentAnalysisViewController {
 			destination.segment = segment
 			return
 		}
 		
-		if let destination = segue.destination as? RVEffortTableViewController {
+		// Embed segues
+		if let destination = segue.destination as? RVRouteProfileViewController {
+			self.routeViewController = destination
+			return
+		}
+		if let destination = segue.destination as? RVEffortListViewController {
 			effortTableViewController = destination
 			effortTableViewController.delegate = self
 			effortTableViewController.ride = segment

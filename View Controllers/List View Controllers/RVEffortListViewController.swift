@@ -14,7 +14,7 @@ protocol RVEffortTableDelegate : class {
 	func didDeselectEffort(effort : RVEffort)
 }
 
-class RVEffortTableViewController: UIViewController, UITableViewDelegate {
+class RVEffortListViewController: UIViewController, UITableViewDelegate {
 	
 	// Public interface
 	// Type of object - segment or activity - determines the data to be shown
@@ -128,7 +128,7 @@ class RVEffortTableViewController: UIViewController, UITableViewDelegate {
 	}
 	
 	func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-		let header = SortFilterHeaderView(frame: view.bounds)
+		let header = RVSortFilterHeaderView(frame: view.bounds)
 		header.sortButton.addTarget(self, action: #selector(sortButtonPressed), for: .touchUpInside)
 		header.filterButton.addTarget(self, action: #selector(filterButtonPressed), for: .touchUpInside)
 		header.headerLabel.text = "\(tableView.numberOfRows(inSection: 0))"

@@ -40,7 +40,7 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
 	private var handler : (([T]?) -> Void)!
     private var sourceView : UIView!
 
-    public var title : String!
+    public var title : String = "Title"
     public var multipleSelection : Bool = false
 	public var selectedItems : [T] = []
 	

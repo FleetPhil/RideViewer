@@ -10,14 +10,13 @@ import UIKit
 import StravaSwift
 import CoreData
 
-
-class ActivityListViewController: UIViewController, SortFilterDelegate {
+class RVActivityListViewController: UIViewController, UITableViewDelegate {
 
 	// MARK: Model
 	private lazy var dataManager = DataManager<RVActivity>()
 	
 	// Outlets
-	@IBOutlet weak var tableView: RVTableView!
+	@IBOutlet weak var tableView: RVSortFilterTableView!
 	var tableDataIsComplete = true
 
 	// Properties
@@ -30,14 +29,15 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
         super.viewDidLoad()
 
 		self.title = "Activities"
-		tableView.dataSource    = dataManager
-		tableView.rowHeight = UITableView.automaticDimension
 		
-		tableView.sortFilterDelegate = self
+		// Set table view parameters
+		tableView.dataSource    = dataManager
+		tableView.delegate		= self
 		
 //		NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged), name: .didChangeActivitySettings, object: nil)
+
+		// Setup the data source
 		dataManager.tableView = self.tableView
-		
 		self.filters = [.cycleRide, .longRide]
 		self.sortKey = .date
         setDataManager()
@@ -50,11 +50,6 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 			}
 		}
 	}
-	
-//	override func viewWillAppear(_ animated: Bool) {
-//		// Select the first row if no selected row and activate the detail view
-//		performSegue(withIdentifier: "ActivityListToActivityDetail", sender: self)
-//	}
 	
 	@IBAction func doneButtonPressed(_ sender: UIBarButtonItem) {
 		self.presentingViewController?.dismiss(animated: true, completion: nil)
@@ -72,7 +67,22 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 //		setDataManager(sortKey: .date, ascending: ActivitySort.date.defaultAscending)
 //	}
 	
-	func sortButtonPressed(sender: UIView) {
+	// MARK: Sort and filter
+	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+		let headerView = UIView()
+		headerView.backgroundColor = UIColor.lightGray
+		return headerView
+	}
+	
+	func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+		let sectionHeaderView = RVSortFilterHeaderView(frame: view.bounds)
+		sectionHeaderView.sortButton.addTarget(self, action: #selector(sortButtonPressed), for: .touchUpInside)
+		sectionHeaderView.filterButton.addTarget(self, action: #selector(filterButtonPressed), for: .touchUpInside)
+		sectionHeaderView.headerLabel.text = "Header"
+		view.addSubview(sectionHeaderView)
+	}
+	
+	@objc func sortButtonPressed(sender: UIView) {
 		// Popup the list of fields to select sort order
 		let chooser = PopupupChooser<ActivitySort>()
 		chooser.title = "Select sort order"
@@ -82,7 +92,7 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 		}
 	}
 	
-	func filterButtonPressed(sender: UIView) {
+	@objc func filterButtonPressed(sender: UIView) {
 		let chooser = PopupupChooser<ActivityFilter>()
 		chooser.title = "Include"
 		chooser.multipleSelection = true
@@ -115,10 +125,6 @@ class ActivityListViewController: UIViewController, SortFilterDelegate {
 		performSegue(withIdentifier: "ActivityListToActivityDetail", sender: self)
 	}
     
-    func didScrollToVisiblePaths(_ paths : [IndexPath]?) {
-        
-    }
-
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if let destination = segue.destination.activeController as? ActivityDetailViewController {

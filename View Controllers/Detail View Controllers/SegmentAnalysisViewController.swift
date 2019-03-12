@@ -14,7 +14,7 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 	@IBOutlet weak var bottomInfoLabel: UILabel!
 	
 	private var routeProfileController : RVRouteProfileViewController!
-	private var effortTableViewController : RVEffortTableViewController!
+	private var effortTableViewController : RVEffortListViewController!
 	
 	// Model
 	var segment : RVSegment!
@@ -37,7 +37,7 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 		if let destination = segue.destination as? RVRouteProfileViewController {
 			routeProfileController = destination
 		}
-		if let destination = segue.destination as? RVEffortTableViewController {
+		if let destination = segue.destination as? RVEffortListViewController {
 			effortTableViewController = destination
 			effortTableViewController.delegate = self
 			effortTableViewController.ride = segment

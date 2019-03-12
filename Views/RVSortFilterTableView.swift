@@ -9,8 +9,22 @@
 import UIKit
 
 class RVSortFilterTableView: UITableView {
-
+	// Public properties
+	var sectionHeaderView : RVSortFilterHeaderView?
 	
+	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+		let headerView = UIView()
+		headerView.backgroundColor = UIColor.lightGray
+		return headerView
+	}
+	
+	func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+		sectionHeaderView = RVSortFilterHeaderView(frame: view.bounds)
+//		header.sortButton.addTarget(self, action: #selector(sortButtonPressed), for: .touchUpInside)
+//		header.filterButton.addTarget(self, action: #selector(filterButtonPressed), for: .touchUpInside)
+		sectionHeaderView!.headerLabel.text = "Header"
+		view.addSubview(sectionHeaderView!)
+	}
 }
 
 class RVSortFilterHeaderView : UIView {

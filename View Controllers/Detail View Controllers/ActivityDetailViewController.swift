@@ -28,7 +28,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	@IBOutlet weak var photoView: ScrollingPhotoView!
 	
 	// MARK: Model for effort table
-	private var effortTableViewController : RVEffortTableViewController!
+	private var effortTableViewController : RVEffortListViewController!
 	var tableDataIsComplete = false
 	
 	@IBOutlet weak var mapView: RideMapView! {
@@ -181,7 +181,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		if let destination = segue.destination as? RVRouteProfileViewController {
 			self.routeViewController = destination
 		}
-		if let destination = segue.destination as? RVEffortTableViewController {
+		if let destination = segue.destination as? RVEffortListViewController {
 			effortTableViewController = destination
 			effortTableViewController.delegate = self
 			effortTableViewController.ride = activity
