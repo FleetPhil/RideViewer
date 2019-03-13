@@ -28,7 +28,7 @@ class StravaManager : TokenDelegate {
 	
 	// Static values
 	let streamTypesForActivity = "distance,altitude"
-	let streamTypesForEffort   = "watts,heartrate,time,cadence"
+	let streamTypesForEffort   = "watts,heartrate,time,cadence,velocity_smooth,distance"
 	
 	private init () {
 		let config = StravaConfig(clientId: 8785,

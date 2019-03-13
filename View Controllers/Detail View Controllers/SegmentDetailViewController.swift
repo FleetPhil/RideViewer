@@ -109,11 +109,11 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
 		
 	// MARK: Effort table delegate
 	func didSelectEffort(effort: RVEffort) {
-		appLog.debug("Selected \(effort.activity.name)")
+		appLog.verbose("Selected \(effort.activity.name)")
 	}
 	
 	func didDeselectEffort(effort: RVEffort) {
-		appLog.debug("Des75zaelected \(effort.activity.name)")
+		appLog.verbose("Deselected \(effort.activity.name)")
 	}
 }
 

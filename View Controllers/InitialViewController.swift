@@ -20,8 +20,8 @@ class InitialViewController: UIViewController {
 											   selector: #selector(self.performAuth(notification:)),
 											   name: NSNotification.Name("code"),
 											   object: nil)
-		showStats()
 		
+//		showStats()
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {

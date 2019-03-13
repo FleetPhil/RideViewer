@@ -145,8 +145,11 @@ public class RVSegment: NSManagedObject, RouteViewCompatible {
 		
 		return self
 	}
-
-
+	
+	// Helper functions
+	func shortestElapsedEffort() -> RVEffort? {
+		return self.efforts.min(by: { $0.elapsedTime < $1.elapsedTime } )
+	}
 }
 
 // Extension to support generic table view

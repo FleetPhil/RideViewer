@@ -127,18 +127,25 @@ class RVRouteProfileView : UIView {
 	
 	override func draw(_ rect: CGRect) {
 		// TODO: draw multiple data sets
-		guard let dataSet = profileData?.dataSetOfDisplayType(.primary) else { return }
-		
 		self.backgroundColor = UIColor.white
-		
+
 		if let path = createHighlight() {
 			UIColor.lightGray.setFill()
 			path.fill()
 		}
-		if let path = pathForDataSet(dataSet) {
-			path.lineWidth = 1.0
-			UIColor.blue.setStroke()
-			path.stroke()
+
+		appLog.verbose {
+			let dataSets = profileData?.profileDataSets.map { ($0.profileDataType, $0.profileDisplayType) } ?? []
+			return "Draw: \(dataSets)"
+		}
+		for dataSet in profileData?.profileDataSets ?? [] {
+			if dataSet.profileDisplayType != .axis {
+				if let path = pathForDataSet(dataSet) {
+					path.lineWidth = 1.0
+					dataSet.profileDisplayType.displayColour.setStroke()
+					path.stroke()
+				}
+			}
 		}
 	}
 }

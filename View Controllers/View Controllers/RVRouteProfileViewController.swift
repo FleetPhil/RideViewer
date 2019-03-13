@@ -23,11 +23,13 @@ extension StreamOwner {
 	}
 }
 
+
 // Data structures for the view
 enum ViewProfileDataType : String {
+	case speed 		= "velocity_smooth"
 	case altitude
-	case heartrate
-	case watts
+	case heartRate 	= "heartrate"
+	case power 		= "watts"
 	case distance
 	case cadence
 	
@@ -41,6 +43,15 @@ enum ViewProfileDisplayType {
 	case secondary
 	case axis
 	case background
+	
+	var displayColour : UIColor {
+		switch self {
+		case .primary:		return UIColor.black
+		case .secondary:	return UIColor.green
+		case .axis:			return UIColor.black
+		case .background:	return UIColor.lightGray
+		}
+	}
 }
 
 struct ViewProfileDataSet {
@@ -61,7 +72,7 @@ struct ViewProfileDataSet {
 
 struct ViewProfileData {
 	private(set) var streamOwner : StreamOwner
-	private var profileDataSets: [ViewProfileDataSet]
+	private(set) var profileDataSets: [ViewProfileDataSet]
 	private(set) var fullRange : RouteIndexRange
 	var viewRange : RouteIndexRange
 	var highlightRange: RouteIndexRange?
@@ -123,42 +134,69 @@ class RVRouteProfileViewController: UIViewController {
     }
     
 	func setPrimaryProfile<S> (streamOwner: S, profileType: ViewProfileDataType, range: RouteIndexRange? = nil) where S : StreamOwner {
-		CoreDataManager.sharedManager().persistentContainer.performBackgroundTask { [weak self] (context) in
-			let asyncActivity = context.object(with: streamOwner.objectID) as! S
-			
-			self?.profileData = ViewProfileData(streamOwner: streamOwner, handler: nil)
-			
-			let streams = asyncActivity.streams.map { $0.type! }
-			appLog.verbose("Streams are \(streams)")
+		profileData = ViewProfileData(streamOwner: streamOwner, handler: nil)
+		
+		let streams = streamOwner.streams.map { $0.type! }
+		appLog.verbose("Target: \(profileType.stravaValue), streams are \(streams)")
 
-			if let dataSet = (asyncActivity.streams.filter { $0.type == profileType.stravaValue }).first {
-				self?.profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .primary, profileDataPoints: dataSet.dataPoints))
-			}
-			// Always include distance set
-			if let dataSet = (asyncActivity.streams.filter { $0.type == ViewProfileDataType.distance.stravaValue }).first {
-				self?.profileData.addDataSet(ViewProfileDataSet(profileDataType: .distance, profileDisplayType: .axis, profileDataPoints: dataSet.dataPoints))
-			}
+		if let dataSet = (streamOwner.streams.filter { $0.type == profileType.stravaValue }).first {
+			appLog.verbose("Adding primary data set \(profileType) for \(self.description)")
+			profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .primary, profileDataPoints: dataSet.dataPoints))
+		} else {
+			appLog.verbose("Stream type \(profileType) (\(profileType.stravaValue)) not found")
+		}
+		// Always include distance set
+		if let dataSet = (streamOwner.streams.filter { $0.type == ViewProfileDataType.distance.stravaValue }).first {
+			self.profileData.addDataSet(ViewProfileDataSet(profileDataType: .distance, profileDisplayType: .axis, profileDataPoints: dataSet.dataPoints))
+		}
+		
+		if self.profileData.dataSetCount >= 2 {
+			self.noDataLabel.isHidden = true
+			self.waitingLabel.isHidden = true
+			self.routeView.profileData = self.profileData
+			self.setAxisLabelsWithData(self.profileData, forType: profileType)
+		} else {
+			self.waitingLabel.isHidden = true
+			self.noDataLabel.isHidden = false
+		}
+	}
+	
+	func addSecondaryProfile<S>(owner : S, profileType: ViewProfileDataType) where S : StreamOwner {
+		// Return if no primary
+		guard profileData.dataSetOfDisplayType(.primary) != nil else {
+			appLog.debug("No primary for secondary \(profileType)")
+			return
+		}
+		
+		if let dataSet = (owner.streams.filter { $0.type == profileType.stravaValue }).first {
+			let primaryPointCount = profileData.dataSetOfDisplayType(.primary)?.profileDataPoints.count ?? 0
+			let secondaryPointCount = dataSet.dataPoints.count
+			appLog.verbose("Primary: \(primaryPointCount), Secondary: \(secondaryPointCount)")
 			
-			DispatchQueue.main.async {
-				if let `self` = self, self.profileData.dataSetCount >= 2 {
-					self.noDataLabel.isHidden = true
-					self.waitingLabel.isHidden = true
-					self.routeView.profileData = self.profileData
-					self.setAxisLabelsWithData(self.profileData, forType: profileType)
-				} else {
-					self?.waitingLabel.isHidden = true
-					self?.noDataLabel.isHidden = false
-				}
-			}
+			// Adjust the data points so the secondary count is the same as the primary
+			let normalisedDataPoints = normaliseDataPoints(dataSet.dataPoints, toRange: primaryPointCount)
+			appLog.verbose("Adding secondary data set \(profileType), \(normalisedDataPoints.count)")
+			profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .secondary, profileDataPoints: normalisedDataPoints))
+			routeView.profileData = profileData
 		}
 	}
 	
-	func addSecondaryProfile(profileType: ViewProfileDataType) {
-		if let dataSet = (profileData?.streamOwner.streams.filter { $0.type == profileType.stravaValue })?.first {
-			profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .secondary, profileDataPoints: dataSet.dataPoints))
+	private func normaliseDataPoints(_ dataPoints : [Double], toRange : Int) -> [Double] {
+		guard toRange > 1 else { return [] }
+		if dataPoints.count == toRange { return dataPoints }
+		
+		let increment = Double(dataPoints.count-1)/Double(toRange-1)
+		var newYValues : [Double] = []
+		for x in 0..<toRange {
+			let newX = Double(x) * increment
+			let lowX = floor(newX)
+			let highX = ceil(newX)
+			let newY = (dataPoints[Int(highX)]-dataPoints[Int(lowX)])*(newX - lowX) + dataPoints[Int(lowX)]
+			newYValues.append(newY)
 		}
+		return newYValues
 	}
-	
+
 	func setHighLightRange(_ range : RouteIndexRange?) {
 		routeView.profileData?.highlightRange = range
 	}

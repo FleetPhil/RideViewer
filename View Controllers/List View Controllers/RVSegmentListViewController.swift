@@ -18,8 +18,6 @@ class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 	@IBOutlet weak var tableView: RVSortFilterTableView!
 	var tableDataIsComplete = false
 	
-	@IBOutlet weak var sortButton: UIBarButtonItem!
-	
 	// Properties
 	private var filters : [SegmentFilter]!
 	private var sortKey : SegmentSort!
@@ -109,17 +107,11 @@ class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 			tableView.reloadData()
 		}
 	}
-	
-	func tableRowSelectedAtIndex(_ index: IndexPath) {
+
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		performSegue(withIdentifier: "SegmentListToSegmentDetail", sender: self)
 	}
     
-    func didScrollToVisiblePaths(_ paths : [IndexPath]?) {
-        
-    }
-    
-
-
 	// MARK: - Navigation
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if let destination = segue.destination.activeController as? SegmentDetailViewController {

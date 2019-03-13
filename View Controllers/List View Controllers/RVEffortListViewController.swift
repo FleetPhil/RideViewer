@@ -27,7 +27,7 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 	// Private properties
 	private var effortTableViewType : EffortTableViewType = .effortsForActivity
 	private lazy var dataManager = DataManager<RVEffort>()
-	private var effortSortKey : EffortSort = .distance
+	private var effortSortKey : EffortSort = .elapsedTime
 	private var effortFilters : [EffortFilter] = EffortFilter.allCases
 	
 	private var popupController : UIViewController?

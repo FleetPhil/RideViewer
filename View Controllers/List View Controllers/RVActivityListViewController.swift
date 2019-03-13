@@ -121,7 +121,7 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate {
 		}
 	}
 	
-	func tableRowSelectedAtIndex(_ index: IndexPath) {
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		performSegue(withIdentifier: "ActivityListToActivityDetail", sender: self)
 	}
     
