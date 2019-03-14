@@ -15,7 +15,7 @@ import XCGLogger
 let appLog : XCGLogger = {
 	let appDelegate = UIApplication.shared.delegate as! AppDelegate
 	let log = XCGLogger.default
-	log.outputLevel = .verbose
+	log.outputLevel = .debug
 	
 	// Set up debug log and user log
 	// TODO: debug log should not be in documents

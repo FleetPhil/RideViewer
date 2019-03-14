@@ -41,7 +41,10 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 		topInfoLabel.text = "Fastest: \(shortestElapsed?.activity.name ?? "Unknown")"
 		topInfoLabel.textColor = ViewProfileDisplayType.primary.displayColour
 		
-		
+		// Get stream data for the fastest ride on this segment and set as the primary
+		if shortestElapsed != nil {
+			getStreams(effort: shortestElapsed!, displayType: .primary)
+		}
 	}
 	
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -63,7 +66,7 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 	
 	// MARK: Effort table delegate
 	func didSelectEffort(effort: RVEffort) {
-		getStreams(effort: effort)
+		getStreams(effort: effort, displayType: .secondary)
 	}
 	
 	func didDeselectEffort(effort: RVEffort) {
@@ -71,31 +74,34 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 	}
 	
 	// MARK: Effort profile setup
-	private func getStreams(effort: RVEffort) {
+	private func getStreams(effort: RVEffort, displayType: ViewProfileDisplayType) {
 		if effort.hasStreamOfType(.speed) {
-			setProfilesForEffort(effort)
+			setProfilesForEffort(effort, displayType: displayType)
 		} else {
 			StravaManager.sharedInstance.streamsForEffort(effort, context: effort.managedObjectContext!, completionHandler: { [weak self] (success) in
 				if success {
 					effort.managedObjectContext!.saveContext()
-					self?.setProfilesForEffort(effort)
+					self?.setProfilesForEffort(effort, displayType: displayType)
 				}
 			})
 		}
 	}
 	
-	private func setProfilesForEffort(_ effort : RVEffort) {
-		speedProfileController.setPrimaryProfile(streamOwner: effort, profileType: .speed)
-		powerProfileController.setPrimaryProfile(streamOwner: effort, profileType: .power)
-		HRProfileController.setPrimaryProfile(streamOwner: effort, profileType: .heartRate)
-
-		if shortestElapsed != nil && shortestElapsed! != effort {
-			speedProfileController.addSecondaryProfile(owner: shortestElapsed!, profileType: .speed)
-			powerProfileController.addSecondaryProfile(owner: shortestElapsed!, profileType: .power)
-			HRProfileController.addSecondaryProfile(owner: shortestElapsed!, profileType: .heartRate)
+	private func setProfilesForEffort(_ effort : RVEffort, displayType: ViewProfileDisplayType) {
+		switch displayType {
+		case .primary:
+			speedProfileController.setPrimaryProfile(streamOwner: effort, profileType: .speed)
+			powerProfileController.setPrimaryProfile(streamOwner: effort, profileType: .power)
+			HRProfileController.setPrimaryProfile(streamOwner: effort, profileType: .heartRate)
+		case .secondary:
+			speedProfileController.addSecondaryProfile(owner: effort, profileType: .speed)
+			powerProfileController.addSecondaryProfile(owner: effort, profileType: .power)
+			HRProfileController.addSecondaryProfile(owner: effort, profileType: .heartRate)
+		default:
+			appLog.error("Unexpected display type \(displayType) requested")
+			break
 		}
 	}
-
 }
 
 

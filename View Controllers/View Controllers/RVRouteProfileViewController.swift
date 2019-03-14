@@ -139,15 +139,16 @@ class RVRouteProfileViewController: UIViewController {
 		let streams = streamOwner.streams.map { $0.type! }
 		appLog.verbose("Target: \(profileType.stravaValue), streams are \(streams)")
 
-		if let dataSet = (streamOwner.streams.filter { $0.type == profileType.stravaValue }).first {
+		if let stream = (streamOwner.streams.filter { $0.type == profileType.stravaValue }).first {
 			appLog.verbose("Adding primary data set \(profileType) for \(self.description)")
-			profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .primary, profileDataPoints: dataSet.dataPoints))
+			profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .primary, profileDataPoints: stream.dataPoints))
 		} else {
 			appLog.verbose("Stream type \(profileType) (\(profileType.stravaValue)) not found")
 		}
-		// Always include distance set
-		if let dataSet = (streamOwner.streams.filter { $0.type == ViewProfileDataType.distance.stravaValue }).first {
-			self.profileData.addDataSet(ViewProfileDataSet(profileDataType: .distance, profileDisplayType: .axis, profileDataPoints: dataSet.dataPoints))
+		// Add the distance set for the primary data as the x axis values
+		if let stream = (streamOwner.streams.filter { $0.type == ViewProfileDataType.distance.stravaValue }).first {
+			showDistance(stream: stream, type: profileType)
+			self.profileData.addDataSet(ViewProfileDataSet(profileDataType: .distance, profileDisplayType: .axis, profileDataPoints: stream.dataPoints))
 		}
 		
 		if self.profileData.dataSetCount >= 2 {
@@ -161,6 +162,12 @@ class RVRouteProfileViewController: UIViewController {
 		}
 	}
 	
+	private func showDistance(stream : RVStream, type: ViewProfileDataType) {
+		let minDistance = stream.dataPoints.first!
+		let maxDistance = stream.dataPoints.last!
+		appLog.debug("Distance for \(type) is \(minDistance.distanceDisplayString) to \(maxDistance.distanceDisplayString) (\((maxDistance-minDistance).distanceDisplayString))")
+	}
+	
 	func addSecondaryProfile<S>(owner : S, profileType: ViewProfileDataType) where S : StreamOwner {
 		// Return if no primary
 		guard profileData.dataSetOfDisplayType(.primary) != nil else {
@@ -171,13 +178,17 @@ class RVRouteProfileViewController: UIViewController {
 		if let dataSet = (owner.streams.filter { $0.type == profileType.stravaValue }).first {
 			let primaryPointCount = profileData.dataSetOfDisplayType(.primary)?.profileDataPoints.count ?? 0
 			let secondaryPointCount = dataSet.dataPoints.count
-			appLog.verbose("Primary: \(primaryPointCount), Secondary: \(secondaryPointCount)")
+			appLog.verbose("Primary count: \(primaryPointCount), Secondary count: \(secondaryPointCount)")
 			
 			// Adjust the data points so the secondary count is the same as the primary
 			let normalisedDataPoints = normaliseDataPoints(dataSet.dataPoints, toRange: primaryPointCount)
 			appLog.verbose("Adding secondary data set \(profileType), \(normalisedDataPoints.count)")
 			profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .secondary, profileDataPoints: normalisedDataPoints))
 			routeView.profileData = profileData
+			
+			if let stream = (owner.streams.filter { $0.type == ViewProfileDataType.distance.stravaValue }).first {
+				showDistance(stream: stream, type: profileType)
+			}
 		}
 	}
 	
@@ -190,7 +201,7 @@ class RVRouteProfileViewController: UIViewController {
 		for x in 0..<toRange {
 			let newX = Double(x) * increment
 			let lowX = floor(newX)
-			let highX = ceil(newX)
+			let highX = min(ceil(newX), Double(dataPoints.count - 1))
 			let newY = (dataPoints[Int(highX)]-dataPoints[Int(lowX)])*(newX - lowX) + dataPoints[Int(lowX)]
 			newYValues.append(newY)
 		}
@@ -210,16 +221,16 @@ class RVRouteProfileViewController: UIViewController {
 		let maxDistance = distanceProfileSet.dataMax(viewRange: profileData.fullRange)
 		
 		horiz0Label.text		= minDistance.distanceDisplayString
-		horiz25Label.text		= ((maxDistance-minDistance)*0.25 + minDistance).distanceDisplayString
-		horiz50Label.text		= ((maxDistance-minDistance)*0.5 + minDistance).distanceDisplayString
-		horiz75Label.text		= ((maxDistance-minDistance)*0.75 + minDistance).distanceDisplayString
+		horiz25Label.text		= ((maxDistance-minDistance) * 0.25 + minDistance).distanceDisplayString
+		horiz50Label.text		= ((maxDistance-minDistance) * 0.5 + minDistance).distanceDisplayString
+		horiz75Label.text		= ((maxDistance-minDistance) * 0.75 + minDistance).distanceDisplayString
 		horiz100Label.text		= ((maxDistance-minDistance) + minDistance).distanceDisplayString
 
 		let minValue			= targetProfileSet.dataMin(viewRange: profileData.fullRange)
 		let maxValue			= targetProfileSet.dataMax(viewRange: profileData.fullRange)
 		
 		vert0Label.text			= minValue.fixedFraction(digits: 0)
-		vert50Label.text		= ((maxValue-minValue)*0.5 + minValue).fixedFraction(digits: 0)
+		vert50Label.text		= ((maxValue-minValue) * 0.5 + minValue).fixedFraction(digits: 0)
 		vert100Label.text		= ((maxValue-minValue) + minValue).fixedFraction(digits: 0)
 	}
 	
