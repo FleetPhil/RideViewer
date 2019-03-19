@@ -13,6 +13,15 @@ import StravaSwift
 import CoreData
 
 class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate, RVEffortTableDelegate {
+	// TODO
+	func didDeselectEffort(effort: RVEffort) {
+		return
+	}
+	
+	func photoDidChangeToIndex(_ index: Int) {
+		return
+	}
+	
 	
 	//MARK: Model
 	weak var activity : RVActivity!
@@ -40,14 +49,14 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	
 	// MARK: Profile View and data
 	var routeViewController: RVRouteProfileViewController!
-
+	
 	// MARK: Photos
 	private var photoAssets : [PHAsset] = []
 	
 	// MARK: Properties
 	private var popupController : UIViewController?
 	private var activityIndicator : UIActivityIndicatorView!
-
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -55,7 +64,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		
 		// Set scrolling photo view delegate
 		photoView?.delegate = self
-
+		
 		// Get Strava details
 		if activity.resourceState == .detailed {
 			tableDataIsComplete = true
@@ -81,7 +90,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 				} else {
 					appLog.verbose("Get streams failed for activity")
 				}
-                self?.routeViewController.setPrimaryProfile(streamOwner: self!.activity, profileType: .altitude)
+				self?.routeViewController.setPrimaryProfile(streamOwner: self!.activity, profileType: .altitude)
 			})
 		}
 		
@@ -111,7 +120,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 			alert.dismiss(animated: true, completion: nil)
 		}
 	}
-
+	
 	
 	
 	func updateView() {
@@ -175,7 +184,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	// MARK: - Navigation
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if let destination = segue.destination as? SegmentDetailViewController {
-//			destination.segment = dataManager.objectAtIndexPath(tableView.indexPathForSelectedRow!)?.segment
+			//			destination.segment = dataManager.objectAtIndexPath(tableView.indexPathForSelectedRow!)?.segment
 		}
 		// Embed segues
 		if let destination = segue.destination as? RVRouteProfileViewController {
@@ -191,22 +200,22 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	// MARK: Effort table delegate
 	func didSelectEffort(effort: RVEffort) {
 		mapView.addRoute(effort, type: .highlightSegment)
-		routeViewController.setHighLightRange(effort.indexRange)
-	}
-	
-	func didDeselectEffort(effort: RVEffort) {
-		mapView.setTypeForRoute(effort, type: nil)
-	}
-	
-	// MARK: Scrolling photo view delegate
-	func photoDidChangeToIndex(_ index: Int) {
-		activity.getPhotoAssets(force: false, completionHandler: { [weak self] assets in
-			let selectedPhotoAsset = assets[index]
-			_ = PhotoManager.shared().getPhotoImage(localIdentifier: selectedPhotoAsset.localIdentifier,
-													size: CGSize(width: 30, height: 30),
-													resultHandler: { [ weak self]  _, image, _, location in
-														self?.mapView.addPhoto(image: image, location: location)
+		//	}
+		
+		func didDeselectEffort(effort: RVEffort) {
+			mapView.setTypeForRoute(effort, type: nil)
+		}
+		
+		// MARK: Scrolling photo view delegate
+		func photoDidChangeToIndex(_ index: Int) {
+			activity.getPhotoAssets(force: false, completionHandler: { [weak self] assets in
+				let selectedPhotoAsset = assets[index]
+				_ = PhotoManager.shared().getPhotoImage(localIdentifier: selectedPhotoAsset.localIdentifier,
+														size: CGSize(width: 30, height: 30),
+														resultHandler: { [ weak self]  _, image, _, location in
+															self?.mapView.addPhoto(image: image, location: location)
+				})
 			})
-		})
+		}
 	}
 }

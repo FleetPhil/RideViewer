@@ -103,9 +103,10 @@ public enum RouteViewType {
 	}
 }
 
+// 	Range expressed in units on the primary axis
 public struct RouteIndexRange {
-	var from: Int
-	var to: Int
+	var from: Double
+	var to: Double
 }
 
 // MARK: Map view

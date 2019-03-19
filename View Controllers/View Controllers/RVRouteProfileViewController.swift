@@ -54,43 +54,81 @@ enum ViewProfileDisplayType {
 	}
 }
 
+struct DataPoint {
+	var dataValue : Double
+	var axisValue : Double
+}
+
+// Max / min for the dataSet to be plotted
+struct PlotBounds {
+	var minX : Double
+	var maxX : Double
+	var minY : Double
+	var maxY : Double
+}
+
 struct ViewProfileDataSet {
 	var profileDataType : ViewProfileDataType
 	var profileDisplayType : ViewProfileDisplayType
-	var profileDataPoints : [Double]
-
-	func dataPointsInScope(viewRange : RouteIndexRange) -> [(Int, Double)] {
-		return self.profileDataPoints.enumerated().filter({ $0.offset >= viewRange.from && $0.offset <= viewRange.to })
+	var dataPoints : [DataPoint]
+	
+	var fullRange : RouteIndexRange {
+		return RouteIndexRange(from: (self.dataPoints.map { $0.axisValue }).min() ?? 0, to: (self.dataPoints.map { $0.axisValue }).max() ?? 0)
 	}
+	
+	func rangeInScope(viewRange : RouteIndexRange, primaryRange : RouteIndexRange) -> RouteIndexRange {
+		let minX =  (self.dataPoints.map { $0.axisValue }).min() ?? 0
+		// Range min for this dataSet is primary min + offset for this set + offset for view from primary min
+		// Reduces to view min + this min - primary min
+		let scopeMin = viewRange.from + minX - primaryRange.from
+		return RouteIndexRange(from: scopeMin, to: primaryRange.to)
+	}
+	
+	func dataPointsInScope(viewRange : RouteIndexRange, primaryRange : RouteIndexRange) -> [DataPoint] {
+		let range = rangeInScope(viewRange: viewRange, primaryRange: primaryRange)
+		return dataPoints.filter({ $0.axisValue >= range.from && $0.axisValue <= range.to })
+	}
+	
 	func dataMin(viewRange : RouteIndexRange) -> Double {
-		return dataPointsInScope(viewRange: viewRange).reduce(Double.greatestFiniteMagnitude, { min($0, $1.1) })
+		return dataPointsInScope(viewRange: viewRange, primaryRange: self.fullRange).reduce(Double.greatestFiniteMagnitude, { min($0, $1.dataValue) })
 	}
 	func dataMax(viewRange : RouteIndexRange) -> Double {
-		return dataPointsInScope(viewRange: viewRange).reduce(0.0, { max($0, $1.1) })
+		return dataPointsInScope(viewRange: viewRange, primaryRange: self.fullRange).reduce(0.0, { max($0, $1.dataValue) })
 	}
+	func axisMin(viewRange : RouteIndexRange) -> Double {
+		return dataPointsInScope(viewRange: viewRange, primaryRange: self.fullRange).reduce(Double.greatestFiniteMagnitude, { min($0, $1.axisValue) })
+	}
+	func axisMax(viewRange : RouteIndexRange) -> Double {
+		return dataPointsInScope(viewRange: viewRange, primaryRange: self.fullRange).reduce(0.0, { max($0, $1.axisValue) })
+	}
+
+	
 }
 
 struct ViewProfileData {
 	private(set) var streamOwner : StreamOwner
 	private(set) var profileDataSets: [ViewProfileDataSet]
-	private(set) var fullRange : RouteIndexRange
-	var viewRange : RouteIndexRange
-	var highlightRange: RouteIndexRange?
+	private var plotBounds: PlotBounds
+	var viewRange : RouteIndexRange = RouteIndexRange(from: 0, to: 0)		// Referenced to the primary dataSet
+	var highlightRange: RouteIndexRange?									// Referenced to the primary dataSet
 	private(set) var rangeChangedHandler: ((RouteIndexRange) -> Void)?
 	
+	// TODO: should init with the primary set
 	init(streamOwner : StreamOwner, handler : ((RouteIndexRange) -> Void)? = nil) {
 		self.streamOwner			= streamOwner
 		self.profileDataSets 		= []
 		self.rangeChangedHandler	= handler
-		self.fullRange				= RouteIndexRange(from: 0, to: 0)
-		self.viewRange				= self.fullRange
 		self.highlightRange			= nil
+		self.plotBounds				= PlotBounds(minX: 0, maxX: 0, minY: 0, maxY: 0)
 	}
 	
 	mutating func addDataSet(_ dataSet : ViewProfileDataSet) {
 		self.profileDataSets.append(dataSet)
-		self.fullRange				= RouteIndexRange(from: 0, to: (self.profileDataSets.reduce(0) { max($0, $1.profileDataPoints.count) }) - 1)
-		self.viewRange				= self.fullRange
+		if dataSet.profileDisplayType == .primary {
+			self.viewRange = dataSet.fullRange
+		}
+		// Set the bounds of all the data sets
+		
 	}
 	
 	func dataSetOfDataType(_ dataType : ViewProfileDataType) -> ViewProfileDataSet? {
@@ -99,7 +137,7 @@ struct ViewProfileData {
 	func dataSetOfDisplayType(_ displayType : ViewProfileDisplayType) -> ViewProfileDataSet? {
 		return self.profileDataSets.filter({ $0.profileDisplayType == displayType }).first
 	}
-
+	
 	var dataSetCount : Int {
 		return profileDataSets.count
 	}
@@ -129,43 +167,40 @@ class RVRouteProfileViewController: UIViewController {
 	// Properties
 	private var profileData : ViewProfileData!
 	
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
+	override func viewDidLoad() {
+		super.viewDidLoad()
+	}
+	
 	func setPrimaryProfile<S> (streamOwner: S, profileType: ViewProfileDataType, range: RouteIndexRange? = nil) where S : StreamOwner {
 		profileData = ViewProfileData(streamOwner: streamOwner, handler: nil)
 		
-		let streams = streamOwner.streams.map { $0.type! }
-		appLog.verbose("Target: \(profileType.stravaValue), streams are \(streams)")
-
-		if let stream = (streamOwner.streams.filter { $0.type == profileType.stravaValue }).first {
-			appLog.verbose("Adding primary data set \(profileType) for \(self.description)")
-			profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .primary, profileDataPoints: stream.dataPoints))
-		} else {
-			appLog.verbose("Stream type \(profileType) (\(profileType.stravaValue)) not found")
-		}
-		// Add the distance set for the primary data as the x axis values
-		if let stream = (streamOwner.streams.filter { $0.type == ViewProfileDataType.distance.stravaValue }).first {
-			showDistance(stream: stream, type: profileType)
-			self.profileData.addDataSet(ViewProfileDataSet(profileDataType: .distance, profileDisplayType: .axis, profileDataPoints: stream.dataPoints))
-		}
-		
-		if self.profileData.dataSetCount >= 2 {
+		if let dataPoints = dataPointsForStreamType(profileType, streamOwner: streamOwner) {
+			profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .primary, dataPoints: dataPoints))
+			
 			self.noDataLabel.isHidden = true
 			self.waitingLabel.isHidden = true
 			self.routeView.profileData = self.profileData
-			self.setAxisLabelsWithData(self.profileData, forType: profileType)
+			self.setAxisLabelsWithData(self.profileData)
 		} else {
 			self.waitingLabel.isHidden = true
 			self.noDataLabel.isHidden = false
 		}
 	}
 	
-	private func showDistance(stream : RVStream, type: ViewProfileDataType) {
-		let minDistance = stream.dataPoints.first!
-		let maxDistance = stream.dataPoints.last!
-		appLog.debug("Distance for \(type) is \(minDistance.distanceDisplayString) to \(maxDistance.distanceDisplayString) (\((maxDistance-minDistance).distanceDisplayString))")
+	func dataPointsForStreamType<S> (_ profileType : ViewProfileDataType, streamOwner : S) -> [DataPoint]? where S : StreamOwner {
+		let streams = streamOwner.streams.map { $0.type! }
+		appLog.verbose("Target: \(profileType.stravaValue), streams are \(streams)")
+		
+		guard let stream = (streamOwner.streams.filter { $0.type == profileType.stravaValue }).first,
+			let axis = (streamOwner.streams.filter { $0.type == ViewProfileDataType.distance.stravaValue }).first else {
+				appLog.error("Missing target: \(profileType.stravaValue), streams are \(streams)")
+				return nil
+		}
+		
+		let axisValues = axis.dataPoints
+		let dataPoints = stream.dataPoints.enumerated().map({ DataPoint(dataValue: $0.element, axisValue: axisValues[$0.offset]) })
+		appLog.verbose("Returning \(dataPoints.count) data points for stream type \(profileType)")
+		return dataPoints
 	}
 	
 	func addSecondaryProfile<S>(owner : S, profileType: ViewProfileDataType) where S : StreamOwner {
@@ -175,65 +210,39 @@ class RVRouteProfileViewController: UIViewController {
 			return
 		}
 		
-		if let dataSet = (owner.streams.filter { $0.type == profileType.stravaValue }).first {
-			let primaryPointCount = profileData.dataSetOfDisplayType(.primary)?.profileDataPoints.count ?? 0
-			let secondaryPointCount = dataSet.dataPoints.count
-			appLog.verbose("Primary count: \(primaryPointCount), Secondary count: \(secondaryPointCount)")
-			
-			// Adjust the data points so the secondary count is the same as the primary
-			let normalisedDataPoints = normaliseDataPoints(dataSet.dataPoints, toRange: primaryPointCount)
-			appLog.verbose("Adding secondary data set \(profileType), \(normalisedDataPoints.count)")
-			profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .secondary, profileDataPoints: normalisedDataPoints))
-			routeView.profileData = profileData
-			
-			if let stream = (owner.streams.filter { $0.type == ViewProfileDataType.distance.stravaValue }).first {
-				showDistance(stream: stream, type: profileType)
-			}
+		if let dataPoints = dataPointsForStreamType(profileType, streamOwner: owner) {
+			profileData.addDataSet(ViewProfileDataSet(profileDataType: profileType, profileDisplayType: .secondary, dataPoints: dataPoints))
+			self.routeView.profileData = profileData
 		}
 	}
 	
-	private func normaliseDataPoints(_ dataPoints : [Double], toRange : Int) -> [Double] {
-		guard toRange > 1 else { return [] }
-		if dataPoints.count == toRange { return dataPoints }
-		
-		let increment = Double(dataPoints.count-1)/Double(toRange-1)
-		var newYValues : [Double] = []
-		for x in 0..<toRange {
-			let newX = Double(x) * increment
-			let lowX = floor(newX)
-			let highX = min(ceil(newX), Double(dataPoints.count - 1))
-			let newY = (dataPoints[Int(highX)]-dataPoints[Int(lowX)])*(newX - lowX) + dataPoints[Int(lowX)]
-			newYValues.append(newY)
-		}
-		return newYValues
+	func removeSecondaryProfile<S>(owner: S) where S : StreamOwner {
+//		let x = profileData.profileDataSets.filter({ $0. })
 	}
-
+	
 	func setHighLightRange(_ range : RouteIndexRange?) {
 		routeView.profileData?.highlightRange = range
 	}
 	
-	private func setAxisLabelsWithData(_ profileData : ViewProfileData, forType : ViewProfileDataType) {
-		// Horizontal axis is distance, vertical is selected data type
-		guard let distanceProfileSet = profileData.dataSetOfDisplayType(.axis) else { return }
-		guard let targetProfileSet = profileData.dataSetOfDataType(forType) else { return }
-		
-		let minDistance = distanceProfileSet.dataMin(viewRange: profileData.fullRange)
-		let maxDistance = distanceProfileSet.dataMax(viewRange: profileData.fullRange)
-		
-		horiz0Label.text		= minDistance.distanceDisplayString
-		horiz25Label.text		= ((maxDistance-minDistance) * 0.25 + minDistance).distanceDisplayString
-		horiz50Label.text		= ((maxDistance-minDistance) * 0.5 + minDistance).distanceDisplayString
-		horiz75Label.text		= ((maxDistance-minDistance) * 0.75 + minDistance).distanceDisplayString
-		horiz100Label.text		= ((maxDistance-minDistance) + minDistance).distanceDisplayString
-
-		let minValue			= targetProfileSet.dataMin(viewRange: profileData.fullRange)
-		let maxValue			= targetProfileSet.dataMax(viewRange: profileData.fullRange)
-		
-		vert0Label.text			= minValue.fixedFraction(digits: 0)
-		vert50Label.text		= ((maxValue-minValue) * 0.5 + minValue).fixedFraction(digits: 0)
-		vert100Label.text		= ((maxValue-minValue) + minValue).fixedFraction(digits: 0)
+	private func setAxisLabelsWithData(_ profileData : ViewProfileData) {
+		if let primarySet = profileData.dataSetOfDisplayType(.primary) {
+			let minValue			= primarySet.dataMin(viewRange: primarySet.fullRange)
+			let maxValue			= primarySet.dataMax(viewRange: primarySet.fullRange)
+			
+			vert0Label.text			= minValue.fixedFraction(digits: 0)
+			vert50Label.text		= ((maxValue-minValue) * 0.5 + minValue).fixedFraction(digits: 0)
+			vert100Label.text		= ((maxValue-minValue) + minValue).fixedFraction(digits: 0)
+			
+			let minDistance = 0.0
+			let maxDistance = primarySet.fullRange.to - primarySet.fullRange.from
+			
+			horiz0Label.text		= minDistance.distanceDisplayString
+			horiz25Label.text		= ((maxDistance-minDistance) * 0.25 + minDistance).distanceDisplayString
+			horiz50Label.text		= ((maxDistance-minDistance) * 0.5 + minDistance).distanceDisplayString
+			horiz75Label.text		= ((maxDistance-minDistance) * 0.75 + minDistance).distanceDisplayString
+			horiz100Label.text		= ((maxDistance-minDistance) + minDistance).distanceDisplayString
+		}
 	}
-	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
 		routeView.setNeedsDisplay()

@@ -153,10 +153,6 @@ public class RVEffort: NSManagedObject, RouteViewCompatible {
         return self
 	}
     
-    var indexRange : RouteIndexRange {
-        return RouteIndexRange(from: Int(self.startIndex), to: Int(self.endIndex))
-    }
-    
     class func filterPredicate(activity : RVActivity, range : RouteIndexRange?) -> NSCompoundPredicate {
         var filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "activity.id == %@", argumentArray: [activity.id])])
         if let routeRange = range {     // Only show efforts in specified index range

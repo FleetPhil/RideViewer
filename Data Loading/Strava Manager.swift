@@ -237,7 +237,10 @@ class StravaManager : TokenDelegate {
 	}
 	
 	func streamsForEffort(_ effort : RVEffort, context: NSManagedObjectContext, completionHandler: @escaping ((Bool)->Void)) {
-		guard token != nil else { return }
+		guard token != nil else {
+			completionHandler(false)
+			return
+		}
 		
 		try? StravaClient.sharedInstance.request(Router.effortStreams(id: Router.Id(effort.id), types: streamTypesForEffort), result: { (streams : [StravaSwift.Stream]?) in
 			streams?.forEach { _ = RVStream.createForEffort(effort, stream: $0, context: context) }

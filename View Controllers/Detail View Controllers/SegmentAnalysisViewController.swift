@@ -43,7 +43,7 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 		
 		// Get stream data for the fastest ride on this segment and set as the primary
 		if shortestElapsed != nil {
-			getStreams(effort: shortestElapsed!, displayType: .primary)
+			displayStreamsForEffort(shortestElapsed!, displayType: .primary)
 		}
 	}
 	
@@ -66,22 +66,26 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 	
 	// MARK: Effort table delegate
 	func didSelectEffort(effort: RVEffort) {
-		getStreams(effort: effort, displayType: .secondary)
+		displayStreamsForEffort(effort, displayType: .secondary)
 	}
 	
 	func didDeselectEffort(effort: RVEffort) {
-		appLog.verbose("Deselected \(effort.activity.name)")
+		speedProfileController.removeSecondaryProfile(owner: effort)
+		powerProfileController.removeSecondaryProfile(owner: effort)
+		HRProfileController.removeSecondaryProfile(owner: effort)
 	}
 	
 	// MARK: Effort profile setup
-	private func getStreams(effort: RVEffort, displayType: ViewProfileDisplayType) {
-		if effort.hasStreamOfType(.speed) {
+	private func displayStreamsForEffort(_ effort: RVEffort, displayType: ViewProfileDisplayType) {
+		if effort.hasStreamOfType(.distance) {			// Has axis value
 			setProfilesForEffort(effort, displayType: displayType)
 		} else {
 			StravaManager.sharedInstance.streamsForEffort(effort, context: effort.managedObjectContext!, completionHandler: { [weak self] (success) in
 				if success {
 					effort.managedObjectContext!.saveContext()
 					self?.setProfilesForEffort(effort, displayType: displayType)
+				} else {
+					appLog.verbose("Failed to get streams for effort \(effort.activity.name)")
 				}
 			})
 		}
