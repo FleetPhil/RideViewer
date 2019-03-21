@@ -26,8 +26,8 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 
 	// Private properties
 	private var effortTableViewType : EffortTableViewType = .effortsForActivity
-	private lazy var dataManager = DataManager<RVEffort>()
-	private var effortSortKey : EffortSort = .elapsedTime
+	private(set) lazy var dataManager = DataManager<RVEffort>()
+	private var effortSortKey : EffortSort!
 	private var effortFilters : [EffortFilter] = EffortFilter.allCases
 	
 	private var popupController : UIViewController?
@@ -38,8 +38,10 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 		switch ride {
 		case is RVActivity:
 			effortTableViewType = .effortsForActivity
+			effortSortKey		= .sequence
 		case is RVSegment:
 			effortTableViewType = .effortsForSegment
+			effortSortKey		= .elapsedTime
 		default:
 			appLog.error("Unsupported ride type for effort table")
 		}
@@ -50,22 +52,32 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 		tableView.tag 			= effortTableViewType.rawValue
 		
 		dataManager.tableView = tableView
-		
 		setDataManager()
+		
 		tableView.reloadData()
 	}
 	
-	func setDataManager() {
+	// Public interface
+	func highlightEffort(_ effort : RVEffort?) {
+		guard let effort = effort, let indexPath = dataManager.indexPathForObject(effort) else {
+			appLog.error("Effort not found in table")
+			return
+		}
+		tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
+	}
+	
+	// Private functions
+	private func setDataManager() {
 		dataManager.sortDescriptor = NSSortDescriptor(key: effortSortKey.rawValue, ascending: self.effortSortKey.defaultAscending)
 		switch effortTableViewType {
 		case .effortsForActivity:
 			let activityPredicate = NSPredicate(format: "activity.id == %@", argumentArray: [(ride as! RVActivity).id])
 			dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [EffortFilter.predicateForFilters(self.effortFilters), activityPredicate])
 		case .effortsForSegment:
-			let settingsPredicate = Settings.sharedInstance.segmentSettingsPredicate
+			// Show all efforts
 			let segmentPredicate = NSPredicate(format: "segment.id == %@", argumentArray: [(ride as! RVSegment).id])
 			let effortPredicate = EffortFilter.predicateForFilters(self.effortFilters)
-			dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [settingsPredicate, segmentPredicate, effortPredicate])
+			dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [segmentPredicate, effortPredicate])
 		}
 		_ = dataManager.fetchObjects()
 	}
@@ -82,7 +94,7 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 		}
 	}
 	
-	@objc func sortButtonPressed(sender: UIView) {
+	@objc private func sortButtonPressed(sender: UIView) {
 		// Popup the list of fields to select sort order
 		let chooser = PopupupChooser<EffortSort>()
 		chooser.title = "Sort order"
@@ -92,7 +104,7 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 		}
 	}
 	
-	@objc func filterButtonPressed(sender: UIView) {
+	@objc private func filterButtonPressed(sender: UIView) {
 		let chooser = PopupupChooser<EffortFilter>()
 		chooser.title = "Include"
 		chooser.multipleSelection = true

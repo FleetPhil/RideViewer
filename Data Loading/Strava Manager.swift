@@ -31,8 +31,8 @@ class StravaManager : TokenDelegate {
 	let streamTypesForEffort   = "watts,heartrate,time,cadence,velocity_smooth,distance"
 	
 	private init () {
-		let config = StravaConfig(clientId: 8785,
-								  clientSecret: "3b200baf949c02246425b3b6fb5957409a7fdb00",
+		let config = StravaConfig(clientId: StravaConstants.ClientID,
+								  clientSecret: StravaConstants.ClientSecret,
 								  redirectUri: "rideviewer://localhost",
 								  scope: .viewPrivate,
 								  delegate: self)
@@ -69,8 +69,8 @@ class StravaManager : TokenDelegate {
 		return token != nil
 	}
 	
-    func getAthleteActivities(page : Int, context : NSManagedObjectContext, completionHandler : @escaping ((_ newActivities : Int)->Void)) {
-		var params = ["per_page":100, "page":page]
+	func getAthleteActivities(page : Int, context : NSManagedObjectContext, progressHandler : @escaping ((_ totalActivities : Int, _ processedActivities : Int, _ finished : Bool)->Void)) {
+		var params = ["per_page":StravaConstants.ItemsPerPage, "page":page]
 
 		if page == 1 {
 		// Get time of latest activity and save the date 
@@ -93,13 +93,15 @@ class StravaManager : TokenDelegate {
 			if activities.count > 0 {
 				activities.forEach {
 					let _ = RVActivity.create(activity: $0, context: context)
+					self.newActivityCount += 1
+					progressHandler(page * StravaConstants.ItemsPerPage + activities.count, self.newActivityCount, false)
 				}
-				self.newActivityCount = self.newActivityCount + activities.count
-                self.getAthleteActivities(page: page + 1, context: context, completionHandler: completionHandler)		// get next page
+				// Get next page
+                self.getAthleteActivities(page: page + 1, context: context, progressHandler: progressHandler)		// get next page
 			} else {
 				// No more activities to load
 				self.lastActivity = nil
-                completionHandler(self.newActivityCount)
+                progressHandler(page * StravaConstants.ItemsPerPage + self.newActivityCount, self.newActivityCount, true)
 			}
 			}, failure: { (error: NSError) in
 				debugPrint(error)
@@ -129,7 +131,7 @@ class StravaManager : TokenDelegate {
 	
 	// TODO: only call completion handler when all data is retrieved
     func getStarredSegments (page : Int, context : NSManagedObjectContext, completionHandler : @escaping (([RVSegment])->Void)) {
-        let params = ["per_page":100, "page":page]
+        let params = ["per_page":StravaConstants.ItemsPerPage, "page":page]
 		var starredSegments: [RVSegment] = []
         
         try? StravaClient.sharedInstance.request(Router.segmentsStarred(params: params), result: { [weak self] (segments: [Segment]?) in
@@ -140,7 +142,7 @@ class StravaManager : TokenDelegate {
                 segments.forEach {
                     let createdSegment = RVSegment.create(segment: $0, context: context)
 					if createdSegment.resourceState != .detailed {
-						self.getSegment(createdSegment, context: context, completionHandler: { success in
+						self.getSegmentDetails(createdSegment, context: context, completionHandler: { success in
 							appLog.debug("Got detailed: \(createdSegment.name!)")
 						})
 					}
@@ -153,7 +155,7 @@ class StravaManager : TokenDelegate {
 					starredSegments.append(createdSegment)
                 }
             }
-            if segments.count == 100 {
+            if segments.count == StravaConstants.ItemsPerPage {
                 self.getStarredSegments(page: page + 1, context: context, completionHandler: completionHandler)        // get next page
             } else {
                 // No more segments to load
@@ -164,7 +166,7 @@ class StravaManager : TokenDelegate {
         })
     }
 	
-	func getSegment(_ segment : RVSegment, context : NSManagedObjectContext, completionHandler : @escaping ((Bool)->Void)) {
+	func getSegmentDetails(_ segment : RVSegment, context : NSManagedObjectContext, completionHandler : @escaping ((Bool)->Void)) {
 		guard token != nil else {
 			completionHandler(false)
 			return
@@ -201,6 +203,7 @@ class StravaManager : TokenDelegate {
 				}
                 appLog.verbose("\(efforts.count) efforts for \(efforts.first!.segment!.name!) on page \(page)")
                 segment.allEfforts = true
+				completionHandler(true)
 			} else {			// Finished
 				// We have all current efforts for this segment
 				segment.allEfforts = true
@@ -218,7 +221,7 @@ class StravaManager : TokenDelegate {
 		}
 		
 		try? StravaClient.sharedInstance.request(Router.activityStreams(id: Router.Id(activity.id), types: streamTypesForActivity), result: { (streams : [StravaSwift.Stream]?) in
-			streams?.forEach { _ = RVStream.createForActivity(activity, stream: $0, context: context) }
+			streams?.forEach { _ = RVStream.createForOwner(activity, stream: $0, context: context) }
 			completionHandler(streams != nil ? true : false)
 			}, failure: { (error: NSError) in
 				debugPrint(error)
@@ -226,10 +229,13 @@ class StravaManager : TokenDelegate {
 	}
 	
 	func streamsForSegment(_ segment : RVSegment, context: NSManagedObjectContext, completionHandler: @escaping ((Bool)->Void)) {
-		guard token != nil else { return }
+		guard token != nil else {
+			completionHandler(false)
+			return
+		}
 		
 		try? StravaClient.sharedInstance.request(Router.segmentStreams(id: Router.Id(segment.id), types: streamTypesForActivity), result: { (streams : [StravaSwift.Stream]?) in
-			streams?.forEach { _ = RVStream.createForSegment(segment, stream: $0, context: context) }
+			streams?.forEach { _ = RVStream.createForOwner(segment, stream: $0, context: context) }
 			completionHandler(streams != nil ? true : false)
 		}, failure: { (error: NSError) in
 			debugPrint(error)
@@ -243,7 +249,7 @@ class StravaManager : TokenDelegate {
 		}
 		
 		try? StravaClient.sharedInstance.request(Router.effortStreams(id: Router.Id(effort.id), types: streamTypesForEffort), result: { (streams : [StravaSwift.Stream]?) in
-			streams?.forEach { _ = RVStream.createForEffort(effort, stream: $0, context: context) }
+			streams?.forEach { _ = RVStream.createForOwner(effort, stream: $0, context: context) }
 			completionHandler(streams != nil ? true : false)
 		}, failure: { (error: NSError) in
 			debugPrint(error)

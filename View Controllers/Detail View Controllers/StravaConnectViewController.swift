@@ -31,14 +31,14 @@ class StravaConnectViewController: UIViewController {
 		
 		do {
 			let _ = StravaManager.sharedInstance.getToken(code: code) { success in
-				if success {
-					appLog.debug("Have token")
-                    StravaManager.sharedInstance.getAthleteActivities(page: 1, context: CoreDataManager.sharedManager().viewContext, completionHandler: { newActivities in
-                        appLog.debug("\(newActivities) new activities")
-                    })
-				} else {
-					appLog.debug("getToken failed")
-				}
+//				if success {
+//					appLog.debug("Have token")
+//					StravaManager.sharedInstance.getAthleteActivities(page: 1, context: CoreDataManager.sharedManager().viewContext, progressHandler: { newActivities,<#arg#>,<#arg#>  in
+//                        appLog.debug("\(newActivities) new activities")
+//                    })
+//				} else {
+//					appLog.debug("getToken failed")
+//				}
 			}
 		}
 	}

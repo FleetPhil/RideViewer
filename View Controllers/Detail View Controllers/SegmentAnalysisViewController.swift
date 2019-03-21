@@ -13,6 +13,11 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 	@IBOutlet weak var topInfoLabel: UILabel!
 	@IBOutlet weak var bottomInfoLabel: UILabel!
 	
+	@IBOutlet weak var topContainerView: UIView!
+	@IBOutlet weak var midContainerView: UIView!
+	@IBOutlet weak var bottomContainerView: UIView!
+	
+	
 	private var effortTableViewController : RVEffortListViewController!
 	private var speedProfileController : RVRouteProfileViewController!
 	private var powerProfileController : RVRouteProfileViewController!
@@ -24,6 +29,7 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 			shortestElapsed = segment.shortestElapsedEffort()
 		}
 	}
+	var highlightEffort : RVEffort? = nil
 	
 	// MARK: Model for effort table
 	private lazy var dataManager = DataManager<RVEffort>()
@@ -45,14 +51,19 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 		if shortestElapsed != nil {
 			displayStreamsForEffort(shortestElapsed!, displayType: .primary)
 		}
+		if highlightEffort != nil {
+			displayStreamsForEffort(highlightEffort!, displayType: .secondary)
+			// Select this effort in the table and scroll to it
+			effortTableViewController.highlightEffort(highlightEffort!)
+		}
 	}
 	
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if let destination = segue.destination as? RVRouteProfileViewController {
 			switch segue.identifier {
 			case "SpeedProfileSegue":	speedProfileController = destination
-			case "PowerProfileSegue":	powerProfileController = destination
 			case "HRProfileSegue":		HRProfileController = destination
+			case "PowerProfileSegue":	powerProfileController = destination
 			default:					appLog.error("Unknown profile segue identifier \(segue.identifier!)")
 			}
 		}
@@ -70,9 +81,9 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 	}
 	
 	func didDeselectEffort(effort: RVEffort) {
-		speedProfileController.removeSecondaryProfile(owner: effort)
-		powerProfileController.removeSecondaryProfile(owner: effort)
-		HRProfileController.removeSecondaryProfile(owner: effort)
+		speedProfileController.removeSecondaryProfiles()
+		powerProfileController.removeSecondaryProfiles()
+		HRProfileController.removeSecondaryProfiles()
 	}
 	
 	// MARK: Effort profile setup
@@ -94,13 +105,26 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 	private func setProfilesForEffort(_ effort : RVEffort, displayType: ViewProfileDisplayType) {
 		switch displayType {
 		case .primary:
-			speedProfileController.setPrimaryProfile(streamOwner: effort, profileType: .speed)
-			powerProfileController.setPrimaryProfile(streamOwner: effort, profileType: .power)
-			HRProfileController.setPrimaryProfile(streamOwner: effort, profileType: .heartRate)
+			if speedProfileController.setPrimaryProfile(streamOwner: effort, profileType: .speed) {
+				speedProfileController.addProfile(owner: effort.segment, profileType: .altitude , displayType: .background)
+			}
+			if HRProfileController.setPrimaryProfile(streamOwner: effort, profileType: .heartRate) {
+				HRProfileController.addProfile(owner: effort.segment, profileType: .altitude , displayType: .background)
+			} else {
+				appLog.debug("No HR for \(effort.activity.name)")
+				midContainerView.isHidden = true
+			}
+			if powerProfileController.setPrimaryProfile(streamOwner: effort, profileType: .power) {
+				powerProfileController.addProfile(owner: effort.segment, profileType: .altitude , displayType: .background)
+			} else {
+				appLog.debug("No power for \(effort.activity.name)")
+				bottomContainerView.isHidden = true
+			}
 		case .secondary:
-			speedProfileController.addSecondaryProfile(owner: effort, profileType: .speed)
-			powerProfileController.addSecondaryProfile(owner: effort, profileType: .power)
-			HRProfileController.addSecondaryProfile(owner: effort, profileType: .heartRate)
+			// Will not add if primary does not exist for this data type
+			speedProfileController.addProfile(owner: effort, profileType: .speed, displayType: .secondary)
+			powerProfileController.addProfile(owner: effort, profileType: .power, displayType: .secondary)
+			HRProfileController.addProfile(owner: effort, profileType: .heartRate, displayType: .secondary)
 		default:
 			appLog.error("Unexpected display type \(displayType) requested")
 			break

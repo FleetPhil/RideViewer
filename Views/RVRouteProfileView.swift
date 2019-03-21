@@ -82,11 +82,18 @@ class RVRouteProfileView : UIView {
 	
 	// Return the point in the given CGRect that shows the x and y values scaled to the bounds
 	// x and y values are in the frame of the secondary, bounds are in the frame of the primary
-	func plot(rect : CGRect, x : Double, y: Double, bounds : PlotBounds) -> CGPoint? {
-		guard x>=bounds.minX, x<=bounds.maxX, y>=bounds.minY, y<=bounds.maxY else {
-			appLog.error("Error: points to plot out of bounds")
+	private func plot(rect : CGRect, x : Double, y: Double, bounds : DataBounds) -> CGPoint? {
+		guard y>=bounds.minY, y<=bounds.maxY, x>=bounds.minX else {
+			appLog.error("Error: data point to plot out of bounds")
 			return nil
 		}
+		
+		if x>bounds.maxX {
+			// Axis value greater than the primary axis, ignore as should only be a few points
+			appLog.verbose("X value exceeds axis by \(x - bounds.maxX) (\(x), \(bounds.maxX))")
+			return nil
+		}
+		
 		let scaledX = (x - bounds.minX)/(bounds.maxX - bounds.minX)
 		let scaledY = (y - bounds.minY)/(bounds.maxY - bounds.minY)
 		
@@ -96,14 +103,12 @@ class RVRouteProfileView : UIView {
 		return CGPoint(x: newX, y: newY)
 	}
 	
-	func plotValues(rect : CGRect, dataValues : [DataPoint], bounds : PlotBounds) -> [CGPoint] {
-		appLog.verbose("Plotting \(dataValues.count) values")
-		
+	private func plotValues(rect : CGRect, dataValues : [DataPoint], dataBounds : DataBounds) -> [CGPoint] {
 		// Calculate the offset of the start of the x axis from the x axis of the primary set and use it as an adjustment for each of the x values
-		let xOffset = dataValues[0].axisValue - bounds.minX
+		let xOffset = dataValues[0].axisValue - dataBounds.minX
 		
 		let points = dataValues.enumerated().compactMap {
-			plot(rect: rect, x: dataValues[$0.offset].axisValue - xOffset, y: dataValues[$0.offset].dataValue, bounds: bounds)
+			plot(rect: rect, x: dataValues[$0.offset].axisValue - xOffset, y: dataValues[$0.offset].dataValue, bounds: dataBounds)
 		}
 		return points
 	}
@@ -121,10 +126,7 @@ class RVRouteProfileView : UIView {
 	}
 	
 	override func draw(_ rect: CGRect) {
-		guard let primaryDataSet = profileData?.dataSetOfDisplayType(.primary) else {
-			appLog.debug("No promary dataSet")
-			return
-		}
+		guard profileData != nil else { return }
 		
 		self.backgroundColor = UIColor.white
 		
@@ -133,29 +135,46 @@ class RVRouteProfileView : UIView {
 			path.fill()
 		}
 		
-		appLog.verbose {
-			let dataSets = profileData!.profileDataSets.map { ($0.profileDataType, $0.profileDisplayType) }
-			return "Draw: \(dataSets)"
-		}
+		appLog.verbose("Draw: \(profileData!.profileDataSets.map { ($0.profileDataType, $0.profileDisplayType) })")
 		
 		let viewRange = profileData!.viewRange
-		let dataBounds = PlotBounds(minX: primaryDataSet.axisMin(viewRange: viewRange),
-									maxX: primaryDataSet.axisMax(viewRange: viewRange),
-									minY: profileData!.profileDataSets.reduce(Double.greatestFiniteMagnitude, { min($0, $1.dataMin(viewRange: viewRange) ) }),
-									maxY: profileData!.profileDataSets.reduce(0.0, { max($0, $1.dataMax(viewRange: viewRange) ) }))
 		
 		for dataSet in profileData!.profileDataSets {
-			appLog.verbose("Draw set: \(dataSet.profileDataType)")
-			let pointsToDraw = plotValues(rect: self.bounds, dataValues: dataSet.dataPoints, bounds: dataBounds)
+			appLog.verbose("Draw set: \(dataSet.profileDataType), \(dataSet.profileDisplayType), \(dataSet.dataPoints.count) values")
+
+			switch dataSet.profileDisplayType {
 			
-			let path = UIBezierPath()
-			path.lineWidth = 1.0
-			path.move(to: pointsToDraw[0])
-			for i in 1..<pointsToDraw.count {
-				path.addLine(to: pointsToDraw[i])
+			case .primary, .secondary:
+				// Primary and secondary draw as a line with data bounds set by primary
+				let pointsToDraw = plotValues(rect: self.bounds, dataValues: dataSet.dataPoints, dataBounds: profileData!.mainDataBounds)
+				let path = UIBezierPath()
+				path.lineWidth = 1.0
+				path.move(to: pointsToDraw[0])
+				for i in 1..<pointsToDraw.count {
+					path.addLine(to: pointsToDraw[i])
+				}
+				dataSet.profileDisplayType.displayColour.setStroke()
+				path.stroke()
+			
+			case .background:
+				// Background draws as a shaded background
+				// Data bounds for the background are relative to the background bounds, not the primary
+				
+				let dataBounds = dataSet.dataBounds(viewRange: viewRange)
+				let viewBounds = CGRect(x: 0, y: self.bounds.height * 0.25 , width: self.bounds.width, height: self.bounds.height * 0.75 )
+				let pointsToDraw = plotValues(rect: viewBounds, dataValues: dataSet.dataPoints, dataBounds: dataBounds)
+
+				let path = UIBezierPath()
+				path.move(to: pointsToDraw[0])
+				for i in 1..<pointsToDraw.count {
+					path.addLine(to: pointsToDraw[i])
+				}
+				path.addLine(to: CGPoint(x: pointsToDraw.last!.x, y: self.bounds.maxY))
+				path.addLine(to: CGPoint(x: pointsToDraw[0].x, y: self.bounds.maxY))
+				path.addLine(to: pointsToDraw[0])
+				UIColor.init(displayP3Red: 1.0, green: 0, blue: 0, alpha: 0.3).setFill()
+				path.fill()
 			}
-			dataSet.profileDisplayType.displayColour.setStroke()
-			path.stroke()
 		}
 	}
 }

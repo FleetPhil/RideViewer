@@ -21,7 +21,7 @@ class InitialViewController: UIViewController {
 											   name: NSNotification.Name("code"),
 											   object: nil)
 		
-//		showStats()
+		//		showStats()
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
@@ -44,17 +44,35 @@ class InitialViewController: UIViewController {
 					// Alamofire executes completion handler on the main queue so need to stay on main queue context here
 					let context = CoreDataManager.sharedManager().viewContext
 					
-					StravaManager.sharedInstance.getAthleteActivities(page: 1, context: context, completionHandler: { newActivities in
-						appLog.debug("\(newActivities) new activities - getting starred segments")
-						StravaManager.sharedInstance.getStarredSegments(page: 1, context: context, completionHandler: { segments in
-							appLog.debug("\(segments.count) segments - getting efforts")
-							self.effortsForSegments(segments)
-						})
+					StravaManager.sharedInstance.getAthleteActivities(page: 1, context: context, progressHandler: { totalActivities, retrievedActivities, finished in
+//						appLog.verbose("Progress: total: \(totalActivities), retrieved: \(retrievedActivities), finished: \(finished)")
+						if finished {
+							// Invalidate flags that indicate all efforts have been retrieved for each segment. We don't know what segments are included on the new activities
+							// so need to invalidate all to be safe
+							self.unsetAllEffortsFlags()
+							
+							StravaManager.sharedInstance.getStarredSegments(page: 1, context: context, completionHandler: { segments in
+								appLog.debug("\(segments.count) segments - getting efforts and streams")
+								self.effortsForSegments(segments, progressHandler: { total, processed, finished in
+									appLog.verbose("Total Segments: \(total), Processed: \(processed), Finished: \(finished)")
+									if finished {
+										context.saveContext()
+									}
+								})
+							})
+						}
 					})
 				} else {
 					appLog.debug("getToken failed")
 				}
 			}
+		}
+	}
+	
+	func unsetAllEffortsFlags() {
+		let predicate = NSPredicate(format: "allEfforts == %@", argumentArray: [NSNumber(value: true)])
+		if let segments : [RVSegment] = CoreDataManager.sharedManager().viewContext.fetchObjects(withPredicate: predicate, withSortDescriptor: nil) {
+			segments.forEach({ $0.allEfforts = false })
 		}
 	}
 	
@@ -95,13 +113,20 @@ class InitialViewController: UIViewController {
 		appLog.debug("\(CoreDataManager.sharedManager().viewContext.countOfObjects(RVStream.self) ?? -1) streams")
 	}
 	
-	func effortsForSegments(_ segments : [RVSegment]) {
+	func effortsForSegments(_ segments : [RVSegment], progressHandler : @escaping ((_ totalActivities : Int, _ processedActivities : Int, _ finished : Bool)->Void)) {
+		var segmentsProcessedCount = 0
 		segments.forEach { segment in
-			if !segment.allEfforts {
+			if segment.allEfforts {
+				// Already have all efforts for this segment
+				segmentsProcessedCount += 1
+				progressHandler(segments.count, segmentsProcessedCount, segments.count == segmentsProcessedCount)
+			} else {
 				StravaManager.sharedInstance.effortsForSegment(segment, page: 1, context: segment.managedObjectContext!, completionHandler: { success in
 					if !success {
 						appLog.debug("Efforts failed for segment \(segment.name!)")
 					}
+					segmentsProcessedCount += 1
+					progressHandler(segments.count, segmentsProcessedCount, segments.count == segmentsProcessedCount)
 				})
 			}
 		}

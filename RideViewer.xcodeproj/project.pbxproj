@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1F7F7563C601199D9C01D301 /* Pods_RideViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC620C6C93D11AF021E27DB /* Pods_RideViewer.framework */; };
+		F4031DB62242A70500093B2E /* StreamOwner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4031DB52242A70500093B2E /* StreamOwner.swift */; };
 		F4048CAA2236B88500502DA5 /* RVSortFilterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */; };
 		F4048CB02236BCB700502DA5 /* RVEffortListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CAF2236BCB700502DA5 /* RVEffortListViewController.swift */; };
 		F405EE8F223589D4001636A0 /* SegmentAnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F405EE8E223589D4001636A0 /* SegmentAnalysisViewController.swift */; };
@@ -16,6 +17,7 @@
 		F41C7A2F21D0E820003A5C31 /* StravaConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41C7A2E21D0E820003A5C31 /* StravaConnectViewController.swift */; };
 		F41C7A3121D12EFA003A5C31 /* Display Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41C7A3021D12EFA003A5C31 /* Display Extensions.swift */; };
 		F4213A9B221EB94700FE8844 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4213A9A221EB94700FE8844 /* InitialViewController.swift */; };
+		F42585A6224161CA00BCDA86 /* ViewProfileData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42585A5224161CA00BCDA86 /* ViewProfileData.swift */; };
 		F429A6F621D7ECF500A053DE /* RVSegmentListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429A6F521D7ECF500A053DE /* RVSegmentListViewController.swift */; };
 		F429A6F821D7F23000A053DE /* Data Model Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429A6F721D7F23000A053DE /* Data Model Extensions.swift */; };
 		F42ECEE421CF91130096F83B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42ECEE321CF91130096F83B /* AppDelegate.swift */; };
@@ -39,6 +41,7 @@
 		F46C126D21F200F7007438DB /* RVPhotoAsset+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C126B21F200F7007438DB /* RVPhotoAsset+CoreDataClass.swift */; };
 		F46C126E21F200F7007438DB /* RVPhotoAsset+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C126C21F200F7007438DB /* RVPhotoAsset+CoreDataProperties.swift */; };
 		F475B72721D232BC0028F2AF /* StravaSwift Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F475B72621D232BC0028F2AF /* StravaSwift Extensions.swift */; };
+		F47B5DD022426ADD00A765EA /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F47B5DCF22426ADD00A765EA /* Constants.swift */; };
 		F47B92632232CF0000B83303 /* RVSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F47B92622232CF0000B83303 /* RVSplitViewController.swift */; };
 		F49E07DC21E1244000A0D678 /* SegmentDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49E07DB21E1244000A0D678 /* SegmentDetailViewController.swift */; };
 		F4AAD80B21DCF788006ED5DD /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AAD80A21DCF788006ED5DD /* SettingsTableViewController.swift */; };
@@ -65,6 +68,7 @@
 		2DC620C6C93D11AF021E27DB /* Pods_RideViewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RideViewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		590E5ACF93A252F741663B7D /* Pods-RideViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.debug.xcconfig"; sourceTree = "<group>"; };
 		D272B46FE80E68DEE976D7CC /* Pods-RideViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.release.xcconfig"; sourceTree = "<group>"; };
+		F4031DB52242A70500093B2E /* StreamOwner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOwner.swift; sourceTree = "<group>"; };
 		F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVSortFilterTableView.swift; sourceTree = "<group>"; };
 		F4048CAF2236BCB700502DA5 /* RVEffortListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVEffortListViewController.swift; sourceTree = "<group>"; };
 		F405EE8E223589D4001636A0 /* SegmentAnalysisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SegmentAnalysisViewController.swift; path = "Detail View Controllers/SegmentAnalysisViewController.swift"; sourceTree = "<group>"; };
@@ -73,6 +77,7 @@
 		F41C7A2E21D0E820003A5C31 /* StravaConnectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StravaConnectViewController.swift; path = "Detail View Controllers/StravaConnectViewController.swift"; sourceTree = "<group>"; };
 		F41C7A3021D12EFA003A5C31 /* Display Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Display Extensions.swift"; sourceTree = "<group>"; };
 		F4213A9A221EB94700FE8844 /* InitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
+		F42585A5224161CA00BCDA86 /* ViewProfileData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewProfileData.swift; sourceTree = "<group>"; };
 		F429A6F521D7ECF500A053DE /* RVSegmentListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVSegmentListViewController.swift; sourceTree = "<group>"; };
 		F429A6F721D7F23000A053DE /* Data Model Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data Model Extensions.swift"; sourceTree = "<group>"; };
 		F42ECEE021CF91130096F83B /* RideViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RideViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -98,6 +103,7 @@
 		F46C126B21F200F7007438DB /* RVPhotoAsset+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVPhotoAsset+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F46C126C21F200F7007438DB /* RVPhotoAsset+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVPhotoAsset+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F475B72621D232BC0028F2AF /* StravaSwift Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StravaSwift Extensions.swift"; sourceTree = "<group>"; };
+		F47B5DCF22426ADD00A765EA /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		F47B92622232CF0000B83303 /* RVSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVSplitViewController.swift; sourceTree = "<group>"; };
 		F49E07DB21E1244000A0D678 /* SegmentDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SegmentDetailViewController.swift; path = "Detail View Controllers/SegmentDetailViewController.swift"; sourceTree = "<group>"; };
 		F4AAD80A21DCF788006ED5DD /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
@@ -291,6 +297,9 @@
 		F4DC5A1A21D4C7CC0017983E /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				F4031DB52242A70500093B2E /* StreamOwner.swift */,
+				F47B5DCF22426ADD00A765EA /* Constants.swift */,
+				F42585A5224161CA00BCDA86 /* ViewProfileData.swift */,
 				F4F5AFC221F0DDDB005DB8B1 /* PhotoManager.swift */,
 				F4DC5A1821D4C7B50017983E /* Distance Utilities.swift */,
 				F4AAD80C21DD251C006ED5DD /* Settings.swift */,
@@ -441,6 +450,7 @@
 				F4ED1BE02208AEB600821D76 /* RVMapView.swift in Sources */,
 				F4611B9F21F3935C00EDFC13 /* General Utilities.swift in Sources */,
 				F42ECF0121CFD25E0096F83B /* RVActivityListViewController.swift in Sources */,
+				F42585A6224161CA00BCDA86 /* ViewProfileData.swift in Sources */,
 				F4F5195121FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift in Sources */,
 				F4F5AFC421F0DDDB005DB8B1 /* PhotoManager.swift in Sources */,
 				F4AAD80D21DD251C006ED5DD /* Settings.swift in Sources */,
@@ -458,6 +468,7 @@
 				F46C126D21F200F7007438DB /* RVPhotoAsset+CoreDataClass.swift in Sources */,
 				F4C113D421D6790B00188A30 /* RVSegment+CoreDataClass.swift in Sources */,
 				F4AAD80B21DCF788006ED5DD /* SettingsTableViewController.swift in Sources */,
+				F47B5DD022426ADD00A765EA /* Constants.swift in Sources */,
 				F4C113D221D6790B00188A30 /* RVEffort+CoreDataClass.swift in Sources */,
 				F42ECEFE21CFA6790096F83B /* RVActivity+CoreDataClass.swift in Sources */,
 				F41C7A2F21D0E820003A5C31 /* StravaConnectViewController.swift in Sources */,
@@ -468,6 +479,7 @@
 				F41C7A3121D12EFA003A5C31 /* Display Extensions.swift in Sources */,
 				F42ECF0B21CFE1A50096F83B /* MOC Extensions.swift in Sources */,
 				F4C113D521D6790B00188A30 /* RVSegment+CoreDataProperties.swift in Sources */,
+				F4031DB62242A70500093B2E /* StreamOwner.swift in Sources */,
 				F4ED1BE22208B02A00821D76 /* RVRouteProfileView.swift in Sources */,
 				FA3F242C21DA7AC80048A828 /* RVMap+CoreDataProperties.swift in Sources */,
 				F47B92632232CF0000B83303 /* RVSplitViewController.swift in Sources */,

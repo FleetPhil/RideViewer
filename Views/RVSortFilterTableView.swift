@@ -20,8 +20,6 @@ class RVSortFilterTableView: UITableView {
 	
 	func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
 		sectionHeaderView = RVSortFilterHeaderView(frame: view.bounds)
-//		header.sortButton.addTarget(self, action: #selector(sortButtonPressed), for: .touchUpInside)
-//		header.filterButton.addTarget(self, action: #selector(filterButtonPressed), for: .touchUpInside)
 		sectionHeaderView!.headerLabel.text = "Header"
 		view.addSubview(sectionHeaderView!)
 	}

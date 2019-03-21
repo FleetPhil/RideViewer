@@ -246,11 +246,13 @@ extension RVEffort : TableViewCompatibleEntity {
 extension RVEffort {
 	var effortDisplayText : NSAttributedString {
 		let effortText = NSMutableAttributedString(string: "⏱ " + self.elapsedTime.shortDurationDisplayString)
-		effortText.append(NSAttributedString(string: "  ⏩ " + (self.distance / self.elapsedTime).speedDisplayString))
-		effortText.append(NSAttributedString(string: self.maxHeartRate > 0 ? "  ❤️ \(self.maxHeartRate.fixedFraction(digits: 0))" : ""))
+		effortText.append(NSAttributedString(string: "  ⏩ " + (self.distance / self.elapsedTime).speedDisplayString()))
+		if self.activity.hasHeartRate {
+			effortText.append(NSAttributedString(string: " " + EmojiConstants.HeartRate + " " + self.maxHeartRate.fixedFraction(digits: 0)))
+		}
 		
 		let powerAttributes : [NSAttributedString.Key : Any] = self.activity.deviceWatts ? [:] : [.foregroundColor : UIColor.lightGray]
-		effortText.append(NSAttributedString(string: "  🔌 \(self.averageWatts.fixedFraction(digits: 0))W", attributes: powerAttributes))
+		effortText.append(NSAttributedString(string: " " +  EmojiConstants.Power + self.averageWatts.fixedFraction(digits: 0) + "W", attributes: powerAttributes))
 		
 		return effortText
 	}
@@ -267,7 +269,7 @@ class EffortListForActivityTableViewCell : UITableViewCell, TableViewCompatibleC
 		if let effort = withModel as? RVEffort {
 			
 			let segmentStarText = effort.segment.starred ? "★" : "☆"
-			segmentName.text = segmentStarText + " " + effort.segment.name!
+			segmentName.text = segmentStarText + " " + effort.segment.name! + (effort.streams.count > 0 ? " ⇉" : "")
             segmentName.textColor = effort.segment.resourceState.resourceStateColour
 			
 			segmentData.text = "➡️ " + effort.distance.distanceDisplayString
@@ -294,7 +296,7 @@ class EffortListForSegmentTableViewCell : UITableViewCell, TableViewCompatibleCe
 	func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell  {
 		if let effort = withModel as? RVEffort {
 			
-			activityName.text = effort.activity.name + (effort.activity.streams.count > 0 ? " 🔹" : "")
+			activityName.text = effort.activity.name + (effort.streams.count > 0 ? " ⇉" : "")
 			activityName.textColor = effort.activity.resourceState.resourceStateColour
 			activityDate.text = (effort.activity.startDate as Date).displayString(displayType: .dateOnly, timeZone: effort.activity.timeZone.timeZone)
 

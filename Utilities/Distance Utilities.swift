@@ -61,8 +61,8 @@ extension Speed {
 	var speedMeasurement : Measurement<UnitSpeed> {
 		return Measurement(value: self, unit: UnitSpeed.metersPerSecond)
 	}
-	var speedDisplayString : String {
-		return self.speedMeasurement.displayFormatter(fractionDigits: 1).string(from: self.speedMeasurement.converted(to: unitSpeed))
+	func speedDisplayString(style : MeasurementFormatter.UnitStyle = .medium, fractionDigits : Int = 0) -> String {
+		return self.speedMeasurement.displayFormatter(unitStyle: style, fractionDigits: fractionDigits).string(from: self.speedMeasurement.converted(to: unitSpeed))
 	}
 }
 
@@ -74,10 +74,10 @@ func / (lhs: Measurement<UnitLength>, rhs: Measurement<UnitDuration>) -> Measure
 
 // Standard formatting
 extension Measurement  {
-	func displayFormatter(fractionDigits : Int = 0)  -> MeasurementFormatter {
+	func displayFormatter(unitStyle : MeasurementFormatter.UnitStyle = .medium,  fractionDigits : Int = 0)  -> MeasurementFormatter {
 		let measurementFormatter = MeasurementFormatter()
 		measurementFormatter.unitOptions = .providedUnit
-		measurementFormatter.unitStyle = .medium
+		measurementFormatter.unitStyle = unitStyle
 		let numberFormatter = NumberFormatter()
 		numberFormatter.numberStyle = NumberFormatter.Style.decimal
 		numberFormatter.maximumFractionDigits = fractionDigits

@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 
 
-extension RVSegment : StreamOwner {
+extension RVSegment {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<RVSegment> {
         return NSFetchRequest<RVSegment>(entityName: "RVSegment")

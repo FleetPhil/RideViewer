@@ -11,8 +11,7 @@ import Foundation
 import CoreData
 
 
-extension RVActivity : StreamOwner {
-
+extension RVActivity {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<RVActivity> {
         return NSFetchRequest<RVActivity>(entityName: "RVActivity")
     }
@@ -46,6 +45,10 @@ extension RVActivity : StreamOwner {
 	@NSManaged public var trainer : Bool
 	@NSManaged public var map : RVMap?
 	@NSManaged public var photoScanDate : NSDate?
+	
+	@NSManaged public var hasHeartRate : Bool
+	@NSManaged public var averageHeartRate : Double
+	@NSManaged public var maxHeartRate : Double
 
     @NSManaged public var efforts: Set<RVEffort>
 	@NSManaged public var photos: Set<RVPhotoAsset>
@@ -69,3 +72,4 @@ extension RVActivity {
     @NSManaged public func removeFromEfforts(_ values: NSSet)
 
 }
+

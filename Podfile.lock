@@ -32,7 +32,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   StravaSwift:
-    :commit: 4d372f5c612b6ba4a2b94dc7edbd92e4eb8bdfcc
+    :commit: bb8bb0666c761445cd00a8cf1191868adb6c8804
     :git: https://github.com/FleetPhil/StravaSwift.git
 
 SPEC CHECKSUMS:

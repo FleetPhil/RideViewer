@@ -51,7 +51,7 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
 			self.mapView.addRoute(segment, type: .highlightSegment)
 		} else {
             // Get segment details including route
-            StravaManager.sharedInstance.getSegment(segment, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] success in
+            StravaManager.sharedInstance.getSegmentDetails(segment, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] success in
                 guard self != nil else { return }
                 if success {
                     self!.mapView!.addRoute(self!.segment, type: .highlightSegment)
@@ -73,9 +73,7 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
         }
 		
 		// Get the route altitude profile
-		if segment.hasStreamOfType(.altitude) {
-            routeViewController.setPrimaryProfile(streamOwner: segment, profileType: .altitude)
-		} else {
+		if !routeViewController.setPrimaryProfile(streamOwner: segment, profileType: .altitude) {
 			appLog.verbose("Getting streams")
 			StravaManager.sharedInstance.streamsForSegment(segment, context: segment.managedObjectContext!, completionHandler: { [weak self] success in
 				if success, let streams = self?.segment.streams {
@@ -83,15 +81,18 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
 				} else {
 					appLog.verbose("Get streams failed for activity")
 				}
-				self?.routeViewController.setPrimaryProfile(streamOwner: self!.segment, profileType: .altitude)
+				_ = self?.routeViewController.setPrimaryProfile(streamOwner: self!.segment, profileType: .altitude)
 			})
 		}
     }
+	
+	var selectedEffort : RVEffort? = nil
 	
 	// MARK: - Navigation
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if let destination = segue.destination as? SegmentAnalysisViewController {
 			destination.segment = segment
+			destination.highlightEffort = selectedEffort
 			return
 		}
 		
@@ -110,10 +111,12 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
 	// MARK: Effort table delegate
 	func didSelectEffort(effort: RVEffort) {
 		appLog.verbose("Selected \(effort.activity.name)")
+		selectedEffort = effort
 	}
 	
 	func didDeselectEffort(effort: RVEffort) {
 		appLog.verbose("Deselected \(effort.activity.name)")
+		selectedEffort = nil
 	}
 }
 

@@ -13,19 +13,10 @@ import StravaSwift
 import CoreData
 
 class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate, RVEffortTableDelegate {
-	// TODO
-	func didDeselectEffort(effort: RVEffort) {
-		return
-	}
-	
-	func photoDidChangeToIndex(_ index: Int) {
-		return
-	}
-	
-	
 	//MARK: Model
 	weak var activity : RVActivity!
 	
+	@IBOutlet weak var infoButton: UIBarButtonItem!
 	
 	@IBOutlet weak var distance: UILabel!
 	@IBOutlet weak var startTime: UILabel!
@@ -65,6 +56,9 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		// Set scrolling photo view delegate
 		photoView?.delegate = self
 		
+		// Info button disabled as no effort selected
+		infoButton.isEnabled = false
+		
 		// Get Strava details
 		if activity.resourceState == .detailed {
 			tableDataIsComplete = true
@@ -81,7 +75,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		}
 		
 		if activity.hasStreamOfType(.altitude) {
-			self.routeViewController.setPrimaryProfile(streamOwner: activity, profileType: .altitude)
+			_ = self.routeViewController.setPrimaryProfile(streamOwner: activity, profileType: .altitude)
 		} else {
 			appLog.verbose("Getting streams")
 			StravaManager.sharedInstance.streamsForActivity(activity, context: activity.managedObjectContext!, completionHandler: { [weak self] success in
@@ -90,7 +84,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 				} else {
 					appLog.verbose("Get streams failed for activity")
 				}
-				self?.routeViewController.setPrimaryProfile(streamOwner: self!.activity, profileType: .altitude)
+				_ = self?.routeViewController.setPrimaryProfile(streamOwner: self!.activity, profileType: .altitude)
 			})
 		}
 		
@@ -99,6 +93,20 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 			updateView()
 		}
 	}
+	
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		// If change is to compact width the effort table will reappear - so scroll to selected row if it exists
+		// If change is to regular width disable the info button as the efforts are not visible
+		switch traitCollection.verticalSizeClass {
+		case .compact:
+			infoButton.isEnabled = false
+		case .regular:
+			effortTableViewController.highlightEffort(selectedEffort)
+			infoButton.isEnabled = (selectedEffort != nil)
+		default:
+			break
+		}
+ 	}
 	
 	func startDataRetrieval() {
 		activityIndicator = UIActivityIndicatorView(style: .gray)
@@ -131,7 +139,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		
 		timeData.text		= "🕘 " + activity.elapsedTime.durationDisplayString
 			+ " ⏱ " + activity.movingTime.durationDisplayString
-			+ " ⏩ " + (activity.distance / activity.movingTime).speedDisplayString
+			+ " ⏩ " + (activity.distance / activity.movingTime).speedDisplayString()
 		
 		elevationData.text	= "⬇️ " + activity.lowElevation.heightDisplayString + " ⬆️ " + activity.highElevation.heightDisplayString + " ↗️ " + activity.elevationGain.heightDisplayString
 		
@@ -159,11 +167,11 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		//        })
 		
 		if activity.streams.filter({ $0.type == ViewProfileDataType.altitude.stravaValue }).first != nil {
-			routeViewController.setPrimaryProfile(streamOwner: activity!, profileType: .altitude)
+			_ = routeViewController.setPrimaryProfile(streamOwner: activity!, profileType: .altitude)
 		} else {
 			StravaManager.sharedInstance.streamsForActivity(activity, context: activity.managedObjectContext!, completionHandler: { (success) in
 				self.activity.managedObjectContext?.saveContext()
-				self.routeViewController.setPrimaryProfile(streamOwner: self.activity!, profileType: .altitude)
+				_ = self.routeViewController.setPrimaryProfile(streamOwner: self.activity!, profileType: .altitude)
 			})
 		}
 	}
@@ -180,11 +188,19 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		photoView.addImage(image: image, identifier: identifier)
 	}
 	
+	//MARK: Info Button
+	@IBAction func infoButtonPressed(_ sender: Any) {
+		
+	}
 	
 	// MARK: - Navigation
+	
+	var selectedEffort : RVEffort? = nil
+	
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-		if let destination = segue.destination as? SegmentDetailViewController {
-			//			destination.segment = dataManager.objectAtIndexPath(tableView.indexPathForSelectedRow!)?.segment
+		if let destination = segue.destination as? SegmentAnalysisViewController {
+			destination.segment = selectedEffort?.segment
+			destination.highlightEffort = selectedEffort
 		}
 		// Embed segues
 		if let destination = segue.destination as? RVRouteProfileViewController {
@@ -200,22 +216,25 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	// MARK: Effort table delegate
 	func didSelectEffort(effort: RVEffort) {
 		mapView.addRoute(effort, type: .highlightSegment)
-		//	}
-		
-		func didDeselectEffort(effort: RVEffort) {
-			mapView.setTypeForRoute(effort, type: nil)
-		}
-		
-		// MARK: Scrolling photo view delegate
-		func photoDidChangeToIndex(_ index: Int) {
-			activity.getPhotoAssets(force: false, completionHandler: { [weak self] assets in
-				let selectedPhotoAsset = assets[index]
-				_ = PhotoManager.shared().getPhotoImage(localIdentifier: selectedPhotoAsset.localIdentifier,
-														size: CGSize(width: 30, height: 30),
-														resultHandler: { [ weak self]  _, image, _, location in
-															self?.mapView.addPhoto(image: image, location: location)
-				})
+		mapView.zoomToRoute(effort)
+		selectedEffort = effort
+		infoButton.isEnabled = true
+	}
+	
+	func didDeselectEffort(effort: RVEffort) {
+		mapView.setTypeForRoute(effort, type: nil)
+		infoButton.isEnabled = false
+	}
+	
+	// MARK: Scrolling photo view delegate
+	func photoDidChangeToIndex(_ index: Int) {
+		activity.getPhotoAssets(force: false, completionHandler: { [weak self] assets in
+			let selectedPhotoAsset = assets[index]
+			_ = PhotoManager.shared().getPhotoImage(localIdentifier: selectedPhotoAsset.localIdentifier,
+													size: CGSize(width: 30, height: 30),
+													resultHandler: { [ weak self]  _, image, _, location in
+														self?.mapView.addPhoto(image: image, location: location)
 			})
-		}
+		})
 	}
 }

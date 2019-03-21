@@ -160,6 +160,9 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
         self.maxPower				= activity.maxPower ?? 0.0
         self.deviceWatts			= activity.deviceWatts ?? false
         self.trainer				= activity.trainer ?? false
+		self.hasHeartRate			= activity.hasHeartRate ?? false
+		self.averageHeartRate		= activity.averageHeartRate ?? 0.0
+		self.maxHeartRate			= activity.maxHeartRate ?? 0.0
         
         if let activityMap = activity.map {
             self.map					= RVMap.create(map: activityMap, context: self.managedObjectContext!)
@@ -176,7 +179,6 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
                 }
             }
         }
-        
         return self
     }
     
@@ -250,7 +252,7 @@ extension RVActivity : PhotoOwningObject {
 class ActivityListTableViewCell : UITableViewCell, TableViewCompatibleCell {
     
     @IBOutlet weak var nameLabel: UILabel!
-	@IBOutlet weak var photoIcon: UILabel!
+	@IBOutlet weak var featuresLabel: UILabel!
 	@IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
@@ -258,11 +260,15 @@ class ActivityListTableViewCell : UITableViewCell, TableViewCompatibleCell {
     func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell {
         if let activity = withModel as? RVActivity {
 			
-            nameLabel.text		= activity.type.emoji + " " + activity.name
+            nameLabel.text		= activity.name
             nameLabel.textColor	= activity.resourceState.resourceStateColour
 			
-			photoIcon.text		= activity.photos.count > 0 ? "\u{1F4F7}" : ""
-            
+			var features = activity.type.emoji
+			if activity.photos.count > 0 { features += EmojiConstants.Camera }
+			if activity.deviceWatts { features += EmojiConstants.Power }
+			if activity.hasHeartRate { features += EmojiConstants.HeartRate }
+			featuresLabel.text = features
+			
 			dateLabel.text		= (activity.startDate as Date).displayString(displayType: .dateTime, timeZone: activity.timeZone.timeZone)
             distanceLabel.text	= activity.distance.distanceDisplayString
             timeLabel.text		= activity.elapsedTime.durationDisplayString
