@@ -59,11 +59,15 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 	
 	// Public interface
 	func highlightEffort(_ effort : RVEffort?) {
-		guard let effort = effort, let indexPath = dataManager.indexPathForObject(effort) else {
-			appLog.error("Effort not found in table")
+		guard let effort = effort else {
+			// No effort to highlight
 			return
 		}
-		tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
+		if let indexPath = dataManager.indexPathForObject(effort) {
+			tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
+		} else {
+			appLog.error("Unable to find selected effort in table")
+		}
 	}
 	
 	// Private functions

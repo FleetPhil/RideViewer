@@ -84,7 +84,7 @@ class RVRouteProfileView : UIView {
 	// x and y values are in the frame of the secondary, bounds are in the frame of the primary
 	private func plot(rect : CGRect, x : Double, y: Double, bounds : DataBounds) -> CGPoint? {
 		guard y>=bounds.minY, y<=bounds.maxY, x>=bounds.minX else {
-			appLog.error("Error: data point to plot out of bounds")
+//			appLog.error("Error: data point to plot out of bounds")
 			return nil
 		}
 		
@@ -115,13 +115,15 @@ class RVRouteProfileView : UIView {
 	
 	private func createHighlight() -> UIBezierPath? {
 		guard let highlight = profileData?.highlightRange, profileData!.viewRange.to - profileData!.viewRange.from > 0 else { return nil }
-		
-		let widthPerDataPoint = self.bounds.width / CGFloat(profileData!.viewRange.to - profileData!.viewRange.from)
-		
-		let rect = CGRect(x:( CGFloat(highlight.from) - CGFloat(profileData!.viewRange.from)) * widthPerDataPoint, y: 0,
-						  width: CGFloat(highlight.to - highlight.from) * widthPerDataPoint, height: self.bounds.height)
-		
-		let path = UIBezierPath(rect: rect)
+
+		guard let topLeft = plot(rect: self.bounds, x: highlight.from, y: profileData!.mainDataBounds.minY, bounds: profileData!.mainDataBounds),
+			let bottomRight = plot(rect: self.bounds, x: highlight.to, y: profileData!.mainDataBounds.maxY, bounds: profileData!.mainDataBounds)
+			else {
+				appLog.error("Plot for highlight range out of bounds")
+				return nil
+		}
+		let highlightRect = CGRect(origin: topLeft, size: CGSize(width: bottomRight.x - topLeft.x, height: bottomRight.y - topLeft.y))
+		let path = UIBezierPath(rect: highlightRect)
 		return path
 	}
 	
@@ -141,6 +143,7 @@ class RVRouteProfileView : UIView {
 		
 		for dataSet in profileData!.profileDataSets {
 			appLog.verbose("Draw set: \(dataSet.profileDataType), \(dataSet.profileDisplayType), \(dataSet.dataPoints.count) values")
+			appLog.verbose("Axis range is \(dataSet.dataPoints.first!.axisValue) to \(dataSet.dataPoints.last!.axisValue), axis bounds are \(profileData!.mainDataBounds)")
 
 			switch dataSet.profileDisplayType {
 			
@@ -158,11 +161,17 @@ class RVRouteProfileView : UIView {
 			
 			case .background:
 				// Background draws as a shaded background
-				// Data bounds for the background are relative to the background bounds, not the primary
+				// Data bounds for the background are relative to the background bounds, not the primary (i.e. plotted on a secondary y axis)
+				// However the viewrange is always relative to the primary
 				
 				let dataBounds = dataSet.dataBounds(viewRange: viewRange)
 				let viewBounds = CGRect(x: 0, y: self.bounds.height * 0.25 , width: self.bounds.width, height: self.bounds.height * 0.75 )
 				let pointsToDraw = plotValues(rect: viewBounds, dataValues: dataSet.dataPoints, dataBounds: dataBounds)
+				
+				if pointsToDraw.count == 0 {
+					appLog.error("No points to draw")
+					return
+				}
 
 				let path = UIBezierPath()
 				path.move(to: pointsToDraw[0])
@@ -172,10 +181,30 @@ class RVRouteProfileView : UIView {
 				path.addLine(to: CGPoint(x: pointsToDraw.last!.x, y: self.bounds.maxY))
 				path.addLine(to: CGPoint(x: pointsToDraw[0].x, y: self.bounds.maxY))
 				path.addLine(to: pointsToDraw[0])
-				UIColor.init(displayP3Red: 1.0, green: 0, blue: 0, alpha: 0.3).setFill()
+				let backgroundColour = UIColor.init(displayP3Red: 0.0, green: 0, blue: 1, alpha: 0.2)
+				backgroundColour.setFill()
 				path.fill()
+				
+				drawLinearGradient(inside: path, start: CGPoint(x: 0, y: viewBounds.minY), end: CGPoint(x: 0.0, y: viewBounds.maxY), colors: [backgroundColour, UIColor.white])
+				
 			}
 		}
+	}
+	
+	func drawLinearGradient(inside path:UIBezierPath, start:CGPoint, end:CGPoint, colors:[UIColor])
+	{
+		guard let ctx = UIGraphicsGetCurrentContext() else { return }
+		
+		ctx.saveGState()
+		path.addClip() // use the path as the clipping region
+		
+		let cgColors = colors.map({ $0.cgColor })
+		guard let gradient = CGGradient(colorsSpace: nil, colors: cgColors as CFArray, locations: nil)
+			else { return }
+		
+		ctx.drawLinearGradient(gradient, start: start, end: end, options: [])
+		
+		ctx.restoreGState() // remove the clipping region for future draw operations
 	}
 }
 

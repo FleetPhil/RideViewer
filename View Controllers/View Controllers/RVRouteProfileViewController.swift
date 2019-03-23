@@ -46,7 +46,8 @@ class RVRouteProfileViewController: UIViewController {
 		if let dataPoints = dataPointsForStreamType(profileType, streamOwner: streamOwner) {
 			profileData	= ViewProfileData(primaryDataSet: ViewProfileDataSet(streamOwner: streamOwner,
 																				profileDataType: profileType,
-																				profileDisplayType: .primary, dataPoints: dataPoints),
+																				profileDisplayType: .primary,
+																				dataPoints: dataPoints),
 											 									handler: nil )
 			self.noDataLabel.isHidden = true
 			self.waitingLabel.isHidden = true
@@ -98,7 +99,7 @@ class RVRouteProfileViewController: UIViewController {
 		
 		let axisValues = axis.dataPoints
 		let dataPoints = stream.dataPoints.enumerated().map({ DataPoint(dataValue: $0.element, axisValue: axisValues[$0.offset]) })
-		appLog.verbose("Returning \(dataPoints.count) data points for stream type \(profileType)")
+		appLog.verbose("Returning \(dataPoints.count) points for type \(profileType), axis range \(dataPoints.first!.axisValue) to \(dataPoints.last!.axisValue)")
 		return dataPoints
 	}
 	

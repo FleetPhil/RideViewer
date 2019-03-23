@@ -116,6 +116,7 @@ struct ViewProfileData {
 	init(primaryDataSet : ViewProfileDataSet, handler : ((RouteIndexRange) -> Void)? = nil) {
 		self.profileDataSets 		= [primaryDataSet]
 		self.rangeChangedHandler	= handler
+//		self.viewRange				= primaryDataSet.fullRange
 		self.highlightRange			= nil
 		self.plotBounds				= {
 			let range = primaryDataSet.fullRange

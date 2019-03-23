@@ -182,6 +182,16 @@ public class RVEffort: NSManagedObject, RouteViewCompatible {
     var coordinates: [CLLocationCoordinate2D]? {
         return self.segment.map?.polylineLocations(summary: false)
     }
+	
+	// Get location in specified activity
+	var distanceRange : RouteIndexRange {
+		if let stream = self.activity.streams.filter({ $0.type == StravaSwift.StreamType.distance.rawValue }).first {
+			let dataPoints = stream.dataPoints
+			return RouteIndexRange(from: dataPoints[Int(self.startIndex)], to: dataPoints[Int(self.endIndex)])
+		} else {
+			return RouteIndexRange(from: 0.0, to: 0.0)
+		}
+	}
 }
 
 // Extension to support photos

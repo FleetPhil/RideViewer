@@ -18,4 +18,5 @@ struct EmojiConstants {
 	static let Camera			= "📷"
 	static let HeartRate		= "❤️"
 	static let Power			= "🔌"
+	static let Fastest			= "🏆"
 }

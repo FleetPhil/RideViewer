@@ -44,13 +44,19 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
         super.viewDidLoad()
 
 		self.title = segment.name!
-		topInfoLabel.text = "Fastest: \(shortestElapsed?.activity.name ?? "Unknown")"
+
+		guard let shortest = shortestElapsed else {
+			appLog.error("No shortest effort for analysis")
+			return
+		}
+
+		topInfoLabel.text = EmojiConstants.Fastest + " " + shortest.activity.name
 		topInfoLabel.textColor = ViewProfileDisplayType.primary.displayColour
+		bottomInfoLabel.attributedText = shortest.effortDisplayText
 		
 		// Get stream data for the fastest ride on this segment and set as the primary
-		if shortestElapsed != nil {
-			displayStreamsForEffort(shortestElapsed!, displayType: .primary)
-		}
+		displayStreamsForEffort(shortest, displayType: .primary)
+		
 		if highlightEffort != nil {
 			displayStreamsForEffort(highlightEffort!, displayType: .secondary)
 			// Select this effort in the table and scroll to it

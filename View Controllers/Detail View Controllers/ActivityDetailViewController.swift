@@ -217,6 +217,9 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 	func didSelectEffort(effort: RVEffort) {
 		mapView.addRoute(effort, type: .highlightSegment)
 		mapView.zoomToRoute(effort)
+		
+		routeViewController.setHighLightRange(effort.distanceRange)
+		
 		selectedEffort = effort
 		infoButton.isEnabled = true
 	}
