@@ -43,7 +43,7 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-		self.title = segment.name!
+		self.title = segment.name! + " (" + segment.distance.distanceDisplayString + ")"
 
 		guard let shortest = shortestElapsed else {
 			appLog.error("No shortest effort for analysis")

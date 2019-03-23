@@ -71,38 +71,21 @@ struct ViewProfileDataSet {
 	var profileDisplayType : ViewProfileDisplayType
 	var dataPoints : [DataPoint]
 	
-	var fullRange : RouteIndexRange {
-		return RouteIndexRange(from: (self.dataPoints.map { $0.axisValue }).min() ?? 0, to: (self.dataPoints.map { $0.axisValue }).max() ?? 0)
+	var dataBounds: DataBounds {
+		return DataBounds(minX: axisMin, maxX: axisMax, minY: dataMin, maxY: dataMax)
 	}
 	
-	func rangeInScope(viewRange : RouteIndexRange, primaryRange : RouteIndexRange) -> RouteIndexRange {
-		let minX =  (self.dataPoints.map { $0.axisValue }).min() ?? 0
-		// Range min for this dataSet is primary min + offset for this set + offset for view from primary min
-		// Reduces to view min + this min - primary min
-		let scopeMin = viewRange.from + minX - primaryRange.from
-		return RouteIndexRange(from: scopeMin, to: primaryRange.to)
+	private var dataMin : Double {
+		return dataPoints.reduce(Double.greatestFiniteMagnitude, { min($0, $1.dataValue) })
 	}
-	
-	func dataPointsInScope(viewRange : RouteIndexRange, primaryRange : RouteIndexRange) -> [DataPoint] {
-		let range = rangeInScope(viewRange: viewRange, primaryRange: primaryRange)
-		return dataPoints.filter({ $0.axisValue >= range.from && $0.axisValue <= range.to })
+	private var dataMax : Double {
+		return dataPoints.reduce(0.0, { max($0, $1.dataValue) })
 	}
-	
-	func dataBounds(viewRange : RouteIndexRange) -> DataBounds {
-		return DataBounds(minX: axisMin(viewRange: viewRange), maxX: axisMax(viewRange: viewRange), minY: dataMin(viewRange: viewRange), maxY: dataMax(viewRange: viewRange))
+	private var axisMin : Double {
+		return dataPoints.reduce(Double.greatestFiniteMagnitude, { min($0, $1.axisValue) })
 	}
-	
-	func dataMin(viewRange : RouteIndexRange) -> Double {
-		return dataPointsInScope(viewRange: viewRange, primaryRange: self.fullRange).reduce(Double.greatestFiniteMagnitude, { min($0, $1.dataValue) })
-	}
-	func dataMax(viewRange : RouteIndexRange) -> Double {
-		return dataPointsInScope(viewRange: viewRange, primaryRange: self.fullRange).reduce(0.0, { max($0, $1.dataValue) })
-	}
-	func axisMin(viewRange : RouteIndexRange) -> Double {
-		return dataPointsInScope(viewRange: viewRange, primaryRange: self.fullRange).reduce(Double.greatestFiniteMagnitude, { min($0, $1.axisValue) })
-	}
-	func axisMax(viewRange : RouteIndexRange) -> Double {
-		return dataPointsInScope(viewRange: viewRange, primaryRange: self.fullRange).reduce(0.0, { max($0, $1.axisValue) })
+	private var axisMax : Double {
+		return dataPoints.reduce(0.0, { max($0, $1.axisValue) })
 	}
 }
 
@@ -116,15 +99,8 @@ struct ViewProfileData {
 	init(primaryDataSet : ViewProfileDataSet, handler : ((RouteIndexRange) -> Void)? = nil) {
 		self.profileDataSets 		= [primaryDataSet]
 		self.rangeChangedHandler	= handler
-//		self.viewRange				= primaryDataSet.fullRange
 		self.highlightRange			= nil
-		self.plotBounds				= {
-			let range = primaryDataSet.fullRange
-			return DataBounds(minX: primaryDataSet.axisMin(viewRange: range),
-							  maxX: primaryDataSet.axisMin(viewRange: range),
-							  minY: primaryDataSet.dataMin(viewRange: range),
-							  maxY: primaryDataSet.dataMax(viewRange: range))
-		}()
+		self.plotBounds				= primaryDataSet.dataBounds
 	}
 	
 	mutating func addDataSet(_ dataSet : ViewProfileDataSet) {
@@ -142,8 +118,8 @@ struct ViewProfileData {
 	
 	var mainDataBounds : DataBounds {
 		let dataSets = dataSetsOfDisplayType(.primary)  + dataSetsOfDisplayType(.secondary)
-		let primaryBase = dataSetsOfDisplayType(.primary).first!.axisMin(viewRange: viewRange)
-		return dataSets.reduce(DataBounds.zeroBounds, ({  $0.union($1.dataBounds(viewRange: viewRange).offsetBy(x: primaryBase - $1.axisMin(viewRange: viewRange), y: 0.0)) }))
+		let primaryBase = dataSetsOfDisplayType(.primary).first!.dataBounds.minX
+		return dataSets.reduce(DataBounds.zeroBounds, ({  $0.union($1.dataBounds.offsetBy(x: primaryBase - $1.dataBounds.minX, y: 0.0)) }))
 	}
 	
 	func dataSetsOfDataType(_ dataType : ViewProfileDataType) -> [ViewProfileDataSet] {

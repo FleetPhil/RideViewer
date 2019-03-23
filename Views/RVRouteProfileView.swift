@@ -132,14 +132,20 @@ class RVRouteProfileView : UIView {
 		
 		self.backgroundColor = UIColor.white
 		
+		// Draw lines for axes
+		let path = UIBezierPath()
+		path.move(to: CGPoint(x: 0.0, y: 0.0))
+		path.addLine(to: CGPoint(x: 0.0, y: self.bounds.maxY))
+		path.addLine(to: CGPoint(x: self.bounds.maxX, y: self.bounds.maxY))
+		UIColor.lightGray.setStroke()
+		path.stroke()
+		
 		if let path = createHighlight() {
 			UIColor.lightGray.setFill()
 			path.fill()
 		}
 		
 		appLog.verbose("Draw: \(profileData!.profileDataSets.map { ($0.profileDataType, $0.profileDisplayType) })")
-		
-		let viewRange = profileData!.viewRange
 		
 		for dataSet in profileData!.profileDataSets {
 			appLog.verbose("Draw set: \(dataSet.profileDataType), \(dataSet.profileDisplayType), \(dataSet.dataPoints.count) values")
@@ -149,7 +155,7 @@ class RVRouteProfileView : UIView {
 			
 			case .primary, .secondary:
 				// Primary and secondary draw as a line with data bounds set by primary
-				let pointsToDraw = plotValues(rect: self.bounds, dataValues: dataSet.dataPoints, dataBounds: profileData!.mainDataBounds)
+				let pointsToDraw = plotValues(rect: self.bounds.inset(by: UIEdgeInsets(top: 1.0, left: 1.0, bottom: 1.0, right: 1.0)), dataValues: dataSet.dataPoints, dataBounds: profileData!.mainDataBounds)
 				let path = UIBezierPath()
 				path.lineWidth = 1.0
 				path.move(to: pointsToDraw[0])
@@ -162,10 +168,9 @@ class RVRouteProfileView : UIView {
 			case .background:
 				// Background draws as a shaded background
 				// Data bounds for the background are relative to the background bounds, not the primary (i.e. plotted on a secondary y axis)
-				// However the viewrange is always relative to the primary
 				
-				let dataBounds = dataSet.dataBounds(viewRange: viewRange)
-				let viewBounds = CGRect(x: 0, y: self.bounds.height * 0.25 , width: self.bounds.width, height: self.bounds.height * 0.75 )
+				let dataBounds = dataSet.dataBounds
+				let viewBounds = CGRect(x: 0, y: self.bounds.height * 0.25 , width: self.bounds.width, height: self.bounds.height * 0.75 ).inset(by: UIEdgeInsets(top: 1.0, left: 1.0, bottom: 1.0, right: 1.0))
 				let pointsToDraw = plotValues(rect: viewBounds, dataValues: dataSet.dataPoints, dataBounds: dataBounds)
 				
 				if pointsToDraw.count == 0 {
@@ -185,13 +190,13 @@ class RVRouteProfileView : UIView {
 				backgroundColour.setFill()
 				path.fill()
 				
-				drawLinearGradient(inside: path, start: CGPoint(x: 0, y: viewBounds.minY), end: CGPoint(x: 0.0, y: viewBounds.maxY), colors: [backgroundColour, UIColor.white])
+				drawLinearGradient(inside: path, start: CGPoint(x: 0, y: viewBounds.minY), end: CGPoint(x: 0.0, y: viewBounds.maxY-1), colors: [backgroundColour, UIColor.white])
 				
 			}
 		}
 	}
 	
-	func drawLinearGradient(inside path:UIBezierPath, start:CGPoint, end:CGPoint, colors:[UIColor])
+	private func drawLinearGradient(inside path:UIBezierPath, start:CGPoint, end:CGPoint, colors:[UIColor])
 	{
 		guard let ctx = UIGraphicsGetCurrentContext() else { return }
 		

@@ -106,8 +106,8 @@ class RVRouteProfileViewController: UIViewController {
 	
 	private func setAxisLabelsWithData(_ profileData : ViewProfileData) {
 		if let primarySet = profileData.dataSetsOfDisplayType(.primary).first {
-			let minValue			= primarySet.dataMin(viewRange: primarySet.fullRange)
-			let maxValue			= primarySet.dataMax(viewRange: primarySet.fullRange)
+			let minValue			= primarySet.dataBounds.minY
+			let maxValue			= primarySet.dataBounds.maxY
 			let midValue			= ((maxValue-minValue) * 0.5 + minValue)
 			
 			switch primarySet.profileDataType {
@@ -124,7 +124,7 @@ class RVRouteProfileViewController: UIViewController {
 			}
 			
 			let minDistance = 0.0
-			let maxDistance = primarySet.fullRange.to - primarySet.fullRange.from
+			let maxDistance = primarySet.dataBounds.maxX - primarySet.dataBounds.minX
 			
 			horiz0Label.text		= minDistance.distanceDisplayString
 			horiz25Label.text		= ((maxDistance-minDistance) * 0.25 + minDistance).distanceDisplayString
