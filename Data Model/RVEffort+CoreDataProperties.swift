@@ -37,8 +37,5 @@ extension RVEffort {
     @NSManaged public var segment: RVSegment
     @NSManaged public var activity: RVActivity
 	@NSManaged public var streams: Set<RVStream>
-	
-	@NSManaged public var photos: Set<RVPhotoAsset>
-
 
 }

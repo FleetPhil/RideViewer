@@ -221,7 +221,6 @@ class ActivityListTableViewCell : UITableViewCell, TableViewCompatibleCell {
             nameLabel.textColor	= activity.resourceState.resourceStateColour
 			
 			var features = activity.type.emoji
-			if activity.photos.count > 0 { features += EmojiConstants.Camera }
 			if activity.deviceWatts { features += EmojiConstants.Power }
 			if activity.hasHeartRate { features += EmojiConstants.HeartRate }
 			featuresLabel.text = features

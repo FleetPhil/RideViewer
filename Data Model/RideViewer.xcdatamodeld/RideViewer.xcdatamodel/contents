@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="17G5019" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="17G6029" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="RVActivity" representedClassName="RVActivity" syncable="YES">
         <attribute name="achievementCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="activityDescription" optional="YES" attributeType="String" syncable="YES"/>
@@ -34,7 +34,6 @@
         <attribute name="trainer" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="efforts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVEffort" inverseName="activity" inverseEntity="RVEffort" syncable="YES"/>
         <relationship name="map" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVMap" inverseName="activities" inverseEntity="RVMap" syncable="YES"/>
-        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVPhotoAsset" inverseName="activity" inverseEntity="RVPhotoAsset" syncable="YES"/>
         <relationship name="streams" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVStream" inverseName="activity" inverseEntity="RVStream" syncable="YES"/>
     </entity>
     <entity name="RVEffort" representedClassName="RVEffort" syncable="YES">
@@ -56,7 +55,6 @@
         <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="startIndex" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="activity" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVActivity" inverseName="efforts" inverseEntity="RVActivity" syncable="YES"/>
-        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVPhotoAsset" inverseName="effort" inverseEntity="RVPhotoAsset" syncable="YES"/>
         <relationship name="segment" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVSegment" inverseName="efforts" inverseEntity="RVSegment" syncable="YES"/>
         <relationship name="streams" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVStream" inverseName="effort" inverseEntity="RVStream" syncable="YES"/>
     </entity>
@@ -67,14 +65,6 @@
         <attribute name="summaryPolyline" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="activities" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVActivity" inverseName="map" inverseEntity="RVActivity" syncable="YES"/>
         <relationship name="segments" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RVSegment" inverseName="map" inverseEntity="RVSegment" syncable="YES"/>
-    </entity>
-    <entity name="RVPhotoAsset" representedClassName="RVPhotoAsset" syncable="YES">
-        <attribute name="localIdentifier" attributeType="String" syncable="YES"/>
-        <attribute name="locationLat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="locationLong" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="photoDate" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <relationship name="activity" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVActivity" inverseName="photos" inverseEntity="RVActivity" syncable="YES"/>
-        <relationship name="effort" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVEffort" inverseName="photos" inverseEntity="RVEffort" syncable="YES"/>
     </entity>
     <entity name="RVSegment" representedClassName="RVSegment" syncable="YES">
         <attribute name="allEfforts" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
@@ -110,10 +100,9 @@
         <relationship name="segment" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RVSegment" inverseName="streams" inverseEntity="RVSegment" syncable="YES"/>
     </entity>
     <elements>
-        <element name="RVActivity" positionX="-613.76953125" positionY="202.71875" width="128" height="570"/>
-        <element name="RVEffort" positionX="-166.86328125" positionY="158.14453125" width="128" height="360"/>
+        <element name="RVActivity" positionX="-613.76953125" positionY="202.71875" width="128" height="555"/>
+        <element name="RVEffort" positionX="-166.86328125" positionY="158.14453125" width="128" height="345"/>
         <element name="RVMap" positionX="-154.84765625" positionY="571.109375" width="128" height="135"/>
-        <element name="RVPhotoAsset" positionX="-431.28515625" positionY="198.04296875" width="128" height="135"/>
         <element name="RVSegment" positionX="38.171875" positionY="232.7578125" width="128" height="360"/>
         <element name="RVStream" positionX="33.37890625" positionY="704.015625" width="128" height="165"/>
     </elements>

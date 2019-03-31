@@ -59,20 +59,6 @@ fileprivate class RouteEnd : NSObject, MKAnnotation {
 	}
 }
 
-fileprivate class PhotoAnnotation : NSObject, MKAnnotation {
-	var coordinate: CLLocationCoordinate2D
-	var image : UIImage
-	init(image : UIImage,  location : CLLocation) {
-		self.coordinate = location.coordinate
-		self.image = image
-		super.init()
-	}
-}
-
-fileprivate class MapPhotoView : MKAnnotationView {
-	
-}
-
 public enum RouteViewType {
 	case mainActivity
 	case activity
@@ -126,7 +112,6 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 	
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
-		self.register(MapPhotoView.self, forAnnotationViewWithReuseIdentifier: "photoView")
 		self.register(SegmentStartAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
 	}
 	
@@ -203,27 +188,13 @@ class RideMapView : MKMapView, MKMapViewDelegate {
 		}
 	}
 	
-	func addPhoto(image : UIImage?, location : CLLocation?) {
-		guard let image = image, let location = location else { return }
-		
-		self.removeAnnotations(self.annotations.filter({ $0 is PhotoAnnotation }))
-		self.addAnnotation(PhotoAnnotation(image: image, location: location))
-	}
-	
 	// MARK: MapView delegate
 	func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-		if let photoAnnotation = annotation as? PhotoAnnotation {
-			let view = mapView.dequeueReusableAnnotationView(withIdentifier: "photoView", for: photoAnnotation)
-			view.image = photoAnnotation.image.renderResizedImage(newWidth: 30)
-			return view
-		}
-		
 		guard let annotation = annotation as? RouteEnd else { return nil }
 		let view = SegmentStartAnnotationView(annotation: annotation, reuseIdentifier: SegmentStartAnnotationView.reuseID)
 		
 		if annotation.rideRoute?.type == .highlightSegment {
 			view.isHidden = false
-//			view.isSelected = true
 			view.clusteringIdentifier = nil
 			return view
 		} else {

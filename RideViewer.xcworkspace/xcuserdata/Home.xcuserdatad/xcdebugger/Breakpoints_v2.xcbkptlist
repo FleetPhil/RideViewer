@@ -164,7 +164,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
-            timestampString = "575736732.675133"
+            timestampString = "575737685.038649"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "73"
@@ -180,11 +180,27 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
-            timestampString = "575736732.675204"
+            timestampString = "575737685.038715"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "68"
             endingLineNumber = "68"
+            landmarkName = "setPrimaryProfile(streamOwner:profileType:range:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
+            timestampString = "575737685.0387681"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "93"
+            endingLineNumber = "93"
             landmarkName = "RVRouteProfileViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -195,24 +211,8 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
-            timestampString = "575736732.675263"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "93"
-            endingLineNumber = "93"
-            landmarkName = "addProfile(owner:profileType:displayType:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "Views/RVRouteProfileView.swift"
-            timestampString = "575736732.675328"
+            timestampString = "575737685.0388221"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "67"
@@ -228,7 +228,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Views/RVRouteProfileView.swift"
-            timestampString = "575736732.67538"
+            timestampString = "575737685.038874"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "70"
@@ -276,7 +276,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Views/RVRouteProfileView.swift"
-            timestampString = "575736732.675429"
+            timestampString = "575737685.038924"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "47"
@@ -292,7 +292,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Views/RVRouteProfileView.swift"
-            timestampString = "575736732.675477"
+            timestampString = "575737685.03898"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "68"
@@ -356,7 +356,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Views/RVRouteProfileView.swift"
-            timestampString = "575736732.675567"
+            timestampString = "575737685.039085"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "54"
@@ -372,7 +372,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Views/RVRouteProfileView.swift"
-            timestampString = "575736732.675617"
+            timestampString = "575737685.039135"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "166"
@@ -388,7 +388,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Views/RVRouteProfileView.swift"
-            timestampString = "575736732.675665"
+            timestampString = "575737685.039184"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "138"
@@ -532,11 +532,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/Detail View Controllers/ActivityDetailViewController.swift"
-            timestampString = "575736732.675796"
+            timestampString = "575737685.039335"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "203"
-            endingLineNumber = "203"
+            startingLineNumber = "207"
+            endingLineNumber = "207"
             landmarkName = "didSelectEffort(effort:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -612,7 +612,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Data Model/RVActivity+CoreDataClass.swift"
-            timestampString = "575736732.676267"
+            timestampString = "575737685.039813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "223"
@@ -644,7 +644,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Views/RVRouteProfileView.swift"
-            timestampString = "575736732.676333"
+            timestampString = "575737685.0398819"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "77"
@@ -676,7 +676,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Views/RVRouteProfileView.swift"
-            timestampString = "575736732.676398"
+            timestampString = "575737685.039966"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "151"
@@ -692,13 +692,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
-            timestampString = "575736732.67645"
+            timestampString = "575737685.040019"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "69"
             endingLineNumber = "69"
-            landmarkName = "RVRouteProfileViewController"
-            landmarkType = "3">
+            landmarkName = "setPrimaryProfile(streamOwner:profileType:range:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -724,13 +724,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
-            timestampString = "575736732.676515"
+            timestampString = "575737685.040087"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "132"
             endingLineNumber = "132"
-            landmarkName = "RVRouteProfileViewController"
-            landmarkType = "3">
+            landmarkName = "setAxisLabelsWithData(_:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -740,12 +740,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
-            timestampString = "575736732.676564"
+            timestampString = "575737685.0401371"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "128"
             endingLineNumber = "128"
-            landmarkName = "dataPointsForStreamType(_:streamOwner:)"
+            landmarkName = "setAxisLabelsWithData(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -756,12 +756,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Views/RVRouteProfileView.swift"
-            timestampString = "575736732.676613"
+            timestampString = "575737685.040187"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "128"
             endingLineNumber = "128"
             landmarkName = "draw(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
+            timestampString = "575737685.0402369"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "164"
+            endingLineNumber = "164"
+            landmarkName = "scrollViewDidEndZooming(_:with:atScale:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

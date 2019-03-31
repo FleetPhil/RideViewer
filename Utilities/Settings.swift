@@ -26,22 +26,6 @@ class Settings {
 		appLog.debug("Save settings")
 	}
 	
-//	var activitySettingsPredicate : NSCompoundPredicate {
-//		var virtualPredicate : NSPredicate 	= NSPredicate(value: true)
-////		var bikePredicate : NSPredicate 	= NSPredicate(value: true)
-//		var distancePredicate : NSPredicate	= NSPredicate(value: true)
-//
-//		if self.includeVirtual == false {		// Filter out virtual rides
-//			virtualPredicate = NSPredicate(format: "activityType != %@", ActivityType.virtualRide.rawValue)
-//		}
-////		if self.onlyBike == true {		// Filter out non-bike activities
-////			virtualPredicate = NSPredicate(format: "activity == %@", NSNumber(value: false))
-////		}
-//		distancePredicate = NSPredicate(format: "distance > %f", self.activityMinDistance)
-//
-//		return NSCompoundPredicate(andPredicateWithSubpredicates: [virtualPredicate, distancePredicate])
-//	}
-	
 	// Return a segment filter from the settings
 	var segmentSettingsPredicate : NSCompoundPredicate {
 		var distancePredicate : NSPredicate	= NSPredicate(value: true)

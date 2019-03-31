@@ -8,11 +8,11 @@
 
 import UIKit
 import MapKit
-import Photos
 import StravaSwift
 import CoreData
 
-class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
+class ActivityDetailViewController: UIViewController, RVEffortTableDelegate, RVRouteProfileScrollViewDelegate {
+	
 	//MARK: Model
 	weak var activity : RVActivity!
 	
@@ -24,8 +24,6 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 	@IBOutlet weak var elevationData: UILabel!
 	@IBOutlet weak var timeData: UILabel!
 	@IBOutlet weak var powerData: UILabel!
-	
-	@IBOutlet weak var photoView: ScrollingPhotoView!
 	
 	// MARK: Model for effort table
 	private var effortTableViewController : RVEffortListViewController!
@@ -41,9 +39,6 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 	// MARK: Profile View and data
 	var routeViewController: RVRouteProfileViewController!
 	
-	// MARK: Photos
-	private var photoAssets : [PHAsset] = []
-	
 	// MARK: Properties
 	private var popupController : UIViewController?
 	private var activityIndicator : UIActivityIndicatorView!
@@ -52,6 +47,9 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 		super.viewDidLoad()
 		
 		guard activity != nil else { return }
+		
+		// Scroll view delegate
+		routeViewController.delegate = self
 		
 		// Info button disabled as no effort selected
 		infoButton.isEnabled = false
@@ -89,6 +87,7 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 			// Populate the view fields
 			updateView()
 		}
+		
 	}
 	
 	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -167,10 +166,15 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 		}
 	}
 	
-	func imageHandler(identifier: String, image : UIImage?, photoDate: Date?, location: CLLocationCoordinate2D) {
-		// appLog.debug("Returned image \(identifier)")
-		photoView.addImage(image: image, identifier: identifier)
+	// Scroll vewi delegate
+	func didChangeScale(viewController: UIViewController, newScale: CGFloat) {
+		appLog.debug("Scale: \(newScale.fixedFraction(digits: 1))")
 	}
+	
+	func didChangeOffset(viewController: UIViewController, newOffset: CGFloat) {
+		appLog.debug("Offset: \(newOffset.fixedFraction(digits: 1))")
+	}
+
 	
 	// MARK: - Navigation
 	var selectedEffort : RVEffort? = nil
