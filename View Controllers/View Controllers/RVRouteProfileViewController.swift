@@ -12,11 +12,22 @@
 import UIKit
 import CoreData
 
+// Delegate is notified when zoom or scroll changes
+protocol RVRouteProfileScrollViewDelegate {
+	func didChangeScale(viewController : UIViewController, newScale : CGFloat)
+	func didChangeOffset(viewController : UIViewController, newOffset : CGFloat)
+}
+
+class RVRouteProfileScrollView : UIScrollView {
+
+}
+
 class RVRouteProfileViewController: UIViewController {
 	
 	// View that is managed by this controller
+	@IBOutlet weak var routeScrollView: UIScrollView!
+	@IBOutlet weak var routeView: RVRouteProfileView!
 	
-	@IBOutlet private weak var routeView: RVRouteProfileView!
 	@IBOutlet private weak var noDataLabel: UILabel!
 	@IBOutlet private weak var waitingLabel: UILabel!
 	
@@ -32,13 +43,19 @@ class RVRouteProfileViewController: UIViewController {
 	@IBOutlet private weak var horiz75Label: UILabel!
 	@IBOutlet private weak var horiz100Label: UILabel!
 	
-	var viewRange : RouteIndexRange?
-	
 	// Properties
+	var delegate : RVRouteProfileScrollViewDelegate?
+	
 	private var profileData : ViewProfileData!
+	private var initialRouteViewWidth : CGFloat!		// Width before scrolling
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+
+		// Set up the zoom level for the view to prevent zooming
+		routeScrollView.delegate = self
+		routeScrollView.minimumZoomScale = 1.0
+		routeScrollView.maximumZoomScale = 5.0
 	}
 	
 	// Public interface
@@ -87,6 +104,7 @@ class RVRouteProfileViewController: UIViewController {
 	
 	// Private functions
 	
+	// Return the data points for the specified data type and owner
 	private func dataPointsForStreamType<S> (_ profileType : ViewProfileDataType, streamOwner : S) -> [DataPoint]? where S : StreamOwner {
 		let streams = streamOwner.streams.map { $0.type! }
 		appLog.verbose("Target: \(profileType.stravaValue), streams are \(streams)")
@@ -103,6 +121,7 @@ class RVRouteProfileViewController: UIViewController {
 		return dataPoints
 	}
 	
+	// MARK: Display functions
 	
 	private func setAxisLabelsWithData(_ profileData : ViewProfileData) {
 		if let primarySet = profileData.dataSetsOfDisplayType(.primary).first {
@@ -133,9 +152,27 @@ class RVRouteProfileViewController: UIViewController {
 			horiz100Label.text		= ((maxDistance-minDistance) + minDistance).distanceDisplayString
 		}
 	}
+}
+
+extension RVRouteProfileViewController : UIScrollViewDelegate {
+	func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+		return routeView
+	}
 	
-	override func viewDidLayoutSubviews() {
-		super.viewDidLayoutSubviews()
+	func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+		delegate?.didChangeScale(viewController: self, newScale: scale)
 		routeView.setNeedsDisplay()
 	}
+	
+	func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+		delegate?.didChangeOffset(viewController: self, newOffset: scrollView.contentOffset.x)
+	}
+
+	func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+		if !decelerate {
+			delegate?.didChangeOffset(viewController: self, newOffset: scrollView.contentOffset.x)
+		}
+	}
+
 }
+

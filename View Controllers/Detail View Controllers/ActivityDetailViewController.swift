@@ -129,8 +129,6 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		}
 	}
 	
-	
-	
 	func updateView() {
 		self.title 			= activity.name
 		
@@ -188,13 +186,7 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		photoView.addImage(image: image, identifier: identifier)
 	}
 	
-	//MARK: Info Button
-	@IBAction func infoButtonPressed(_ sender: Any) {
-		
-	}
-	
 	// MARK: - Navigation
-	
 	var selectedEffort : RVEffort? = nil
 	
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

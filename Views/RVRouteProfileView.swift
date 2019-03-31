@@ -14,71 +14,31 @@ class RVRouteProfileView : UIView {
 	// Public model
 	var profileData: ViewProfileData? {
 		didSet {
+			self.contentMode = ContentMode.redraw
 			setNeedsDisplay()
 		}
 	}
 	
-	required init?(coder aDecoder: NSCoder) {
-		super.init(coder: aDecoder)
-//		self.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(didPinch)))
-//		self.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
-		self.isUserInteractionEnabled = true
+	var sizeIsSet : Bool = false
+
+	// MARK: Set the view size
+	//		There is no instrinsic size for this view in the storyboard so one needs to be defined (i.e. bounds set)
+	//		If the superview is a scroll view and has a defined content size then use that
+	//		If not use the bounds of the superview as the content size
+	override func layoutSubviews() {
+		if !sizeIsSet {
+			if let scrollView = superview as? UIScrollView {
+				self.bounds = scrollView.bounds
+				self.frame.origin = CGPoint(x: 0, y: 0)
+				scrollView.contentSize = self.bounds.size
+				sizeIsSet = true
+				appLog.debug("Bounds set to \(self.bounds)")
+			}
+		}
+		super.layoutSubviews()
 	}
 	
-//	@IBAction func didPinch(_ gestureRecognizer : UIPinchGestureRecognizer) {
-//		guard gestureRecognizer.view != nil, profileData != nil else { return }
-//
-//		// NOTE: if profileData is set then data ranges are too
-//
-//		if gestureRecognizer.state == .ended {
-//			if let handler = profileData?.rangeChangedHandler {
-//				handler(profileData!.viewRange)
-//			}
-//		}
-//
-//		guard gestureRecognizer.state == .began || gestureRecognizer.state == .changed else { return }
-//
-//		let visiblePoints = CGFloat(profileData!.viewRange.to - profileData!.viewRange.from)
-//		let newVisiblePoints = CGFloat(profileData!.viewRange.to - profileData!.viewRange.from) / gestureRecognizer.scale
-//		let change = Int(newVisiblePoints - visiblePoints)
-//		profileData!.viewRange = RouteIndexRange(from: profileData!.viewRange.from - change/2, to: profileData!.viewRange.to + change/2)
-//		if profileData!.viewRange.from < 0 {
-//			profileData!.viewRange.to += -profileData!.viewRange.from
-//			profileData!.viewRange.from += -profileData!.viewRange.from
-//		}
-//		if Int(newVisiblePoints) > profileData!.fullRange.to {
-//			profileData!.viewRange = RouteIndexRange(from: 0, to: profileData!.fullRange.to)
-//		}
-//		gestureRecognizer.scale = 1.0
-//		self.setNeedsDisplay()
-//	}
-//
-//	@IBAction func didPan(_ gestureRecognizer : UIPanGestureRecognizer) {
-//		guard gestureRecognizer.view != nil, profileData != nil else { return }
-//
-//		switch gestureRecognizer.state {
-//		case .ended:
-//			if let handler = profileData?.rangeChangedHandler {
-//				handler(profileData!.viewRange)
-//			}
-//		case .began, .changed:
-//			let widthPerDataPoint = self.bounds.width / CGFloat(profileData!.viewRange.to - profileData!.viewRange.from)
-//			profileData!.viewRange.from -= Int(gestureRecognizer.translation(in: self).x / widthPerDataPoint)
-//
-//			if profileData!.viewRange.from < 0 { profileData!.viewRange.from = 0 }
-//
-//			profileData!.viewRange.to = profileData!.viewRange.from + Int(self.bounds.width / widthPerDataPoint)
-//			if profileData!.viewRange.to > profileData!.fullRange.to {
-//				profileData!.viewRange.from -= (profileData!.viewRange.to - profileData!.fullRange.to)
-//				profileData!.viewRange.to -= (profileData!.viewRange.to - profileData!.fullRange.to)
-//			}
-//			gestureRecognizer.setTranslation(CGPoint(x: 0, y: 0), in: self)
-//			self.setNeedsDisplay()
-//		default:
-//			break
-//
-//		}
-//	}
+	// MARK: Functions to plot values
 	
 	// Return the point in the given CGRect that shows the x and y values scaled to the bounds
 	// x and y values are in the frame of the secondary, bounds are in the frame of the primary
@@ -116,8 +76,10 @@ class RVRouteProfileView : UIView {
 	private func createHighlight() -> UIBezierPath? {
 		guard let highlight = profileData?.highlightRange, profileData!.viewRange.to - profileData!.viewRange.from > 0 else { return nil }
 
-		guard let topLeft = plot(rect: self.bounds, x: highlight.from, y: profileData!.mainDataBounds.minY, bounds: profileData!.mainDataBounds),
-			let bottomRight = plot(rect: self.bounds, x: highlight.to, y: profileData!.mainDataBounds.maxY, bounds: profileData!.mainDataBounds)
+		let drawRect = self.frame
+		
+		guard let topLeft = plot(rect: drawRect, x: highlight.from, y: profileData!.mainDataBounds.minY, bounds: profileData!.mainDataBounds),
+			let bottomRight = plot(rect: drawRect, x: highlight.to, y: profileData!.mainDataBounds.maxY, bounds: profileData!.mainDataBounds)
 			else {
 				appLog.error("Plot for highlight range out of bounds")
 				return nil
@@ -128,16 +90,33 @@ class RVRouteProfileView : UIView {
 	}
 	
 	override func draw(_ rect: CGRect) {
+		
 		guard profileData != nil else { return }
-		
 		self.backgroundColor = UIColor.white
+
+		let drawRect = self.bounds
 		
+		// If the device has been rotated while the scrollview is zoomed, the content height will have been scaled and needs to be adjusted
+		if let sv = superview as? UIScrollView {
+			if sv.contentSize.height > drawRect.height {
+				sv.contentSize.height = drawRect.height
+			}
+		}
+
+		// Calculate the zoom level and width for the lines
+		let zoom = frame.width / bounds.width
+		let lineWidth = 1.0 / zoom
+		
+		appLog.verbose(self.bounds.display(name: "Bounds") + " " + self.frame.display(name: "Frame") + " Zoom: \(zoom.fixedFraction(digits: 1))")
+		appLog.verbose((self.superview! as! UIScrollView).contentSize.display(name: "Content size"))
+
 		// Draw lines for axes
 		let path = UIBezierPath()
 		path.move(to: CGPoint(x: 0.0, y: 0.0))
-		path.addLine(to: CGPoint(x: 0.0, y: self.bounds.maxY))
-		path.addLine(to: CGPoint(x: self.bounds.maxX, y: self.bounds.maxY))
+		path.addLine(to: CGPoint(x: 0.0, y: drawRect.maxY))
+		path.addLine(to: CGPoint(x: drawRect.maxX, y: drawRect.maxY))
 		UIColor.lightGray.setStroke()
+		path.lineWidth = lineWidth
 		path.stroke()
 		
 		if let path = createHighlight() {
@@ -155,9 +134,9 @@ class RVRouteProfileView : UIView {
 			
 			case .primary, .secondary:
 				// Primary and secondary draw as a line with data bounds set by primary
-				let pointsToDraw = plotValues(rect: self.bounds.inset(by: UIEdgeInsets(top: 1.0, left: 1.0, bottom: 1.0, right: 1.0)), dataValues: dataSet.dataPoints, dataBounds: profileData!.mainDataBounds)
+				let pointsToDraw = plotValues(rect: drawRect, dataValues: dataSet.dataPoints, dataBounds: profileData!.mainDataBounds)
 				let path = UIBezierPath()
-				path.lineWidth = 1.0
+				path.lineWidth = lineWidth
 				path.move(to: pointsToDraw[0])
 				for i in 1..<pointsToDraw.count {
 					path.addLine(to: pointsToDraw[i])
@@ -170,7 +149,7 @@ class RVRouteProfileView : UIView {
 				// Data bounds for the background are relative to the background bounds, not the primary (i.e. plotted on a secondary y axis)
 				
 				let dataBounds = dataSet.dataBounds
-				let viewBounds = CGRect(x: 0, y: self.bounds.height * 0.25 , width: self.bounds.width, height: self.bounds.height * 0.75 ).inset(by: UIEdgeInsets(top: 1.0, left: 1.0, bottom: 1.0, right: 1.0))
+				let viewBounds = CGRect(x: 0, y: drawRect.height * 0.25 , width: drawRect.width, height: drawRect.height * 0.75 ).inset(by: UIEdgeInsets(top: 1.0, left: 1.0, bottom: 1.0, right: 1.0))
 				let pointsToDraw = plotValues(rect: viewBounds, dataValues: dataSet.dataPoints, dataBounds: dataBounds)
 				
 				if pointsToDraw.count == 0 {
@@ -210,6 +189,29 @@ class RVRouteProfileView : UIView {
 		ctx.drawLinearGradient(gradient, start: start, end: end, options: [])
 		
 		ctx.restoreGState() // remove the clipping region for future draw operations
+	}
+	
+	override var transform: CGAffineTransform {
+		get { return super.transform }
+		set {
+			let unzoomedViewHeight = self.bounds.height
+			var t = newValue
+			t.d = 1.0
+			t.ty = (1.0 - t.a) * unzoomedViewHeight/2
+			super.transform = t
+		}
+	}
+}
+
+extension CGRect {
+	func display(name : String = "") -> String {
+		return self.size.display(name: name)
+	}
+}
+
+extension CGSize {
+	func display(name : String = "") -> String {
+		return name + "(W: " + self.width.fixedFraction(digits: 1) + ", H: " + self.height.fixedFraction(digits: 1) + ")"
 	}
 }
 
