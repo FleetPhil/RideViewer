@@ -12,7 +12,7 @@ import Photos
 import StravaSwift
 import CoreData
 
-class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate, RVEffortTableDelegate {
+class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 	//MARK: Model
 	weak var activity : RVActivity!
 	
@@ -52,9 +52,6 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		super.viewDidLoad()
 		
 		guard activity != nil else { return }
-		
-		// Set scrolling photo view delegate
-		photoView?.delegate = self
 		
 		// Info button disabled as no effort selected
 		infoButton.isEnabled = false
@@ -153,17 +150,6 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		mapView!.addRoute(activity, type: .mainActivity)
 		mapView!.setMapRegion()
 		
-		// Get photos for this activity
-		//        activity.getPhotoAssets(force: false, completionHandler: { [weak self] identifiers in
-		//            identifiers.forEach() { [weak self] id in
-		//                if self != nil {
-		//                    _ = PhotoManager.shared().getPhotoImage(localIdentifier : id.localIdentifier, size : self!.photoView.bounds.size, resultHandler : { identifier, image, creationDate, location in
-		//                        self?.photoView?.addImage(image: image, identifier: identifier)
-		//                    })
-		//                }
-		//            }
-		//        })
-		
 		if activity.streams.filter({ $0.type == ViewProfileDataType.altitude.stravaValue }).first != nil {
 			_ = routeViewController.setPrimaryProfile(streamOwner: activity!, profileType: .altitude)
 		} else {
@@ -221,15 +207,4 @@ class ActivityDetailViewController: UIViewController, ScrollingPhotoViewDelegate
 		infoButton.isEnabled = false
 	}
 	
-	// MARK: Scrolling photo view delegate
-	func photoDidChangeToIndex(_ index: Int) {
-		activity.getPhotoAssets(force: false, completionHandler: { [weak self] assets in
-			let selectedPhotoAsset = assets[index]
-			_ = PhotoManager.shared().getPhotoImage(localIdentifier: selectedPhotoAsset.localIdentifier,
-													size: CGSize(width: 30, height: 30),
-													resultHandler: { [ weak self]  _, image, _, location in
-														self?.mapView.addPhoto(image: image, location: location)
-			})
-		})
-	}
 }

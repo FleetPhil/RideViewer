@@ -203,49 +203,6 @@ extension RVActivity : TableViewCompatibleEntity {
     }
 }
 
-// Extension to support photos
-extension RVActivity {
-	// Return photo asset identifiers to completion handler on main thread
-	func getPhotoAssets(force : Bool, completionHandler : @escaping ([RVPhotoAsset])->Void) {
-		if !force && self.photoScanDate != nil {
-			completionHandler(Array(self.photos).sorted(by: { ($0.photoDate as Date) < ($1.photoDate as Date) }))
-			return
-		}
-		
-		CoreDataManager.sharedManager().viewContext.automaticallyMergesChangesFromParent = true
-		CoreDataManager.sharedManager().persistentContainer.performBackgroundTask( { context in
-			let contextSelf = (context.object(with: self.objectID) as! RVActivity)
-			_ = context.deleteObjects(contextSelf.photos)
-			
-			let photos = PhotoManager.shared().photosForTimePeriod(self.startDate as Date, duration: self.elapsedTime)
-			guard photos.count <= Settings.sharedInstance.maxPhotosForActivity else {
-				appLog.error("More than \(Settings.sharedInstance.maxPhotosForActivity) photos for \(self.name) on \(self.startDate)")
-				return
-			}
-			photos.forEach({ asset in
-				let newAsset = RVPhotoAsset.create(asset: asset, context: context)
-				newAsset.activity = context.object(with: self.objectID) as? RVActivity
-			})
-			contextSelf.photoScanDate = Date() as NSDate
-			context.saveContext()
-			DispatchQueue.main.async() {
-				completionHandler(Array(self.photos).sorted(by: { ($0.photoDate as Date) < ($1.photoDate as Date) }))
-			}
-		})
-	}
-}
-
-protocol PhotoOwningObject {
-	var photos: Set<RVPhotoAsset> { get set }
-	
-}
-
-extension RVActivity : PhotoOwningObject {
-	
-}
-
-
-
 
 
 // Table cell

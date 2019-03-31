@@ -1007,9 +1007,6 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
-                                        <connections>
-                                            <segue destination="QJs-Cv-zGD" kind="showDetail" id="bxx-za-YKm"/>
-                                        </connections>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -1522,86 +1519,6 @@
             </objects>
             <point key="canvasLocation" x="1245" y="46"/>
         </scene>
-        <!--Scan Photos View Controller-->
-        <scene sceneID="yGg-ON-Rw3">
-            <objects>
-                <viewController id="XoR-kt-R0n" customClass="ScanPhotosViewController" customModule="RideViewer" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="ma4-LQ-mJ8">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="Eja-hd-QoD">
-                                <rect key="frame" x="105.66666666666667" y="307.33333333333331" width="163.66666666666663" height="197.66666666666669"/>
-                                <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="en4-aM-aoV">
-                                        <rect key="frame" x="0.0" y="0.0" width="163.66666666666666" height="117.66666666666667"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Total Photos" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8MC-AR-5Uh">
-                                                <rect key="frame" x="0.0" y="0.0" width="110" height="20.333333333333332"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Photos Scanned" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hzn-Vj-cvm">
-                                                <rect key="frame" x="0.0" y="24.333333333333371" width="140" height="20.333333333333329"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Activities Matched" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5dE-ri-hYK">
-                                                <rect key="frame" x="0.0" y="48.666666666666686" width="156" height="20.333333333333329"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Segments Matched" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kCq-5i-jQ4">
-                                                <rect key="frame" x="0.0" y="73" width="163.66666666666666" height="20.333333333333329"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Photos Stored" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SYL-3k-dpk">
-                                                <rect key="frame" x="0.0" y="97.333333333333371" width="124" height="20.333333333333329"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                        </subviews>
-                                    </stackView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yNA-71-L7I">
-                                        <rect key="frame" x="0.0" y="167.66666666666669" width="163.66666666666666" height="30"/>
-                                        <state key="normal" title="Start Scan"/>
-                                        <connections>
-                                            <action selector="startScanButton:" destination="XoR-kt-R0n" eventType="touchUpInside" id="fU6-vG-mXM"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstItem="yNA-71-L7I" firstAttribute="centerX" secondItem="Eja-hd-QoD" secondAttribute="centerX" id="VVu-ka-oGt"/>
-                                </constraints>
-                            </stackView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="Eja-hd-QoD" firstAttribute="centerX" secondItem="ma4-LQ-mJ8" secondAttribute="centerX" id="U55-F5-p1C"/>
-                            <constraint firstItem="Eja-hd-QoD" firstAttribute="centerY" secondItem="ma4-LQ-mJ8" secondAttribute="centerY" id="sYL-yd-ocA"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="Oso-eg-tSw"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="1Pr-Vo-hwJ"/>
-                    <connections>
-                        <outlet property="activitiesMatchedLabel" destination="5dE-ri-hYK" id="H5z-Sc-Vhx"/>
-                        <outlet property="effortsMatchedLabel" destination="kCq-5i-jQ4" id="fLL-BY-Qd2"/>
-                        <outlet property="photosStoredLabel" destination="SYL-3k-dpk" id="JDn-9Q-ebz"/>
-                        <outlet property="photosscannedLabel" destination="hzn-Vj-cvm" id="dFp-qh-7eh"/>
-                        <outlet property="startButton" destination="yNA-71-L7I" id="zIO-Qw-aYe"/>
-                        <outlet property="totalPhotosLabel" destination="8MC-AR-5Uh" id="tt1-it-nA6"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="kJh-qf-Qnz" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3490" y="2182"/>
-        </scene>
         <!--Navigation Controller-->
         <scene sceneID="phx-VP-BA7">
             <objects>
@@ -1637,24 +1554,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uuq-Nd-bk3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2711" y="33"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="ORM-w7-MJ7">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QJs-Cv-zGD" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="6XP-i1-Rdr">
-                        <rect key="frame" x="0.0" y="44" width="375" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="XoR-kt-R0n" kind="relationship" relationship="rootViewController" id="AnY-G4-V1N"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="SHM-mf-8Fz" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1831" y="2043"/>
         </scene>
     </scenes>
     <resources>

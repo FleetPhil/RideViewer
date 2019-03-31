@@ -78,16 +78,4 @@ class ScanPhotosViewController: UIViewController {
 			}
 		}
 	}
-	
-	func getPhotosForActivities() {
-		let allActivities : [RVActivity] = CoreDataManager.sharedManager().viewContext.fetchObjects()!
-		for activity in allActivities {
-			if stopScan { break }
-			activity.getPhotoAssets(force: true, completionHandler: { photoAssets in
-				self.photosStoredCount += photoAssets.count
-				self.activitiesMatchedCount += 1
-				self.updateLabels()
-			})
-		}
-	}
 }
