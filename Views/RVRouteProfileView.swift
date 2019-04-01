@@ -105,7 +105,7 @@ class RVRouteProfileView : UIView {
 
 		// Calculate the zoom level and width for the lines
 		let zoom = frame.width / bounds.width
-		let lineWidth = 1.0 / zoom
+        let lineWidth = zoom == 1.0 ? 1.0 : 1.0 / zoom
 		
 		appLog.verbose(self.bounds.display(name: "Bounds") + " " + self.frame.display(name: "Frame") + " Zoom: \(zoom.fixedFraction(digits: 1))")
 		appLog.verbose((self.superview! as! UIScrollView).contentSize.display(name: "Content size"))

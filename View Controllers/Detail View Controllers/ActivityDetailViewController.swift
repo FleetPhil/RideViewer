@@ -11,9 +11,9 @@ import MapKit
 import StravaSwift
 import CoreData
 
-class ActivityDetailViewController: UIViewController, RVEffortTableDelegate, RVRouteProfileScrollViewDelegate {
-	
-	//MARK: Model
+class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
+
+    //MARK: Model
 	weak var activity : RVActivity!
 	
 	@IBOutlet weak var infoButton: UIBarButtonItem!
@@ -47,9 +47,6 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate, RVR
 		super.viewDidLoad()
 		
 		guard activity != nil else { return }
-		
-		// Scroll view delegate
-		routeViewController.delegate = self
 		
 		// Info button disabled as no effort selected
 		infoButton.isEnabled = false
@@ -165,16 +162,6 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate, RVR
 			mapView.setMapRegion()
 		}
 	}
-	
-	// Scroll vewi delegate
-	func didChangeScale(viewController: UIViewController, newScale: CGFloat) {
-		appLog.debug("Scale: \(newScale.fixedFraction(digits: 1))")
-	}
-	
-	func didChangeOffset(viewController: UIViewController, newOffset: CGFloat) {
-		appLog.debug("Offset: \(newOffset.fixedFraction(digits: 1))")
-	}
-
 	
 	// MARK: - Navigation
 	var selectedEffort : RVEffort? = nil

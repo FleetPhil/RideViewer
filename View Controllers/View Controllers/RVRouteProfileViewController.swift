@@ -14,8 +14,9 @@ import CoreData
 
 // Delegate is notified when zoom or scroll changes
 protocol RVRouteProfileScrollViewDelegate {
-	func didChangeScale(viewController : UIViewController, newScale : CGFloat)
-	func didChangeOffset(viewController : UIViewController, newOffset : CGFloat)
+    func didChangeScale(viewController : UIViewController, newScale: CGFloat, withOffset: CGPoint)
+	func didEndScrolling(viewController : UIViewController, newOffset : CGPoint)
+    func didScroll(viewController : UIViewController, newOffset : CGPoint)
 }
 
 class RVRouteProfileScrollView : UIScrollView {
@@ -159,20 +160,26 @@ extension RVRouteProfileViewController : UIScrollViewDelegate {
 		return routeView
 	}
 	
-	func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-		delegate?.didChangeScale(viewController: self, newScale: scale)
-		routeView.setNeedsDisplay()
-	}
-	
-	func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-		delegate?.didChangeOffset(viewController: self, newOffset: scrollView.contentOffset.x)
-	}
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        delegate?.didChangeScale(viewController: self, newScale: scale, withOffset: scrollView.contentOffset)
+        routeView.setNeedsDisplay()
+    }
 
-	func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-		if !decelerate {
-			delegate?.didChangeOffset(viewController: self, newOffset: scrollView.contentOffset.x)
-		}
-	}
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        delegate?.didEndScrolling(viewController: self, newOffset: scrollView.contentOffset)
+    }
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            delegate?.didEndScrolling(viewController: self, newOffset: scrollView.contentOffset)
+        }
+    }
+
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        if !scrollView.isZooming {
+//            delegate?.didScroll(viewController: self, newOffset: scrollView.contentOffset)
+//        }
+//    }
 
 }
 

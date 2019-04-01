@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
+class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RVRouteProfileScrollViewDelegate {
 	
 	@IBOutlet weak var topInfoLabel: UILabel!
 	@IBOutlet weak var bottomInfoLabel: UILabel!
@@ -22,7 +22,11 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 	private var speedProfileController : RVRouteProfileViewController!
 	private var powerProfileController : RVRouteProfileViewController!
 	private var HRProfileController : RVRouteProfileViewController!
-	
+
+    var profileControllers : [RVRouteProfileViewController] {
+        return [speedProfileController, powerProfileController, HRProfileController]
+    }
+    
 	// Model
 	var segment : RVSegment! {
 		didSet {
@@ -49,6 +53,10 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 			appLog.error("No shortest effort for analysis")
 			return
 		}
+        
+        speedProfileController.delegate = self
+        powerProfileController.delegate = self
+        HRProfileController.delegate = self
 
 		topInfoLabel.text = EmojiConstants.Fastest + " " + shortest.activity.name
 		topInfoLabel.textColor = ViewProfileDisplayType.primary.displayColour
@@ -136,6 +144,23 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 			break
 		}
 	}
+    
+    // MARK: Profile controller delegate
+    
+    func didChangeScale(viewController: UIViewController, newScale: CGFloat, withOffset: CGPoint) {
+        profileControllers.filter({ $0 != viewController }).forEach({ $0.routeScrollView.setZoomScale(newScale, animated: false) })
+        profileControllers.filter({ $0 != viewController }).forEach({ $0.routeScrollView.setContentOffset(withOffset, animated: true) })
+    }
+    
+    func didEndScrolling(viewController: UIViewController, newOffset: CGPoint) {
+        profileControllers.filter({ $0 != viewController }).forEach({ $0.routeScrollView.setContentOffset(newOffset, animated: true) })
+    }
+    
+    func didScroll(viewController: UIViewController, newOffset: CGPoint) {
+//        profileControllers.filter({ $0 != viewController }).forEach({ $0.routeScrollView.setContentOffset(newOffset, animated: false) })
+    }
+    
+
 }
 
 

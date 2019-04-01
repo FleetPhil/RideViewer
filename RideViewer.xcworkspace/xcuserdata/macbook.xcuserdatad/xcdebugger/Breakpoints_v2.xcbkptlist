@@ -95,38 +95,6 @@
             endingLineNumber = "139"
             landmarkName = "getStarredSegments(page:context:completionHandler:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Optional&lt;Swift.Array&lt;StravaSwift.Segment&gt;&gt;) -&gt; () in RideViewer.StravaManager.getStarredSegments(page: Swift.Int, context: __C.NSManagedObjectContext, completionHandler: () -&gt; ()) -&gt; ()"
-                  moduleName = "RideViewer"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/macbook/Documents/Development/Strava/RideViewer/Data%20Loading/Strava%20Manager.swift"
-                  timestampString = "573219462.135197"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "139"
-                  endingLineNumber = "139"
-                  offsetFromSymbolStart = "762">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (StravaSwift.Segment) -&gt; () in closure #1 (Swift.Optional&lt;Swift.Array&lt;StravaSwift.Segment&gt;&gt;) -&gt; () in RideViewer.StravaManager.getStarredSegments(page: Swift.Int, context: __C.NSManagedObjectContext, completionHandler: () -&gt; ()) -&gt; ()"
-                  moduleName = "RideViewer"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/macbook/Documents/Development/Strava/RideViewer/Data%20Loading/Strava%20Manager.swift"
-                  timestampString = "573219462.138494"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "140"
-                  endingLineNumber = "140"
-                  offsetFromSymbolStart = "53">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
