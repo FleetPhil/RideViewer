@@ -148,17 +148,13 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RV
     // MARK: Profile controller delegate
     
     func didChangeScale(viewController: UIViewController, newScale: CGFloat, withOffset: CGPoint) {
-        profileControllers.filter({ $0 != viewController }).forEach({ $0.routeScrollView.setZoomScale(newScale, animated: false) })
-        profileControllers.filter({ $0 != viewController }).forEach({ $0.routeScrollView.setContentOffset(withOffset, animated: true) })
     }
     
     func didEndScrolling(viewController: UIViewController, newOffset: CGPoint) {
-        profileControllers.filter({ $0 != viewController }).forEach({ $0.routeScrollView.setContentOffset(newOffset, animated: true) })
     }
     
     func didScroll(viewController: UIViewController, newOffset: CGPoint) {
-//        profileControllers.filter({ $0 != viewController }).forEach({ $0.routeScrollView.setContentOffset(newOffset, animated: false) })
-    }
+   	}
     
 
 }
