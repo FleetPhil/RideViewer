@@ -1,5 +1,8 @@
 PODS:
-  - Alamofire (4.8.1)
+  - Alamofire (4.8.2)
+  - Charts (3.2.2):
+    - Charts/Core (= 3.2.2)
+  - Charts/Core (3.2.2)
   - ObjcExceptionBridging (1.0.1):
     - ObjcExceptionBridging/ObjcExceptionBridging (= 1.0.1)
   - ObjcExceptionBridging/ObjcExceptionBridging (1.0.1)
@@ -14,9 +17,11 @@ PODS:
     - ObjcExceptionBridging
 
 DEPENDENCIES:
+  - Charts (from `https://github.com/danielgindi/Charts.git`, branch `master`)
   - Polyline (~> 4.0)
   - StravaSwift (from `https://github.com/FleetPhil/StravaSwift.git`)
-  - XCGLogger
+  - SwiftyJSON (<= 4.2.0)
+  - XCGLogger (<= 6.1.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -27,22 +32,29 @@ SPEC REPOS:
     - XCGLogger
 
 EXTERNAL SOURCES:
+  Charts:
+    :branch: master
+    :git: https://github.com/danielgindi/Charts.git
   StravaSwift:
     :git: https://github.com/FleetPhil/StravaSwift.git
 
 CHECKOUT OPTIONS:
+  Charts:
+    :commit: 5d0b99adb860406059e42149520ce9c0cb847feb
+    :git: https://github.com/danielgindi/Charts.git
   StravaSwift:
-    :commit: bb8bb0666c761445cd00a8cf1191868adb6c8804
+    :commit: 12d88e08260b4e4f01308b1e2678a665df689f95
     :git: https://github.com/FleetPhil/StravaSwift.git
 
 SPEC CHECKSUMS:
-  Alamofire: 16ce2c353fb72865124ddae8a57c5942388f4f11
+  Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
+  Charts: f69cf0518b6d1d62608ca504248f1bbe0b6ae77e
   ObjcExceptionBridging: c30e00eb3700467e695faeea30e26e18bd445001
   Polyline: 3d69f75bb136357e27291d439d0436c6ebda57a4
   StravaSwift: 4d9fd4f167185fd76a43b7f8cae70d436031d9ad
   SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
   XCGLogger: 7f7f43f15dfe3a305fa1342b7dc29af656289abd
 
-PODFILE CHECKSUM: e00f49cb355baaf5736fcaee38cd3f48dc28c7ea
+PODFILE CHECKSUM: 85ab408ec4d7a51c4a98bdc4182d4792857a2399
 
 COCOAPODS: 1.5.3

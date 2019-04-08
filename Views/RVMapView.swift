@@ -89,11 +89,6 @@ public enum RouteViewType {
 	}
 }
 
-// 	Range expressed in units on the primary axis
-public struct RouteIndexRange {
-	var from: Double
-	var to: Double
-}
 
 // MARK: Map view
 protocol RideMapViewDelegate : class {

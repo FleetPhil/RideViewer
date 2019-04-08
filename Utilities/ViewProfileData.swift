@@ -37,6 +37,12 @@ enum ViewProfileDisplayType {
 	}
 }
 
+//     Range expressed in units on the primary axis
+public struct RouteIndexRange {
+    var from: Double
+    var to: Double
+}
+
 struct DataPoint {
 	var dataValue : Double
 	var axisValue : Double

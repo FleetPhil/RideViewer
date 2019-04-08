@@ -11,8 +11,10 @@ target 'RideViewer' do
   # Pods for RideViewer
 
   pod 'StravaSwift', :git => 'https://github.com/FleetPhil/StravaSwift.git'
-  pod 'XCGLogger'
+  pod 'SwiftyJSON', '<= 4.2.0'
+  pod 'XCGLogger', '<= 6.1.0'
   pod 'Polyline', '~> 4.0'
+  pod 'Charts', :git => 'https://github.com/danielgindi/Charts.git', :branch => 'master'
 
 end
 
