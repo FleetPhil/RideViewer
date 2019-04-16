@@ -164,7 +164,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
-            timestampString = "576436498.501289"
+            timestampString = "576777395.005594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "63"
@@ -180,13 +180,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/Detail View Controllers/SegmentAnalysisViewController.swift"
-            timestampString = "576436498.5017101"
+            timestampString = "576778971.263028"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "86"
-            endingLineNumber = "86"
-            landmarkName = "prepare(for:sender:)"
-            landmarkType = "7">
+            startingLineNumber = "89"
+            endingLineNumber = "89"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -196,13 +196,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/Detail View Controllers/SegmentAnalysisViewController.swift"
-            timestampString = "576436498.501767"
+            timestampString = "576778971.263418"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "101"
-            endingLineNumber = "101"
-            landmarkName = "didDeselectEffort(effort:)"
-            landmarkType = "7">
+            startingLineNumber = "104"
+            endingLineNumber = "104"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -212,13 +212,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/Detail View Controllers/SegmentAnalysisViewController.swift"
-            timestampString = "576436498.501816"
+            timestampString = "576778971.263712"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "97"
-            endingLineNumber = "97"
-            landmarkName = "didDeselectEffort(effort:)"
-            landmarkType = "7">
+            startingLineNumber = "100"
+            endingLineNumber = "100"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -244,11 +244,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/InitialViewController.swift"
-            timestampString = "574882121.8064409"
+            timestampString = "576502470.036999"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "122"
-            endingLineNumber = "122"
+            startingLineNumber = "85"
+            endingLineNumber = "85"
             landmarkName = "effortsForSegments(_:progressHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -260,11 +260,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/InitialViewController.swift"
-            timestampString = "574882121.806518"
+            timestampString = "576502470.037058"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "129"
-            endingLineNumber = "129"
+            startingLineNumber = "92"
+            endingLineNumber = "92"
             landmarkName = "effortsForSegments(_:progressHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -276,11 +276,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/InitialViewController.swift"
-            timestampString = "574882121.806572"
+            timestampString = "576502470.037111"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "117"
-            endingLineNumber = "117"
+            startingLineNumber = "80"
+            endingLineNumber = "80"
             landmarkName = "effortsForSegments(_:progressHandler:)"
             landmarkType = "7">
             <Locations>
@@ -356,13 +356,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/Detail View Controllers/ActivityDetailViewController.swift"
-            timestampString = "575737685.039335"
+            timestampString = "576777395.006054"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "207"
-            endingLineNumber = "207"
-            landmarkName = "didSelectEffort(effort:)"
-            landmarkType = "7">
+            startingLineNumber = "204"
+            endingLineNumber = "204">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -372,13 +370,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/Detail View Controllers/SegmentAnalysisViewController.swift"
-            timestampString = "576436498.50208"
+            timestampString = "576778971.264124"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "60"
-            endingLineNumber = "60"
-            landmarkName = "viewDidLoad()"
-            landmarkType = "7">
+            startingLineNumber = "63"
+            endingLineNumber = "63"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -388,13 +386,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/Detail View Controllers/SegmentAnalysisViewController.swift"
-            timestampString = "576436498.5021321"
+            timestampString = "576778971.264376"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
-            landmarkName = "prepare(for:sender:)"
-            landmarkType = "7">
+            startingLineNumber = "93"
+            endingLineNumber = "93"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -468,13 +466,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Utilities/ViewProfileData.swift"
-            timestampString = "576435076.9911391"
+            timestampString = "576777395.0063699"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "120"
-            endingLineNumber = "120"
-            landmarkName = "ViewProfileData"
-            landmarkType = "14">
+            startingLineNumber = "108"
+            endingLineNumber = "108"
+            landmarkName = "dataSetsOfDataType(_:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -484,28 +482,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Utilities/ViewProfileData.swift"
-            timestampString = "576435076.99119"
+            timestampString = "576777395.006429"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "103"
-            endingLineNumber = "103"
-            landmarkName = "ViewProfileData"
-            landmarkType = "14">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
-            timestampString = "576436498.502364"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "109"
-            endingLineNumber = "109"
-            landmarkName = "chartDataSet(_:dataPoints:)"
+            startingLineNumber = "91"
+            endingLineNumber = "91"
+            landmarkName = "addDataSet(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -516,12 +498,60 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
-            timestampString = "576436498.502646"
+            timestampString = "576777395.006485"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "113"
+            endingLineNumber = "113"
+            landmarkName = "chartDataSet(_:displayDataPoints:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
+            timestampString = "576777395.006543"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "60"
             endingLineNumber = "60"
             landmarkName = "addProfile(owner:profileType:displayType:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Data Loading/Strava Manager.swift"
+            timestampString = "576777395.006603"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "274"
+            endingLineNumber = "274"
+            landmarkName = "gearStreamData(speed:cadence:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "View Controllers/View Controllers/RVRouteProfileViewController.swift"
+            timestampString = "576777395.00666"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "89"
+            endingLineNumber = "89"
+            landmarkName = "dataPointsForStreamType(_:streamOwner:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

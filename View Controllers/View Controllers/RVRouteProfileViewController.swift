@@ -32,7 +32,7 @@ class RVRouteProfileViewController: UIViewController {
 	@IBOutlet weak var profileChartView: RVRouteProfileView!
 	
 	// Public interface
-	func setPrimaryProfile<S> (streamOwner: S, profileType: ViewProfileDataType, range: RouteIndexRange? = nil) -> Bool where S : StreamOwner {
+	func setPrimaryProfile<S> (streamOwner: S, profileType: RVStreamDataType, range: RouteIndexRange? = nil) -> Bool where S : StreamOwner {
 		if let dataPoints = dataPointsForStreamType(profileType, streamOwner: streamOwner) {
 			let dataSet = ViewProfileDataSet(streamOwner: streamOwner,
 											 profileDataType: profileType,
@@ -40,7 +40,7 @@ class RVRouteProfileViewController: UIViewController {
 											 dataPoints: dataPoints)
 			profileData	= ViewProfileData(primaryDataSet: dataSet)
 			countOfPointsToDisplay = Int(profileChartView.bounds.width / 2)
-			let primarySet = chartDataSet(dataSet, dataPoints: countOfPointsToDisplay)
+			let primarySet = chartDataSet(dataSet, displayDataPoints: countOfPointsToDisplay)
 			profileChartView.data = LineChartData(dataSets: [primarySet])
 			return true
 		} else {
@@ -48,7 +48,7 @@ class RVRouteProfileViewController: UIViewController {
 		}
 	}
 	
-	func addProfile<S>(owner : S, profileType: ViewProfileDataType, displayType : ViewProfileDisplayType) where S : StreamOwner {
+	func addProfile<S>(owner : S, profileType: RVStreamDataType, displayType : ViewProfileDisplayType) where S : StreamOwner {
 		guard profileData != nil else {
 			appLog.error("No profile to add to")
 			return
@@ -57,7 +57,7 @@ class RVRouteProfileViewController: UIViewController {
 		if let dataPoints = dataPointsForStreamType(profileType, streamOwner: owner) {
 			let dataSet = ViewProfileDataSet(streamOwner: owner, profileDataType: profileType, profileDisplayType: displayType, dataPoints: dataPoints)
 			profileData.addDataSet(dataSet)
-			profileChartView.data?.addDataSet(chartDataSet(dataSet, dataPoints: countOfPointsToDisplay))
+			profileChartView.data?.addDataSet(chartDataSet(dataSet, displayDataPoints: countOfPointsToDisplay))
 			profileChartView.notifyDataSetChanged()
 		}
 	}
@@ -70,19 +70,20 @@ class RVRouteProfileViewController: UIViewController {
 	}
 	
 	func setHighLightRange(_ range : RouteIndexRange?) {
-		// TODO: Update chart
+//		let highlights = Highlight(
+//		profileChartView.highlightValues(<#T##highs: [Highlight]?##[Highlight]?#>)
 	}
 	
 	// Private functions
 	
 	// Return the data points for the specified data type and owner normalised to start at zero on the axis
-	private func dataPointsForStreamType<S> (_ profileType : ViewProfileDataType, streamOwner : S) -> [DataPoint]? where S : StreamOwner {
-		let streams = streamOwner.streams.map { $0.type! }
-		appLog.verbose("Target: \(profileType.stravaValue), streams are \(streams)")
+	private func dataPointsForStreamType<S> (_ profileType : RVStreamDataType, streamOwner : S) -> [DataPoint]? where S : StreamOwner {
+		let streams = streamOwner.streams.map { $0.type }
+		appLog.verbose("Target: \(profileType.stringValue), streams are \(streams)")
 		
-		guard let valueStream = (streamOwner.streams.filter { $0.type == profileType.stravaValue }).first,
-			let axisStream = (streamOwner.streams.filter { $0.type == ViewProfileDataType.distance.stravaValue }).first else {
-				appLog.error("Missing stream data: \(profileType.stravaValue), streams are \(streams)")
+		guard let valueStream = (streamOwner.streams.filter { $0.type == profileType }).first,
+			let axisStream = (streamOwner.streams.filter { $0.type == RVStreamDataType.distance }).first else {
+				appLog.error("Missing stream data: \(profileType.stringValue), streams are \(streams)")
 				return nil
 		}
 
@@ -98,13 +99,17 @@ class RVRouteProfileViewController: UIViewController {
 		return nil
 	}
 	
-	private func chartDataSet(_ dataSet : ViewProfileDataSet, dataPoints: Int) -> LineChartDataSet {
-		let scaleFactor = dataSet.dataPoints.count / dataPoints
+	private func chartDataSet(_ dataSet : ViewProfileDataSet, displayDataPoints: Int) -> LineChartDataSet {
+		var scaleFactor = dataSet.dataPoints.count / displayDataPoints
+		if scaleFactor == 0 { scaleFactor = 1 }			// Cannot be zero
+		
 		var entries : [ChartDataEntry] = []
 		
 		for i in stride(from: 0, to: dataSet.dataPoints.count, by: scaleFactor) {
 			entries.append(ChartDataEntry(x: dataSet.dataPoints[i].axisValue, y: dataSet.dataPoints[i].dataValue))
 		}
+		
+		appLog.verbose("Plotting \(entries.count) points from \(dataSet.dataPoints.count)")
 		
 		let lineDataSet = LineChartDataSet(entries: entries, label: "")
 		lineDataSet.drawCirclesEnabled = false

@@ -17,8 +17,8 @@ protocol StreamOwner where Self : NSManagedObject {
 }
 
 extension StreamOwner {
-	func hasStreamOfType(_ type : ViewProfileDataType) -> Bool {
-		return self.streams.filter({ $0.type == type.stravaValue }).first != nil
+	func hasStreamOfType(_ type : RVStreamDataType) -> Bool {
+		return self.streams.filter({ $0.type == type }).first != nil
 	}
 }
 	

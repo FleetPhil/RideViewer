@@ -20,3 +20,8 @@ struct EmojiConstants {
 	static let Power			= "🔌"
 	static let Fastest			= "🏆"
 }
+
+struct StravaStreamType {
+	static let Activity 		= "distance,altitude"
+	static let Effort			= "watts,heartrate,time,cadence,velocity_smooth,distance"
+}

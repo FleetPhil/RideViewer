@@ -52,6 +52,7 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 		infoButton.isEnabled = false
 		
 		// Get Strava details
+		// First get detailed activity information
 		if activity.resourceState == .detailed {
 			tableDataIsComplete = true
 		} else {
@@ -66,19 +67,20 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 			})
 		}
 		
-		if activity.hasStreamOfType(.altitude) {
-			_ = self.routeViewController.setPrimaryProfile(streamOwner: activity, profileType: .altitude)
-		} else {
-			appLog.verbose("Getting streams")
-			StravaManager.sharedInstance.streamsForActivity(activity, context: activity.managedObjectContext!, completionHandler: { [weak self] success in
-				if success, let streams = self?.activity.streams {
-					appLog.verbose("Streams call result: success = \(success), \(streams.count) streams")
-				} else {
-					appLog.verbose("Get streams failed for activity")
-				}
-				_ = self?.routeViewController.setPrimaryProfile(streamOwner: self!.activity, profileType: .altitude)
-			})
-		}
+//		// Now get data streams
+//		if activity.hasStreamOfType(.altitude) {
+//			_ = self.routeViewController.setPrimaryProfile(streamOwner: activity, profileType: .altitude)
+//		} else {
+//			appLog.verbose("Getting streams")
+//			StravaManager.sharedInstance.streamsForActivity(activity, context: activity.managedObjectContext!, completionHandler: { [weak self] success in
+//				if success, let streams = self?.activity.streams {
+//					appLog.verbose("Streams call result: success = \(success), \(streams.count) streams")
+//				} else {
+//					appLog.verbose("Get streams failed for activity")
+//				}
+//				_ = self?.routeViewController.setPrimaryProfile(streamOwner: self!.activity, profileType: .altitude)
+//			})
+//		}
 		
 		if activity != nil {
 			// Populate the view fields
@@ -146,7 +148,7 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 		mapView!.addRoute(activity, type: .mainActivity)
 		mapView!.setMapRegion()
 		
-		if activity.streams.filter({ $0.type == ViewProfileDataType.altitude.stravaValue }).first != nil {
+		if activity.streams.filter({ $0.type == RVStreamDataType.altitude }).first != nil {
 			_ = routeViewController.setPrimaryProfile(streamOwner: activity!, profileType: .altitude)
 		} else {
 			StravaManager.sharedInstance.streamsForActivity(activity, context: activity.managedObjectContext!, completionHandler: { (success) in

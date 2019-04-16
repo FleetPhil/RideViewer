@@ -10,6 +10,7 @@ import Foundation
 import StravaSwift
 import CoreData
 
+
 class StravaManager : TokenDelegate {
 	func get() -> OAuthToken? {
 		return token
@@ -25,10 +26,6 @@ class StravaManager : TokenDelegate {
 	private var token: OAuthToken!
 	private var newActivityCount = 0
 	private var lastActivity : Date? = nil
-	
-	// Static values
-	let streamTypesForActivity = "distance,altitude"
-	let streamTypesForEffort   = "watts,heartrate,time,cadence,velocity_smooth,distance"
 	
 	private init () {
 		let config = StravaConfig(clientId: StravaConstants.ClientID,
@@ -68,6 +65,8 @@ class StravaManager : TokenDelegate {
 	var haveToken : Bool {
 		return token != nil
 	}
+	
+	// MARK: Strava Data Retrieval functions
 	
 	func getAthleteActivities(page : Int, context : NSManagedObjectContext, progressHandler : @escaping ((_ totalActivities : Int, _ processedActivities : Int, _ finished : Bool)->Void)) {
 		var params = ["per_page":StravaConstants.ItemsPerPage, "page":page]
@@ -220,8 +219,8 @@ class StravaManager : TokenDelegate {
 			return			
 		}
 		
-		try? StravaClient.sharedInstance.request(Router.activityStreams(id: Router.Id(activity.id), types: streamTypesForActivity), result: { (streams : [StravaSwift.Stream]?) in
-			streams?.forEach { _ = RVStream.createForOwner(activity, stream: $0, context: context) }
+		try? StravaClient.sharedInstance.request(Router.activityStreams(id: Router.Id(activity.id), types: StravaStreamType.Activity), result: { (streams : [StravaSwift.Stream]?) in
+			streams?.forEach({ RVStream.createWithStrava(owner: activity, stream: $0, context: context) })
 			completionHandler(streams != nil ? true : false)
 			}, failure: { (error: NSError) in
 				debugPrint(error)
@@ -234,8 +233,8 @@ class StravaManager : TokenDelegate {
 			return
 		}
 		
-		try? StravaClient.sharedInstance.request(Router.segmentStreams(id: Router.Id(segment.id), types: streamTypesForActivity), result: { (streams : [StravaSwift.Stream]?) in
-			streams?.forEach { _ = RVStream.createForOwner(segment, stream: $0, context: context) }
+		try? StravaClient.sharedInstance.request(Router.segmentStreams(id: Router.Id(segment.id), types: StravaStreamType.Activity), result: { (streams : [StravaSwift.Stream]?) in
+			streams?.forEach({ RVStream.createWithStrava(owner: segment, stream: $0, context: context) })
 			completionHandler(streams != nil ? true : false)
 		}, failure: { (error: NSError) in
 			debugPrint(error)
@@ -248,12 +247,31 @@ class StravaManager : TokenDelegate {
 			return
 		}
 		
-		try? StravaClient.sharedInstance.request(Router.effortStreams(id: Router.Id(effort.id), types: streamTypesForEffort), result: { (streams : [StravaSwift.Stream]?) in
-			streams?.forEach { _ = RVStream.createForOwner(effort, stream: $0, context: context) }
-			completionHandler(streams != nil ? true : false)
+		try? StravaClient.sharedInstance.request(Router.effortStreams(id: Router.Id(effort.id), types: StravaStreamType.Effort), result: { (streams : [StravaSwift.Stream]?) in
+			streams?.forEach({ RVStream.createWithStrava(owner: effort, stream: $0, context: context) })
+			if let speedStream = streams?.filter({ $0.type == .velocitySmooth }).first, let cadenceStream = streams?.filter({ $0.type == .cadence }).first {
+				RVStream.createWithData(owner: effort,
+										type: .gearRatio,
+										seriesType: speedStream.seriesType ?? "",
+										originalSize: speedStream.originalSize ?? 0,
+										data: self.gearStreamData(speed: speedStream, cadence: cadenceStream),
+										context: context)
+			}
+			completionHandler(true)
 		}, failure: { (error: NSError) in
 			debugPrint(error)
+			completionHandler(false)
 		})
+	}
+	
+	func gearStreamData(speed: StravaSwift.Stream, cadence: StravaSwift.Stream) -> [Double] {
+		guard let speedData = speed.data as? [Double], let cadenceData = cadence.data as? [Double] else { return [] }
+		
+		let x = speedData.enumerated().map { index, value in
+			return cadenceData[index] == 0 ? 0.0 : value / cadenceData[index]
+		}
+		
+		return x
 	}
 }
 

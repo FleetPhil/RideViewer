@@ -185,7 +185,7 @@ public class RVEffort: NSManagedObject, RouteViewCompatible {
 	
 	// Get location in specified activity
 	var distanceRange : RouteIndexRange {
-		if let stream = self.activity.streams.filter({ $0.type == StravaSwift.StreamType.distance.rawValue }).first {
+		if let stream = self.activity.streams.filter({ $0.type == .distance }).first {
 			let dataPoints = stream.dataPoints
 			return RouteIndexRange(from: dataPoints[Int(self.startIndex)], to: dataPoints[Int(self.endIndex)])
 		} else {

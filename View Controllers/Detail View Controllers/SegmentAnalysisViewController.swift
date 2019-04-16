@@ -17,14 +17,17 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RV
 	@IBOutlet weak var midContainerView: UIView!
 	@IBOutlet weak var bottomContainerView: UIView!
 	
+	private var topViewDataType : RVStreamDataType = .speed
+	private var midViewDataType : RVStreamDataType = .cadence
+	private var bottomViewDataType : RVStreamDataType = .gearRatio
 	
 	private var effortTableViewController : RVEffortListViewController!
-	private var speedProfileController : RVRouteProfileViewController!
-	private var powerProfileController : RVRouteProfileViewController!
-	private var HRProfileController : RVRouteProfileViewController!
+	private var topProfileController : RVRouteProfileViewController!
+	private var midProfileController : RVRouteProfileViewController!
+	private var bottomProfileController : RVRouteProfileViewController!
 
     var profileControllers : [RVRouteProfileViewController] {
-        return [speedProfileController, powerProfileController, HRProfileController]
+        return [topProfileController, midProfileController, bottomProfileController]
     }
     
 	// Model
@@ -54,9 +57,9 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RV
 			return
 		}
         
-        speedProfileController.delegate = self
-        powerProfileController.delegate = self
-        HRProfileController.delegate = self
+        topProfileController.delegate = self
+        midProfileController.delegate = self
+        bottomProfileController.delegate = self
 
 		topInfoLabel.text = EmojiConstants.Fastest + " " + shortest.activity.name
 		topInfoLabel.textColor = ViewProfileDisplayType.primary.displayColour
@@ -75,9 +78,9 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RV
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if let destination = segue.destination as? RVRouteProfileViewController {
 			switch segue.identifier {
-			case "SpeedProfileSegue":	speedProfileController = destination
-			case "HRProfileSegue":		HRProfileController = destination
-			case "PowerProfileSegue":	powerProfileController = destination
+			case "SpeedProfileSegue":	topProfileController = destination
+			case "HRProfileSegue":		midProfileController = destination
+			case "PowerProfileSegue":	bottomProfileController = destination
 			default:					appLog.error("Unknown profile segue identifier \(segue.identifier!)")
 			}
 		}
@@ -95,9 +98,9 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RV
 	}
 	
 	func didDeselectEffort(effort: RVEffort) {
-		speedProfileController.removeSecondaryProfiles()
-		powerProfileController.removeSecondaryProfiles()
-		HRProfileController.removeSecondaryProfiles()
+		topProfileController.removeSecondaryProfiles()
+		midProfileController.removeSecondaryProfiles()
+		bottomProfileController.removeSecondaryProfiles()
 	}
 	
 	// MARK: Effort profile setup
@@ -119,26 +122,26 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RV
 	private func setProfilesForEffort(_ effort : RVEffort, displayType: ViewProfileDisplayType) {
 		switch displayType {
 		case .primary:
-			if speedProfileController.setPrimaryProfile(streamOwner: effort, profileType: .speed) {
-				speedProfileController.addProfile(owner: effort.segment, profileType: .altitude , displayType: .background)
+			if topProfileController.setPrimaryProfile(streamOwner: effort, profileType: topViewDataType) {
+				topProfileController.addProfile(owner: effort.segment, profileType: .altitude , displayType: .background)
 			}
-			if HRProfileController.setPrimaryProfile(streamOwner: effort, profileType: .heartRate) {
-				HRProfileController.addProfile(owner: effort.segment, profileType: .altitude , displayType: .background)
+			if midProfileController.setPrimaryProfile(streamOwner: effort, profileType: midViewDataType) {
+				midProfileController.addProfile(owner: effort.segment, profileType: .altitude , displayType: .background)
 			} else {
 				appLog.debug("No HR for \(effort.activity.name)")
 				midContainerView.isHidden = true
 			}
-			if powerProfileController.setPrimaryProfile(streamOwner: effort, profileType: .power) {
-				powerProfileController.addProfile(owner: effort.segment, profileType: .altitude , displayType: .background)
+			if bottomProfileController.setPrimaryProfile(streamOwner: effort, profileType: bottomViewDataType) {
+				bottomProfileController.addProfile(owner: effort.segment, profileType: .altitude , displayType: .background)
 			} else {
 				appLog.debug("No power for \(effort.activity.name)")
 				bottomContainerView.isHidden = true
 			}
 		case .secondary:
 			// Will not add if primary does not exist for this data type
-			speedProfileController.addProfile(owner: effort, profileType: .speed, displayType: .secondary)
-			powerProfileController.addProfile(owner: effort, profileType: .power, displayType: .secondary)
-			HRProfileController.addProfile(owner: effort, profileType: .heartRate, displayType: .secondary)
+			topProfileController.addProfile(owner: effort, profileType: topViewDataType, displayType: .secondary)
+			midProfileController.addProfile(owner: effort, profileType: midViewDataType, displayType: .secondary)
+			bottomProfileController.addProfile(owner: effort, profileType: bottomViewDataType, displayType: .secondary)
 		default:
 			appLog.error("Unexpected display type \(displayType) requested")
 			break

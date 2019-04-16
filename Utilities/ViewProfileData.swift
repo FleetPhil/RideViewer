@@ -10,18 +10,6 @@ import Foundation
 import UIKit
 
 // Data structures for the view
-enum ViewProfileDataType : String {
-	case speed 		= "velocity_smooth"
-	case altitude
-	case heartRate 	= "heartrate"
-	case power 		= "watts"
-	case distance
-	case cadence
-	
-	var stravaValue : String {
-		return self.rawValue
-	}
-}
 
 enum ViewProfileDisplayType {
 	case primary
@@ -73,7 +61,7 @@ struct DataBounds {
 
 struct ViewProfileDataSet {
 	var streamOwner : StreamOwner
-	var profileDataType : ViewProfileDataType
+	var profileDataType : RVStreamDataType
 	var profileDisplayType : ViewProfileDisplayType
 	var dataPoints : [DataPoint]
 	
@@ -128,7 +116,7 @@ struct ViewProfileData {
 		return dataSets.reduce(DataBounds.zeroBounds, ({  $0.union($1.dataBounds.offsetBy(x: primaryBase - $1.dataBounds.minX, y: 0.0)) }))
 	}
 	
-	func dataSetsOfDataType(_ dataType : ViewProfileDataType) -> [ViewProfileDataSet] {
+	func dataSetsOfDataType(_ dataType : RVStreamDataType) -> [ViewProfileDataSet] {
 		return self.profileDataSets.filter({ $0.profileDataType == dataType })
 	}
 	func dataSetsOfDisplayType(_ displayType : ViewProfileDisplayType) -> [ViewProfileDataSet] {
