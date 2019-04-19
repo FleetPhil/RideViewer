@@ -443,7 +443,7 @@
                         <barButtonItem key="rightBarButtonItem" title="Detail" id="YIk-0D-1eN">
                             <connections>
                                 <action selector="infoButtonPressed:" destination="j5o-hi-hJL" id="x1j-I7-zie"/>
-                                <segue destination="3lA-4N-19T" kind="show" identifier="ActivityDetailToSegmentAnalysis" id="HaR-SM-zc8"/>
+                                <segue destination="1Gb-yD-mqu" kind="show" identifier="ActivityDetailToSegmentAnalysis" id="hxE-cY-Odi"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -466,11 +466,11 @@
             <objects>
                 <viewController id="UYC-PK-P9U" customClass="RVRouteProfileViewController" customModule="RideViewer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="9r6-n5-hhO">
-                        <rect key="frame" x="0.0" y="0.0" width="359" height="81.333333333333371"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="249.33333333333334"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iiT-vu-61X" customClass="RVRouteProfileView" customModule="RideViewer" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="359" height="81.333333333333329"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="249.33333333333334"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                         </subviews>
@@ -494,12 +494,12 @@
                     </connections>
                 </pinchGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="6593" y="270"/>
+            <point key="canvasLocation" x="7038" y="628"/>
         </scene>
-        <!--View Controller-->
+        <!--Segment Analysis View Controller-->
         <scene sceneID="7K7-xG-TfQ">
             <objects>
-                <viewController id="1Gb-yD-mqu" sceneMemberID="viewController">
+                <viewController id="1Gb-yD-mqu" customClass="SegmentAnalysisViewController" customModule="RideViewer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Xgq-I6-qRx">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -546,7 +546,7 @@
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iis-QR-hJn">
                                         <rect key="frame" x="0.0" y="54.666666666666643" width="375" height="249.33333333333337"/>
                                         <connections>
-                                            <segue destination="SkO-kc-JB6" kind="embed" id="1jD-uj-8uE"/>
+                                            <segue destination="aXo-Y5-RMc" kind="embed" id="OYS-lV-h6i"/>
                                         </connections>
                                     </containerView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dck-8T-4EE">
@@ -576,19 +576,19 @@
                                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="41h-K3-DxO">
                                                         <rect key="frame" x="0.0" y="0.0" width="375" height="249.33333333333334"/>
                                                         <connections>
-                                                            <segue destination="ihF-vP-wkP" kind="embed" id="sRn-O1-B0B"/>
+                                                            <segue destination="UYC-PK-P9U" kind="embed" identifier="PowerProfileSegue" id="8c9-R0-RO5"/>
                                                         </connections>
                                                     </containerView>
                                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kHI-jg-qem">
                                                         <rect key="frame" x="0.0" y="249.33333333333337" width="375" height="249.33333333333337"/>
                                                         <connections>
-                                                            <segue destination="ZWR-T0-AgJ" kind="embed" id="ovg-IP-Xgk"/>
+                                                            <segue destination="UYC-PK-P9U" kind="embed" identifier="HRProfileSegue" id="LIr-h2-2jI"/>
                                                         </connections>
                                                     </containerView>
                                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wf1-ip-yDX">
                                                         <rect key="frame" x="0.0" y="498.66666666666657" width="375" height="249.33333333333331"/>
                                                         <connections>
-                                                            <segue destination="Ipa-u6-poi" kind="embed" id="SQO-u3-I9K"/>
+                                                            <segue destination="UYC-PK-P9U" kind="embed" identifier="SpeedProfileSegue" id="3of-YP-a7D"/>
                                                         </connections>
                                                     </containerView>
                                                 </subviews>
@@ -625,6 +625,13 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="bgq-Vj-bwS"/>
                     </view>
+                    <connections>
+                        <outlet property="bottomContainerView" destination="Wf1-ip-yDX" id="4mg-gc-wdq"/>
+                        <outlet property="bottomInfoLabel" destination="plC-no-Icz" id="0RD-ZQ-cPt"/>
+                        <outlet property="midContainerView" destination="kHI-jg-qem" id="lZT-m8-B6h"/>
+                        <outlet property="topContainerView" destination="41h-K3-DxO" id="uQw-Fz-Fdv"/>
+                        <outlet property="topInfoLabel" destination="AGk-MS-FgW" id="kwl-TS-I80"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dgz-7A-vgu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -639,10 +646,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Ks4-7e-alG" userLabel="Main Stack View">
-                                <rect key="frame" x="8" y="88" width="359" height="690"/>
+                                <rect key="frame" x="8" y="44" width="359" height="734"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="7Yd-RL-UQV">
-                                        <rect key="frame" x="0.0" y="0.0" width="359" height="340"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="359" height="362"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Lpg-89-ElY">
                                                 <rect key="frame" x="0.0" y="0.0" width="359" height="50"/>
@@ -681,7 +688,7 @@
                                                 </constraints>
                                             </view>
                                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qFz-ms-Dac">
-                                                <rect key="frame" x="0.0" y="60" width="359" height="280"/>
+                                                <rect key="frame" x="0.0" y="60" width="359" height="302"/>
                                                 <connections>
                                                     <segue destination="aXo-Y5-RMc" kind="embed" id="u1n-0t-dbR"/>
                                                 </connections>
@@ -690,29 +697,29 @@
                                         <variation key="heightClass=compact-widthClass=compact" hidden="YES"/>
                                     </stackView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gcy-Br-9bM">
-                                        <rect key="frame" x="0.0" y="344" width="359" height="2"/>
+                                        <rect key="frame" x="0.0" y="366" width="359" height="2"/>
                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="2" id="wtt-JI-BJP"/>
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="AFb-90-DxE">
-                                        <rect key="frame" x="0.0" y="350" width="359" height="340"/>
+                                        <rect key="frame" x="0.0" y="372" width="359" height="362"/>
                                         <subviews>
                                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="guK-VH-vRk" userLabel="Top Container View">
-                                                <rect key="frame" x="0.0" y="0.0" width="359" height="110.66666666666667"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="359" height="118"/>
                                                 <connections>
                                                     <segue destination="UYC-PK-P9U" kind="embed" identifier="SpeedProfileSegue" id="K2M-Ec-ctv"/>
                                                 </connections>
                                             </containerView>
                                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rdu-we-1pj" userLabel="Mid Container View">
-                                                <rect key="frame" x="0.0" y="114.66666666666663" width="359" height="110.66666666666669"/>
+                                                <rect key="frame" x="0.0" y="122" width="359" height="118"/>
                                                 <connections>
                                                     <segue destination="UYC-PK-P9U" kind="embed" identifier="HRProfileSegue" id="sOs-7A-mza"/>
                                                 </connections>
                                             </containerView>
                                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a6O-cI-jN0" userLabel="Bottom Container View">
-                                                <rect key="frame" x="0.0" y="229.33333333333334" width="359" height="110.66666666666666"/>
+                                                <rect key="frame" x="0.0" y="244" width="359" height="118"/>
                                                 <connections>
                                                     <segue destination="UYC-PK-P9U" kind="embed" identifier="PowerProfileSegue" id="kXr-o5-lQw"/>
                                                 </connections>
@@ -746,25 +753,25 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9xI-bd-p4g" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5118" y="649"/>
+            <point key="canvasLocation" x="5250" y="523"/>
         </scene>
         <!--Effort List View Controller-->
         <scene sceneID="hqW-A2-wd2">
             <objects>
                 <viewController id="aXo-Y5-RMc" customClass="RVEffortListViewController" customModule="RideViewer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pLL-q4-psw">
-                        <rect key="frame" x="0.0" y="0.0" width="359" height="271.66666666666663"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="249.33333333333337"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="0UY-lY-jFq" customClass="RVSortFilterTableView" customModule="RideViewer" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="43.999999999999986" width="359" height="193.66666666666663"/>
+                                <rect key="frame" x="0.0" y="44.000000000000014" width="375" height="171.33333333333337"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ActivityEffortCell" id="Ctc-uu-luG" customClass="EffortListForActivityTableViewCell" customModule="RideViewer" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="359" height="44"/>
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Ctc-uu-luG" id="flX-9b-bIN">
-                                            <rect key="frame" x="0.0" y="0.0" width="359" height="43.666666666666664"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.666666666666664"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="iCU-Kd-qkx">
@@ -816,10 +823,10 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="SegmentEffortCell" id="SEC-5b-mHX" customClass="EffortListForSegmentTableViewCell" customModule="RideViewer" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="72" width="359" height="44"/>
+                                        <rect key="frame" x="0.0" y="72" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="SEC-5b-mHX" id="p8L-f8-5Cx">
-                                            <rect key="frame" x="0.0" y="0.0" width="359" height="43.666666666666664"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.666666666666664"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="pQk-Q3-12b">
@@ -882,7 +889,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qfX-AT-KbQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6034" y="-274"/>
+            <point key="canvasLocation" x="6311" y="-92"/>
         </scene>
         <!--Activities-->
         <scene sceneID="Grf-a2-QHq">
@@ -1516,71 +1523,14 @@
             </objects>
             <point key="canvasLocation" x="2711" y="33"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="gdd-S0-nH7">
-            <objects>
-                <viewController id="SkO-kc-JB6" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="A5T-Bx-vae">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="249.33333333333337"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="9M0-0c-Vpx"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="JF2-pf-e5z" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7071" y="561"/>
-        </scene>
-        <!--View Controller-->
-        <scene sceneID="aTC-7x-xOO">
-            <objects>
-                <viewController id="ihF-vP-wkP" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="6bz-j1-ANj">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="249.33333333333334"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                        <viewLayoutGuide key="safeArea" id="8Xd-Ek-mu8"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="wzl-xg-ISA" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6823" y="1374"/>
-        </scene>
-        <!--View Controller-->
-        <scene sceneID="r5J-Ms-EMF">
-            <objects>
-                <viewController id="ZWR-T0-AgJ" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="13q-UI-s5d">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="249.33333333333337"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="3yq-L3-N4l" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6628" y="1710"/>
-        </scene>
-        <!--View Controller-->
-        <scene sceneID="GPb-OW-BPR">
-            <objects>
-                <viewController id="Ipa-u6-poi" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="O22-Xg-QmL">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="249.33333333333331"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="0.40000000000000002" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="BRV-un-nKk" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6958" y="1116"/>
-        </scene>
     </scenes>
     <resources>
         <image name="Strava" width="171" height="31"/>
         <image name="api_logo_pwrdBy_strava_stack_light" width="199" height="86"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="1PH-1e-tBD"/>
-        <segue reference="vr9-jA-TLw"/>
+        <segue reference="OYS-lV-h6i"/>
+        <segue reference="hxE-cY-Odi"/>
+        <segue reference="8c9-R0-RO5"/>
     </inferredMetricsTieBreakers>
 </document>

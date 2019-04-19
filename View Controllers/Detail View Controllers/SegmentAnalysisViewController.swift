@@ -18,8 +18,8 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RV
 	@IBOutlet weak var bottomContainerView: UIView!
 	
 	private var topViewDataType : RVStreamDataType = .speed
-	private var midViewDataType : RVStreamDataType = .cadence
-	private var bottomViewDataType : RVStreamDataType = .gearRatio
+	private var midViewDataType : RVStreamDataType = .heartRate
+	private var bottomViewDataType : RVStreamDataType = .power
 	
 	private var effortTableViewController : RVEffortListViewController!
 	private var topProfileController : RVRouteProfileViewController!
