@@ -34,6 +34,20 @@ public struct RouteIndexRange {
 struct DataPoint {
 	var dataValue : Double
 	var axisValue : Double
+	
+	init (dataValue: Double, axisValue : Double) {
+		self.dataValue = dataValue
+		self.axisValue = axisValue
+	}
+	
+	init? (data: Double?, axis: Double?) {
+		if let data = data, let axis = axis {
+			self.axisValue = axis
+			self.dataValue = data
+		} else {
+			return nil
+		}
+	}
 }
 
 // Max / min for the dataSet to be plotted

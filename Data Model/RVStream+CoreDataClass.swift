@@ -10,6 +10,7 @@
 import Foundation
 import CoreData
 import StravaSwift
+import Charts
 
 // Stream data type
 enum RVStreamDataType : String {
@@ -31,7 +32,31 @@ enum RVStreamDataType : String {
 	var stringValue : String {
 		return self.rawValue
 	}
+
+	var chartValueFormatter : AxisValueFormatter {
+		switch self {
+		case .speed:
+			func speedFormatter(value : Speed)->String { return value.speedDisplayString() }
+			return AxisValueFormatter(numberFormatter: speedFormatter)
+		case .cadence:
+			func zeroFractionFormatter(value : Double)->String { return value.fixedFraction(digits: 0) }
+			return AxisValueFormatter(numberFormatter: zeroFractionFormatter)
+		case .altitude:
+			func altFormatter(value : Double)->String { return value.fixedFraction(digits: 0) + "m" }
+			return AxisValueFormatter(numberFormatter: altFormatter)
+		case .heartRate:
+			func hrFormatter(value : Double)->String { return value.fixedFraction(digits: 0) + "bpm" }
+			return AxisValueFormatter(numberFormatter: hrFormatter)
+		case .power:
+			func powerFormatter(value : Double)->String { return value.fixedFraction(digits: 0) + "W" }
+			return AxisValueFormatter(numberFormatter: powerFormatter)
+		default:
+			func defaultFormatter(value : Double)->String { return value.fixedFraction(digits: 1) }
+			return AxisValueFormatter(numberFormatter: defaultFormatter)
+		}
+	}
 }
+
 
 @objc(RVStream)
 public class RVStream: NSManagedObject {

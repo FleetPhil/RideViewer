@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct StravaConstants {
 	static let ClientID			= 8785
@@ -25,3 +26,16 @@ struct StravaStreamType {
 	static let Activity 		= "distance,altitude"
 	static let Effort			= "watts,heartrate,time,cadence,velocity_smooth,distance"
 }
+
+struct DisplayConstants {
+	static let ScreenPointsPerDataPoint : CGFloat = 2
+}
+
+struct BikeConstants {
+	static let Circumference 	= 2136
+	static let InnerChainRing 	= 34
+	static let OuterChainRing	= 50
+	
+}
+
+

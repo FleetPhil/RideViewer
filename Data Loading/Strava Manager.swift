@@ -264,7 +264,7 @@ class StravaManager : TokenDelegate {
 		})
 	}
 	
-	func gearStreamData(speed: StravaSwift.Stream, cadence: StravaSwift.Stream) -> [Double] {
+	private func gearStreamData(speed: StravaSwift.Stream, cadence: StravaSwift.Stream) -> [Double] {
 		guard let speedData = speed.data as? [Double], let cadenceData = cadence.data as? [Double] else { return [] }
 		
 		let x = speedData.enumerated().map { index, value in

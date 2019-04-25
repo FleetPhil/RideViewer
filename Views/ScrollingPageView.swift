@@ -1,0 +1,74 @@
+//
+//  ScrollingPageView.swift
+//  ScrollingContainer
+//
+//  Created by Home on 24/04/2019.
+//  Copyright © 2019 Home. All rights reserved.
+//
+
+import UIKit
+
+class ScrollingPageView: UIView {
+	private var scrollView : UIScrollView!
+	private var stackView : UIStackView!
+	
+	@discardableResult
+	func addScrollingView(_ view : UIView, horizontal : Bool) -> UIView {
+		if scrollView == nil {
+			scrollView = createScrollView()
+			stackView = createStackView(horizontal)
+		}
+		return addView(view)
+	}
+	
+	private func createScrollView() -> UIScrollView {
+		let scrollView = UIScrollView()
+		self.addSubview(scrollView)
+		
+		scrollView.translatesAutoresizingMaskIntoConstraints = false
+		NSLayoutConstraint.activate([
+			scrollView.topAnchor.constraint(equalTo: self.topAnchor),
+			scrollView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+			scrollView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+			scrollView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
+			])
+		scrollView.isPagingEnabled = true
+		
+		return scrollView
+	}
+	
+	private func createStackView(_ horizontal : Bool) -> UIStackView {
+		let stackView = UIStackView()
+		stackView.axis = horizontal ? .horizontal : .vertical
+		scrollView.addSubview(stackView)
+
+		stackView.translatesAutoresizingMaskIntoConstraints = false
+		
+		let whConstraint = horizontal ? stackView.heightAnchor.constraint(equalTo: scrollView.heightAnchor) : stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+		
+		NSLayoutConstraint.activate([
+			stackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+			stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+			stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+			stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+			whConstraint
+			])
+		
+		return stackView
+	}
+	
+	private func addView(_ view : UIView) -> UIView {
+		stackView.addArrangedSubview(view)
+
+		view.translatesAutoresizingMaskIntoConstraints = false
+		
+		if stackView.axis == .vertical {
+			NSLayoutConstraint.activate([view.heightAnchor.constraint(equalTo: scrollView.heightAnchor)])
+		} else {
+			NSLayoutConstraint.activate([view.widthAnchor.constraint(equalTo: scrollView.widthAnchor)])
+		}
+		
+		return view
+	}
+	
+}
