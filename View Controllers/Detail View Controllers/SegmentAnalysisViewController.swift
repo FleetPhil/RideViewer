@@ -8,12 +8,14 @@
 
 import UIKit
 
-class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RVRouteProfileScrollViewDelegate {
+class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 	
 	@IBOutlet weak var topInfoLabel: UILabel!
 	@IBOutlet weak var bottomInfoLabel: UILabel!
 	
 	@IBOutlet weak var scrollingProfileView: ScrollingPageView!
+	
+	@IBOutlet weak var profileInfoLabel: UILabel!
 	
 	private var topViewDataType : RVStreamDataType = .speed
 	private var midViewDataType : RVStreamDataType = .heartRate
@@ -60,13 +62,11 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RV
 		midProfileController = storyboard!.instantiateViewController(withIdentifier: "RVRouteProfileviewController") as? RVRouteProfileViewController
 		bottomProfileController = storyboard!.instantiateViewController(withIdentifier: "RVRouteProfileviewController") as? RVRouteProfileViewController
 
-		scrollingProfileView.addScrollingView(topProfileController.view, horizontal: false)
-		scrollingProfileView.addScrollingView(midProfileController.view, horizontal: false)
-		scrollingProfileView.addScrollingView(bottomProfileController.view, horizontal: false)
-
-        topProfileController.delegate = self
-        midProfileController.delegate = self
-        bottomProfileController.delegate = self
+		scrollingProfileView.addScrollingView(topProfileController.view, ofType: topViewDataType, horizontal: false)
+		scrollingProfileView.addScrollingView(midProfileController.view, ofType: midViewDataType, horizontal: false)
+		scrollingProfileView.addScrollingView(bottomProfileController.view, ofType: bottomViewDataType, horizontal: false)
+		
+		scrollingProfileView.viewChangedCallback = setInfoForPage(_:)
 
 		topInfoLabel.text = EmojiConstants.Fastest + " " + shortest.activity.name
 		topInfoLabel.textColor = ViewProfileDisplayType.primary.displayColour
@@ -80,22 +80,23 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RV
 			// Select this effort in the table and scroll to it
 			effortTableViewController.highlightEffort(highlightEffort!)
 		}
+		
+		// Set the display for the first page
+		setInfoForPage(0)
 	}
 	
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//		if let destination = segue.destination as? RVRouteProfileViewController {
-//			switch segue.identifier {
-//			case "SpeedProfileSegue":	topProfileController = destination
-//			case "HRProfileSegue":		midProfileController = destination
-//			case "PowerProfileSegue":	bottomProfileController = destination
-//			default:					appLog.error("Unknown profile segue identifier \(segue.identifier!)")
-//			}
-//		}
-
 		if let destination = segue.destination as? RVEffortListViewController {
 			effortTableViewController = destination
 			effortTableViewController.delegate = self
 			effortTableViewController.ride = segment
+		}
+	}
+	
+	// MARK: Set description for the active profile view
+	func setInfoForPage(_ page : Int) {
+		if let viewType = scrollingProfileView.viewTypeForPage(page), let dataType = viewType as? RVStreamDataType {
+			profileInfoLabel.text = dataType.stringValue
 		}
 	}
 	
@@ -154,19 +155,6 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate, RV
 			break
 		}
 	}
-    
-    // MARK: Profile controller delegate
-    
-    func didChangeScale(viewController: UIViewController, newScale: CGFloat, withOffset: CGPoint) {
-    }
-    
-    func didEndScrolling(viewController: UIViewController, newOffset: CGPoint) {
-    }
-    
-    func didScroll(viewController: UIViewController, newOffset: CGPoint) {
-   	}
-    
-
 }
 
 

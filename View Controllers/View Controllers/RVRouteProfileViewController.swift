@@ -13,22 +13,12 @@ import UIKit
 import CoreData
 import Charts
 
-/// RVRouteProfileScrollViewDelegate is notified when zoom or scroll changes
-protocol RVRouteProfileScrollViewDelegate {
-    func didChangeScale(viewController : UIViewController, newScale: CGFloat, withOffset: CGPoint)
-	func didEndScrolling(viewController : UIViewController, newOffset : CGPoint)
-    func didScroll(viewController : UIViewController, newOffset : CGPoint)
-}
-
 class RVRouteProfileViewController: UIViewController {
 	// Model
 	
 	/// Struct with the data to be shown
 	private var profileData : ViewProfileData!
 	private var countOfPointsToDisplay : Int = 0
-	
-	/// Delegate to receive scrolling updates
-	var delegate : RVRouteProfileScrollViewDelegate?
 	
 	/// View that is managed by this controller
 	@IBOutlet weak var profileChartView: RVRouteProfileView!
@@ -177,6 +167,7 @@ class RVRouteProfileViewController: UIViewController {
 			// Setup the axis
 			profileChartView.rightAxis.enabled = true
 			profileChartView.rightAxis.drawGridLinesEnabled = false
+			profileChartView.rightAxis.valueFormatter = dataSet.profileDataType.chartValueFormatter
 			lineDataSet.axisDependency = .right
 			
 			let colorTop = UIColor(red: 255.0/255.0, green: 94.0/255.0, blue: 58.0/255.0, alpha: 1.0).cgColor
