@@ -33,13 +33,17 @@ class RVSplitViewController: UISplitViewController, UISplitViewControllerDelegat
 		case .compact:		displayString += "Compact"
 		case .regular:		displayString += "Regular"
 		case .unspecified:	displayString += "Unspecified"
-		}
+        @unknown default:
+            appLog.error("Unknown new value")
+        }
 		displayString += ", V: "
 		switch traitCollection.verticalSizeClass {
 		case .compact:		displayString += "Compact"
 		case .regular:		displayString += "Regular"
 		case .unspecified:	displayString += "Unspecified"
-		}
+        @unknown default:
+            appLog.error("Unknown new value")
+        }
 		appLog.debug(displayString)
 	}
 }

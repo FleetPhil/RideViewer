@@ -17,7 +17,7 @@ class RVRouteProfileViewController: UIViewController {
 	// Model
 	
 	/// Struct with the data to be shown
-	private var profileData : ViewProfileData!
+	private var profileData : ViewProfileData?
 	private var countOfPointsToDisplay : Int = 0
 	
 	/// View that is managed by this controller
@@ -33,28 +33,33 @@ class RVRouteProfileViewController: UIViewController {
 		- range: unused?
 
 	- Returns: Bool indicating success (TODO: should throw if error)
-	
-	- ToDo: remove range
 	*/
-	func setPrimaryProfile<S> (streamOwner: S, profileType: RVStreamDataType, range: RouteIndexRange? = nil) -> Bool where S : StreamOwner {
-		if let dataPoints = dataPointsForStreamType(profileType, streamOwner: streamOwner) {
-			// Create the data set with the required stream
-			let dataSet = ViewProfileDataSet(streamOwner: streamOwner,
-											 profileDataType: profileType,
-											 profileDisplayType: .primary,
-											 dataPoints: dataPoints)
-
-			profileData	= ViewProfileData(primaryDataSet: dataSet)
-			
-			// Calculate the number of data points to display, create the line chart data set and assign to the chart view
-			countOfPointsToDisplay = Int(profileChartView.bounds.width / DisplayConstants.ScreenPointsPerDataPoint)
-			let primarySet = chartDataSet(dataSet, displayDataPoints: countOfPointsToDisplay)
-			profileChartView.data = LineChartData(dataSets: [primarySet])
-			profileChartView.leftAxis.valueFormatter = profileType.chartValueFormatter
-			return true
-		} else {
-			return false
-		}
+    func setPrimaryProfile<S> (streamOwner: S, profileType: RVStreamDataType, seriesType: RVStreamDataType) where S : StreamOwner {
+        // TODO: use .distance or .time as appropriate
+        streamOwner.dataPointsForStreamType(profileType, seriesType: seriesType, completionHandler: { [weak self] dataPoints in
+            guard let `self` = self else { return }     // Out of scope
+            
+            guard let dataPoints = dataPoints else {
+                appLog.error("Failed to get data points of type \(profileType)")
+                self.profileChartView.noDataText = "Unable to get data of type \(profileType.stringValue)"
+                self.profileData = nil
+                return
+            }
+            
+            // Create the data set with the required stream
+            let dataSet = ViewProfileDataSet(streamOwner: streamOwner,
+                                             profileDataType: profileType,
+                                             profileDisplayType: .primary,
+                                             dataPoints: dataPoints)
+            
+            self.profileData    = ViewProfileData(primaryDataSet: dataSet, seriesType: seriesType)
+            
+            // Calculate the number of data points to display, create the line chart data set and assign to the chart view
+            self.countOfPointsToDisplay = Int(self.profileChartView.bounds.width / DisplayConstants.ScreenPointsPerDataPoint)
+            let primarySet = self.chartDataSet(dataSet, displayDataPoints: self.countOfPointsToDisplay)
+            self.profileChartView.data = LineChartData(dataSets: [primarySet])
+            self.profileChartView.leftAxis.valueFormatter = profileType.chartValueFormatter
+        })
 	}
 	
 	
@@ -68,18 +73,25 @@ class RVRouteProfileViewController: UIViewController {
 	
 	- Returns: None
 	*/
-	func addProfile<S>(streamOwner : S, profileType: RVStreamDataType, displayType : ViewProfileDisplayType) where S : StreamOwner {
+    func addProfile<S>(streamOwner : S, profileType: RVStreamDataType, displayType : ViewProfileDisplayType, withRange : RouteIndexRange?) where S : StreamOwner {
 		guard profileData != nil else {
 			appLog.error("No profile to add to")
 			return
 		}
-		
-		if let dataPoints = dataPointsForStreamType(profileType, streamOwner: streamOwner) {
-			let dataSet = ViewProfileDataSet(streamOwner: streamOwner, profileDataType: profileType, profileDisplayType: displayType, dataPoints: dataPoints)
-			profileData.addDataSet(dataSet)
-			profileChartView.data?.addDataSet(chartDataSet(dataSet, displayDataPoints: countOfPointsToDisplay))
-			profileChartView.notifyDataSetChanged()
-		}
+        
+        streamOwner.dataPointsForStreamType(profileType, seriesType: profileData!.profileSeriesType, completionHandler: { [weak self] dataPoints in
+            guard let `self` = self else { return }     // Out of scope
+            
+            guard let dataPoints = dataPoints else {
+                appLog.error("Failed to add data points of type \(profileType)")
+                return
+            }
+
+            let dataSet = ViewProfileDataSet(streamOwner: streamOwner, profileDataType: profileType, profileDisplayType: displayType, dataPoints: dataPoints)
+            self.profileData!.addDataSet(dataSet)
+            self.profileChartView.data?.addDataSet(self.chartDataSet(dataSet, displayDataPoints: self.countOfPointsToDisplay))
+            self.profileChartView.notifyDataSetChanged()
+        })
 	}
 	
 	/**
@@ -87,59 +99,34 @@ class RVRouteProfileViewController: UIViewController {
 	*/
 	func removeSecondaryProfiles() {
 		if profileData != nil {
-			profileData.removeDataSetsOfDisplayType(.secondary)
-			
+			profileData!.removeDataSetsOfDisplayType(.secondary)
 		}
+        self.profileChartView.notifyDataSetChanged()
 	}
 	
 	/**
 	Highlight a range of values
 
-	Parameter range: tange to be highlighted (in x axis units)
+	- Parameters:
+		- range: range to be highlighted (in x axis units). nil to remove highlights
 	*/
 	func setHighLightRange(_ range : RouteIndexRange?) {
-//		let highlights = Highlight(
-//		profileChartView.highlightValues(<#T##highs: [Highlight]?##[Highlight]?#>)
+		if range == nil {
+			profileChartView.xAxis.removeAllLimitLines()
+		} else {
+			let lowLimit = ChartLimitLine(limit: range!.from)
+			lowLimit.lineColor = DisplayConstants.LimitLineColour
+			profileChartView.xAxis.addLimitLine(lowLimit)
+
+			let highLimit = ChartLimitLine(limit: range!.to)
+			highLimit.lineColor = DisplayConstants.LimitLineColour
+			profileChartView.xAxis.addLimitLine(highLimit)
+			
+			profileChartView.notifyDataSetChanged()
+		}
 	}
 	
 	// Private functions
-	
-	// Return the data points for the specified data type and owner normalised to start at zero on the axis
-	private func dataPointsForStreamType<S> (_ profileType : RVStreamDataType, streamOwner : S) -> [DataPoint]? where S : StreamOwner {
-		let streams = streamOwner.streams.map { $0.type }
-		appLog.verbose("Target: \(profileType.stringValue), streams are \(streams)")
-		
-		guard let valueStream = (streamOwner.streams.filter { $0.type == profileType }).first,
-			let axisStream = (streamOwner.streams.filter { $0.type == RVStreamDataType.distance }).first else {
-				appLog.error("Missing stream data: \(profileType.stringValue), streams are \(streams)")
-				return nil
-		}
-
-		appLog.verbose("axis: \(axisStream.dataPoints.first!) to \(axisStream.dataPoints.last!)")
-		
-		if let startAxisValue = axisStream.dataPoints.first {
-			// Only unpack the axis stream data points from JSON once (for performance reasons)
-			let axisDataPoints = axisStream.dataPoints
-			let dataPoints = valueStream.dataPoints.enumerated().map({ DataPoint(dataValue: $0.element, axisValue: axisDataPoints[$0.offset] - startAxisValue) })
-			appLog.verbose("Returning \(dataPoints.count) points for type \(profileType), axis range \(dataPoints.first!.axisValue) to \(dataPoints.last!.axisValue)")
-			
-			// If type is gear ratio adjust for wheel circumference and main sprocket
-			if profileType == .gearRatio {
-				return dataPoints.compactMap({ DataPoint(data: rearTeeth(gearRatio: $0.dataValue), axis: $0.axisValue) })
-			} else {
-				return dataPoints
-			}
-		}
-		return nil
-	}
-	
-	/// Return the implied number of rear teeth based on the small chainring and the speed/cadence parameter
-	private func rearTeeth(gearRatio : Double) -> Double? {
-		if gearRatio == 0 { return nil }
-		let x = (Double(BikeConstants.InnerChainRing)*(Double(BikeConstants.Circumference)/1000.0))/(gearRatio*60.0)
-		return x
-	}
-
 	
 	// Create a Line Chart dataSet from the data points and display type
 	private func chartDataSet(_ dataSet : ViewProfileDataSet, displayDataPoints: Int) -> LineChartDataSet {
@@ -154,15 +141,15 @@ class RVRouteProfileViewController: UIViewController {
 		
 		appLog.verbose("Plotting \(entries.count) points from \(dataSet.dataPoints.count)")
 		
-		let lineDataSet = LineChartDataSet(entries: entries, label: "")
+        let lineDataSet = LineChartDataSet(entries: entries, label: "")
 		lineDataSet.drawCirclesEnabled = false
 		lineDataSet.drawValuesEnabled = false
 		
 		switch dataSet.profileDisplayType {
 		case .primary:
-			lineDataSet.setColor(UIColor.black, alpha: 1.0)
+			lineDataSet.setColor(DisplayConstants.PrimaryProfileColour, alpha: 1.0)
 		case .secondary:
-			lineDataSet.setColor(UIColor.green, alpha: 1.0)
+			lineDataSet.setColor(DisplayConstants.SecondaryProfileColour, alpha: 1.0)
 		case .background:
 			// Setup the axis
 			profileChartView.rightAxis.enabled = true

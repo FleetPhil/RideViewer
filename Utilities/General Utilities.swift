@@ -27,4 +27,3 @@ extension MKMapView {
 		return self.annotations(in: self.visibleMapRect).map { obj -> MKAnnotation in return obj as! MKAnnotation }
 	}
 }
-

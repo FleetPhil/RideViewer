@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "53CEE2E01B9DA79446BBF38910734828"
+               BlueprintIdentifier = "FF1FABC70DEB12B94B99DDB4E43B26E0"
                BuildableName = "XCGLogger.framework"
                BlueprintName = "XCGLogger"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "53CEE2E01B9DA79446BBF38910734828"
+            BlueprintIdentifier = "FF1FABC70DEB12B94B99DDB4E43B26E0"
             BuildableName = "XCGLogger.framework"
             BlueprintName = "XCGLogger"
             ReferencedContainer = "container:Pods.xcodeproj">

@@ -25,10 +25,16 @@ struct EmojiConstants {
 struct StravaStreamType {
 	static let Activity 		= "distance,altitude"
 	static let Effort			= "watts,heartrate,time,cadence,velocity_smooth,distance"
+    
+    static let EffortAnalysisTypes : [RVStreamDataType] = [.speed, .heartRate, .cadence, .power, .gearRatio]
+    static let InitialAnalysisType : RVStreamDataType = .speed
 }
 
 struct DisplayConstants {
 	static let ScreenPointsPerDataPoint : CGFloat = 2
+	static let LimitLineColour : UIColor = UIColor.red
+    static let PrimaryProfileColour = UIColor.black
+    static let SecondaryProfileColour = UIColor.blue
 }
 
 struct BikeConstants {

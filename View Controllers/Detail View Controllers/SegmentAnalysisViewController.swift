@@ -112,7 +112,9 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 	}
 	
 	// MARK: Effort profile setup
+    // TODO: change to new 'streams' method
 	private func displayStreamsForEffort(_ effort: RVEffort, displayType: ViewProfileDisplayType) {
+        appLog.debug("Segment is \(effort.segment.name!)")
 		if effort.hasStreamOfType(.distance) {			// Has axis value
 			setProfilesForEffort(effort, displayType: displayType)
 		} else {
@@ -128,32 +130,28 @@ class SegmentAnalysisViewController: UIViewController, RVEffortTableDelegate {
 	}
 	
 	private func setProfilesForEffort(_ effort : RVEffort, displayType: ViewProfileDisplayType) {
-		switch displayType {
-		case .primary:
-			if topProfileController.setPrimaryProfile(streamOwner: effort, profileType: topViewDataType) {
-				topProfileController.addProfile(streamOwner: effort.segment, profileType: .altitude , displayType: .background)
-			}
-			if midProfileController.setPrimaryProfile(streamOwner: effort, profileType: midViewDataType) {
-				midProfileController.addProfile(streamOwner: effort.segment, profileType: .altitude , displayType: .background)
-			} else {
-				appLog.debug("No HR for \(effort.activity.name)")
-//				midContainerView.isHidden = true
-			}
-			if bottomProfileController.setPrimaryProfile(streamOwner: effort, profileType: bottomViewDataType) {
-				bottomProfileController.addProfile(streamOwner: effort.segment, profileType: .altitude , displayType: .background)
-			} else {
-				appLog.debug("No power for \(effort.activity.name)")
-//				bottomContainerView.isHidden = true
-			}
-		case .secondary:
-			// Will not add if primary does not exist for this data type
-			topProfileController.addProfile(streamOwner: effort, profileType: topViewDataType, displayType: .secondary)
-			midProfileController.addProfile(streamOwner: effort, profileType: midViewDataType, displayType: .secondary)
-			bottomProfileController.addProfile(streamOwner: effort, profileType: bottomViewDataType, displayType: .secondary)
-		default:
-			appLog.error("Unexpected display type \(displayType) requested")
-			break
-		}
+        switch displayType {
+        case .primary:
+            appLog.debug("Top profile is \(topViewDataType)")
+            topProfileController.setPrimaryProfile(streamOwner: effort, profileType: topViewDataType, seriesType: .distance)
+            topProfileController.addProfile(streamOwner: effort.segment, profileType: .altitude , displayType: .background, withRange: nil)
+
+//            midProfileController.setPrimaryProfile(streamOwner: effort, profileType: midViewDataType)
+//            midProfileController.addProfile(streamOwner: effort.segment, profileType: .altitude , displayType: .background, withRange: nil)
+//
+//            bottomProfileController.setPrimaryProfile(streamOwner: effort, profileType: bottomViewDataType)
+//            bottomProfileController.addProfile(streamOwner: effort.segment, profileType: .altitude , displayType: .background, withRange: nil)
+
+        case .secondary:
+            // Will not add if primary does not exist for this data type
+            topProfileController.addProfile(streamOwner: effort, profileType: topViewDataType, displayType: .secondary, withRange: nil)
+//            midProfileController.addProfile(streamOwner: effort, profileType: midViewDataType, displayType: .secondary, withRange: nil)
+//            bottomProfileController.addProfile(streamOwner: effort, profileType: bottomViewDataType, displayType: .secondary, withRange: nil)
+            
+        default:
+            appLog.error("Unexpected display type \(displayType) requested")
+            break
+        }
 	}
 }
 

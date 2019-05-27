@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1F7F7563C601199D9C01D301 /* Pods_RideViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC620C6C93D11AF021E27DB /* Pods_RideViewer.framework */; };
+		AD70F7FB2292DEE500E02FBA /* EffortAnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */; };
 		F4031DB62242A70500093B2E /* StreamOwner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4031DB52242A70500093B2E /* StreamOwner.swift */; };
 		F4048CAA2236B88500502DA5 /* RVSortFilterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */; };
 		F4048CB02236BCB700502DA5 /* RVEffortListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CAF2236BCB700502DA5 /* RVEffortListViewController.swift */; };
@@ -63,6 +64,7 @@
 /* Begin PBXFileReference section */
 		2DC620C6C93D11AF021E27DB /* Pods_RideViewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RideViewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		590E5ACF93A252F741663B7D /* Pods-RideViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.debug.xcconfig"; sourceTree = "<group>"; };
+		AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EffortAnalysisViewController.swift; path = "Detail View Controllers/EffortAnalysisViewController.swift"; sourceTree = "<group>"; };
 		D272B46FE80E68DEE976D7CC /* Pods-RideViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.release.xcconfig"; sourceTree = "<group>"; };
 		F4031DB52242A70500093B2E /* StreamOwner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOwner.swift; sourceTree = "<group>"; };
 		F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVSortFilterTableView.swift; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 			isa = PBXGroup;
 			children = (
 				F405EE8E223589D4001636A0 /* SegmentAnalysisViewController.swift */,
+				AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */,
 				F42ECF0321CFD3090096F83B /* ActivityDetailViewController.swift */,
 				F49E07DB21E1244000A0D678 /* SegmentDetailViewController.swift */,
 				F41C7A2E21D0E820003A5C31 /* StravaConnectViewController.swift */,
@@ -341,6 +344,7 @@
 				TargetAttributes = {
 					F42ECEDF21CF91130096F83B = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 				};
 			};
@@ -384,7 +388,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-RideViewer/Pods-RideViewer-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Charts/Charts.framework",
 				"${BUILT_PRODUCTS_DIR}/ObjcExceptionBridging/ObjcExceptionBridging.framework",
@@ -405,7 +409,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RideViewer/Pods-RideViewer-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F922DC697E650C2792AB7CEA /* [CP] Check Pods Manifest.lock */ = {
@@ -467,6 +471,7 @@
 				F42ECF0B21CFE1A50096F83B /* MOC Extensions.swift in Sources */,
 				F4C113D521D6790B00188A30 /* RVSegment+CoreDataProperties.swift in Sources */,
 				F4031DB62242A70500093B2E /* StreamOwner.swift in Sources */,
+				AD70F7FB2292DEE500E02FBA /* EffortAnalysisViewController.swift in Sources */,
 				F4ED1BE22208B02A00821D76 /* RVRouteProfileView.swift in Sources */,
 				FA3F242C21DA7AC80048A828 /* RVMap+CoreDataProperties.swift in Sources */,
 				F47B92632232CF0000B83303 /* RVSplitViewController.swift in Sources */,
@@ -633,7 +638,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.diggens.RideViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -652,7 +657,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.diggens.RideViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

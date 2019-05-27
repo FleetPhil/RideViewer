@@ -46,47 +46,23 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		guard activity != nil else { return }
+		guard let activity = activity else { return }
 		
 		// Info button disabled as no effort selected
 		infoButton.isEnabled = false
-		
-		// Get Strava details
-		// First get detailed activity information
-		if activity.resourceState == .detailed {
-			tableDataIsComplete = true
-		} else {
-			startDataRetrieval()
-			StravaManager.sharedInstance.updateActivity(activity, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] success in
-				if success {
-					self?.endDataRetrieval()
-					self?.tableDataIsComplete = true
-				} else {
-					self?.dataRetrievalFailed()
-				}
-			})
-		}
-		
-//		// Now get data streams
-//		if activity.hasStreamOfType(.altitude) {
-//			_ = self.routeViewController.setPrimaryProfile(streamOwner: activity, profileType: .altitude)
-//		} else {
-//			appLog.verbose("Getting streams")
-//			StravaManager.sharedInstance.streamsForActivity(activity, context: activity.managedObjectContext!, completionHandler: { [weak self] success in
-//				if success, let streams = self?.activity.streams {
-//					appLog.verbose("Streams call result: success = \(success), \(streams.count) streams")
-//				} else {
-//					appLog.verbose("Get streams failed for activity")
-//				}
-//				_ = self?.routeViewController.setPrimaryProfile(streamOwner: self!.activity, profileType: .altitude)
-//			})
-//		}
-		
-		if activity != nil {
-			// Populate the view fields
-			updateView()
-		}
-		
+        
+		// Get detailed activity information (also includes segment efforts)
+        startDataRetrieval()
+        activity.detailedActivity(completionHandler: { [weak self] detailedActivity in
+            appLog.debug("Returned \(detailedActivity == nil ? "nil" : "values") for activity \(self?.activity.name ?? "(nil self)")")
+            if detailedActivity != nil {
+                self?.endDataRetrieval()
+                self?.updateView()
+            } else {
+                self?.dataRetrievalFailed()
+                self?.updateView()
+            }
+        })
 	}
 	
 	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -147,15 +123,9 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 		// Map view
 		mapView!.addRoute(activity, type: .mainActivity)
 		mapView!.setMapRegion()
-		
-		if activity.streams.filter({ $0.type == RVStreamDataType.altitude }).first != nil {
-			_ = routeViewController.setPrimaryProfile(streamOwner: activity!, profileType: .altitude)
-		} else {
-			StravaManager.sharedInstance.streamsForActivity(activity, context: activity.managedObjectContext!, completionHandler: { (success) in
-				self.activity.managedObjectContext?.saveContext()
-				_ = self.routeViewController.setPrimaryProfile(streamOwner: self.activity!, profileType: .altitude)
-			})
-		}
+        
+        // Set the altitude profile - will retrieve data from Strava if not on the database
+        self.routeViewController.setPrimaryProfile(streamOwner: self.activity, profileType: .altitude, seriesType: .distance)
 	}
 	
 	override func viewDidLayoutSubviews() {
@@ -169,9 +139,9 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 	var selectedEffort : RVEffort? = nil
 	
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-		if let destination = segue.destination as? SegmentAnalysisViewController {
+		if let destination = segue.destination as? EffortAnalysisViewController {
 			destination.segment = selectedEffort?.segment
-			destination.highlightEffort = selectedEffort
+			destination.selectedEffort = selectedEffort
 		}
 		// Embed segues
 		if let destination = segue.destination as? RVRouteProfileViewController {
@@ -189,13 +159,16 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 		mapView.addRoute(effort, type: .highlightSegment)
 		mapView.zoomToRoute(effort)
 		
-		routeViewController.setHighLightRange(effort.distanceRange)
+		routeViewController.setHighLightRange(effort.distanceRangeInActivity)
 		
 		selectedEffort = effort
 		infoButton.isEnabled = true
 	}
 	
 	func didDeselectEffort(effort: RVEffort) {
+		routeViewController.setHighLightRange(nil)		// Deselects highlights
+		selectedEffort = nil
+		
 		mapView.setTypeForRoute(effort, type: nil)
 		infoButton.isEnabled = false
 	}

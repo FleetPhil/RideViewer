@@ -152,6 +152,59 @@ public class RVSegment: NSManagedObject, RouteViewCompatible {
 	}
 }
 
+// Extensions to return Strava data
+extension RVSegment {
+    /**
+     Get streams for this segment
+     
+     Calls completion handler with nil data not available
+     
+     - Parameters:
+     - completionHandler: function called with the returned streams
+     - Returns: none
+     */
+    func streams(completionHandler : (@escaping (Set<RVStream>?)->Void)) {
+        if self.streams.count > 0 {
+            completionHandler(self.streams)
+            return
+        }
+        StravaManager.sharedInstance.streamsForSegment(self, context: self.managedObjectContext!, completionHandler: { success in
+            if (success) {
+                self.managedObjectContext?.saveContext()
+                completionHandler(self.streams)
+            } else {
+                completionHandler(nil)
+            }
+        })
+    }
+
+    
+    /**
+     Get efforts for this segment
+     
+     Calls completion handler with nil data not available
+     
+     - Parameters:
+        - completionHandler: function called with the returned efforts
+     - Returns: none
+     */
+    func efforts(completionHandler : (@escaping (_ efforts : Set<RVEffort>?)->Void)) {
+        if self.allEfforts {                // We have all efforts so no need to get from Strava
+            completionHandler(self.efforts)
+            return
+        }
+        StravaManager.sharedInstance.effortsForSegment(self, page: 1, context: self.managedObjectContext!, completionHandler: { [weak self] success in
+            if (success) {
+                self?.allEfforts = true
+                self?.managedObjectContext?.saveContext()
+                completionHandler(self?.efforts)
+            } else {
+                completionHandler(nil)
+            }
+        })
+    }
+}
+
 // Extension to support generic table view
 extension RVSegment : TableViewCompatibleEntity {
 	func cellForTableView(tableView: UITableView, atIndexPath indexPath: IndexPath) -> TableViewCompatibleCell {

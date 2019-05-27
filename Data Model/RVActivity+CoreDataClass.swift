@@ -170,13 +170,11 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
             self.map = nil
         }
         
-        if self.resourceState != .detailed {            // If current state is detailed we already have segments
-            self.resourceState = self.resourceState.newState(returnedState: activity.resourceState)
+        self.resourceState = self.resourceState.newState(returnedState: activity.resourceState)
             
-            if let efforts = activity.segmentEfforts {			// Detailed activity
-                for effort in efforts {
-                    let _ = RVEffort.create(effort: effort, forActivity : self, context: self.managedObjectContext!)
-                }
+        if let efforts = activity.segmentEfforts {			// Detailed activity has efforts
+            for effort in efforts {
+                let _ = RVEffort.create(effort: effort, forActivity : self, context: self.managedObjectContext!)
             }
         }
         return self
@@ -195,6 +193,52 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
     }
 	
 }
+
+// Extension to return activity info from the database or Strava
+extension RVActivity {
+    func detailedActivity(completionHandler : (@escaping (_ activity : RVActivity?)->Void )) {
+        if self.resourceState == .detailed {
+            completionHandler(self)
+            return
+        }
+        StravaManager.sharedInstance.updateActivity(self, context: self.managedObjectContext!, completionHandler: { [weak self] success in
+            if success {
+                self?.managedObjectContext?.saveContext()
+                completionHandler(self)
+            } else {
+                completionHandler(nil)
+            }
+        })
+    }
+}
+
+// Extension to return stream data
+extension RVActivity {
+    /**
+     Get streams for this activity
+     
+     Calls completion handler with nil data not available
+     
+     - Parameters:
+     - completionHandler: function called with the returned streams
+     - Returns: none
+     */
+    func streams(completionHandler : (@escaping (Set<RVStream>?)->Void)) {
+        if self.streams.count > 0 {                // We have streams so no need to get from Strava
+            completionHandler(self.streams)
+            return
+        }
+        StravaManager.sharedInstance.streamsForActivity(self, context: self.managedObjectContext!, completionHandler: { success in
+            if (success) {
+                self.managedObjectContext?.saveContext()
+                completionHandler(self.streams)
+            } else {
+                completionHandler(nil)
+            }
+        })
+    }
+}
+
 
 // Extension to support generic table view
 extension RVActivity : TableViewCompatibleEntity {

@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "58ABA0A4D69DA55AA358E6A53BFD328F"
+               BlueprintIdentifier = "8092D4E6B4C1A85D50A643457D87226F"
                BuildableName = "Polyline.framework"
                BlueprintName = "Polyline"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "58ABA0A4D69DA55AA358E6A53BFD328F"
+            BlueprintIdentifier = "8092D4E6B4C1A85D50A643457D87226F"
             BuildableName = "Polyline.framework"
             BlueprintName = "Polyline"
             ReferencedContainer = "container:Pods.xcodeproj">

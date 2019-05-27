@@ -68,7 +68,7 @@ class StravaManager : TokenDelegate {
 	
 	// MARK: Strava Data Retrieval functions
 	
-	func getAthleteActivities(page : Int, context : NSManagedObjectContext, progressHandler : @escaping ((_ totalActivities : Int, _ processedActivities : Int, _ finished : Bool)->Void)) {
+	func getAthleteActivities(page : Int, context : NSManagedObjectContext, progressHandler : @escaping ((_ processedActivities : Int, _ totalActivities : Int, _ finished : Bool)->Void)) {
 		var params = ["per_page":StravaConstants.ItemsPerPage, "page":page]
 
 		if page == 1 {
@@ -93,14 +93,14 @@ class StravaManager : TokenDelegate {
 				activities.forEach {
 					let _ = RVActivity.create(activity: $0, context: context)
 					self.newActivityCount += 1
-					progressHandler(page * StravaConstants.ItemsPerPage + activities.count, self.newActivityCount, false)
+					progressHandler(self.newActivityCount, activities.count, false)
 				}
 				// Get next page
                 self.getAthleteActivities(page: page + 1, context: context, progressHandler: progressHandler)		// get next page
 			} else {
 				// No more activities to load
 				self.lastActivity = nil
-                progressHandler(page * StravaConstants.ItemsPerPage + self.newActivityCount, self.newActivityCount, true)
+                progressHandler(self.newActivityCount, self.newActivityCount, true)
 			}
 			}, failure: { (error: NSError) in
 				debugPrint(error)
@@ -182,7 +182,10 @@ class StravaManager : TokenDelegate {
 	}
 	
 	func effortsForSegment(_ segment : RVSegment, page : Int, context : NSManagedObjectContext, completionHandler : @escaping ((Bool)->Void)) {
-		guard token != nil else { return }
+		guard token != nil else {
+            completionHandler(false)
+            return
+        }
 		
 		if segment.allEfforts {
 			appLog.debug("Efforts called but already have them")
@@ -201,11 +204,9 @@ class StravaManager : TokenDelegate {
 					}
 				}
                 appLog.verbose("\(efforts.count) efforts for \(efforts.first!.segment!.name!) on page \(page)")
-                segment.allEfforts = true
 				completionHandler(true)
 			} else {			// Finished
 				// We have all current efforts for this segment
-				segment.allEfforts = true
 				completionHandler(true)
 			}
 		}, failure: { (error: NSError) in
@@ -249,6 +250,7 @@ class StravaManager : TokenDelegate {
 		
 		try? StravaClient.sharedInstance.request(Router.effortStreams(id: Router.Id(effort.id), types: StravaStreamType.Effort), result: { (streams : [StravaSwift.Stream]?) in
 			streams?.forEach({ RVStream.createWithStrava(owner: effort, stream: $0, context: context) })
+            // Create a gearRatio stream
 			if let speedStream = streams?.filter({ $0.type == .velocitySmooth }).first, let cadenceStream = streams?.filter({ $0.type == .cadence }).first {
 				RVStream.createWithData(owner: effort,
 										type: .gearRatio,
@@ -257,6 +259,34 @@ class StravaManager : TokenDelegate {
 										data: self.gearStreamData(speed: speedStream, cadence: cadenceStream),
 										context: context)
 			}
+            // Create a cumulative power stream
+            if let powerStream = streams?.filter({ $0.type == .watts }).first,
+                let powerValues = powerStream.data as? [Double],
+                let timeStream = streams?.filter({ $0.type == .time }).first,
+                let timeValues = timeStream.data as? [Double] {
+                let timeDiffs = [0] + zip(timeValues.dropFirst(), timeValues).map(-)
+                RVStream.createWithData(owner: effort,
+                                        type: .cumulativePower,
+                                        seriesType: powerStream.seriesType ?? "",
+                                        originalSize: powerStream.originalSize ?? 0,
+                                        data: powerValues.enumerated().map({ $0.element * timeDiffs[$0.offset] } ).reduce(into: []) { $0.append(($0.last ?? 0) + $1) },
+                                        context: context)
+            }
+            // Create a cumulative heart rate stream
+            if let hrStream = streams?.filter({ $0.type == .heartRate }).first,
+                let hrValues = hrStream.data as? [Double],
+                let timeStream = streams?.filter({ $0.type == .time }).first,
+                let timeValues = timeStream.data as? [Double] {
+                let timeDiffs = [0] + zip(timeValues.dropFirst(), timeValues).map(-)
+                RVStream.createWithData(owner: effort,
+                                        type: .cumulativeHR,
+                                        seriesType: hrStream.seriesType ?? "",
+                                        originalSize: hrStream.originalSize ?? 0,
+                                        data: hrValues.enumerated().map({ ($0.element * timeDiffs[$0.offset]) / 60 } ).reduce(into: []) { $0.append(($0.last ?? 0) + $1) },
+                                        context: context)
+            }
+
+            
 			completionHandler(true)
 		}, failure: { (error: NSError) in
 			debugPrint(error)

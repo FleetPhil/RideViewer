@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2F17E468DD07C64A833FAA0A57F3FD5C"
+               BlueprintIdentifier = "63750800E60A54EC70B2A7E3885764D3"
                BuildableName = "StravaSwift.framework"
                BlueprintName = "StravaSwift"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2F17E468DD07C64A833FAA0A57F3FD5C"
+            BlueprintIdentifier = "63750800E60A54EC70B2A7E3885764D3"
             BuildableName = "StravaSwift.framework"
             BlueprintName = "StravaSwift"
             ReferencedContainer = "container:Pods.xcodeproj">

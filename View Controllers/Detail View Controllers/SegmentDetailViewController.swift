@@ -29,7 +29,6 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
     @IBOutlet weak var routeViewController: RVRouteProfileViewController!
 	
 	private var popupController : UIViewController?
-	private var tableDataIsComplete : Bool = false
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,29 +60,24 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
             })
         }
         
-        // Get all efforts for this segment if we don't have them
-        if segment.allEfforts {
-			tableDataIsComplete = true
-		} else {
-            StravaManager.sharedInstance.effortsForSegment(self.segment, page: 1, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [ weak self ] success in
-				if success {
-					self?.tableDataIsComplete = true
-				}
-            })
-        }
+        // Get all efforts for this segment - any updates will be automatically applied to the effort table
+        self.segment.efforts(completionHandler: ({ [weak self] efforts in
+            if self != nil {
+                appLog.verbose("\(efforts?.count ?? -1) efforts retrieved for segment \(self!.segment.name!)")
+            }
+        }))
 		
 		// Get the route altitude profile
-		if !routeViewController.setPrimaryProfile(streamOwner: segment, profileType: .altitude) {
-			appLog.verbose("Getting streams")
-			StravaManager.sharedInstance.streamsForSegment(segment, context: segment.managedObjectContext!, completionHandler: { [weak self] success in
-				if success, let streams = self?.segment.streams {
-					appLog.verbose("Streams call result: success = \(success), \(streams.count) streams")
-				} else {
-					appLog.verbose("Get streams failed for activity")
-				}
-				_ = self?.routeViewController.setPrimaryProfile(streamOwner: self!.segment, profileType: .altitude)
-			})
-		}
+        routeViewController.setPrimaryProfile(streamOwner: segment, profileType: .altitude, seriesType: .distance)
+        appLog.verbose("Getting streams")
+        StravaManager.sharedInstance.streamsForSegment(segment, context: segment.managedObjectContext!, completionHandler: { [weak self] success in
+            if success, let streams = self?.segment.streams {
+                appLog.verbose("Streams call result: success = \(success), \(streams.count) streams")
+            } else {
+                appLog.verbose("Get streams failed for activity")
+            }
+            _ = self?.routeViewController.setPrimaryProfile(streamOwner: self!.segment, profileType: .altitude, seriesType: .distance)
+        })
     }
 	
 	var selectedEffort : RVEffort? = nil

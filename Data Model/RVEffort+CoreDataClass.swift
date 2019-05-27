@@ -183,8 +183,8 @@ public class RVEffort: NSManagedObject, RouteViewCompatible {
         return self.segment.map?.polylineLocations(summary: false)
     }
 	
-	// Get location in specified activity
-	var distanceRange : RouteIndexRange {
+	// Get start and end distance in activity for this effort
+	var distanceRangeInActivity : RouteIndexRange {
 		if let stream = self.activity.streams.filter({ $0.type == .distance }).first {
 			let dataPoints = stream.dataPoints
 			return RouteIndexRange(from: dataPoints[Int(self.startIndex)], to: dataPoints[Int(self.endIndex)])
@@ -192,6 +192,33 @@ public class RVEffort: NSManagedObject, RouteViewCompatible {
 			return RouteIndexRange(from: 0.0, to: 0.0)
 		}
 	}
+}
+
+// Extension to return of stream data
+extension RVEffort {
+    /**
+     Get streams for this effort
+     
+     Calls completion handler with nil data not available
+     
+     - Parameters:
+     - completionHandler: function called with the returned streams
+     - Returns: none
+     */
+    func streams(completionHandler : (@escaping (Set<RVStream>?)->Void)) {
+        if self.streams.count > 0 {                // We have streams so no need to get from Strava
+            completionHandler(self.streams)
+            return
+        }
+        StravaManager.sharedInstance.streamsForEffort(self, context: self.managedObjectContext!, completionHandler: { success in
+            if (success) {
+                self.managedObjectContext?.saveContext()
+                completionHandler(self.streams)
+            } else {
+                completionHandler(nil)
+            }
+        })
+    }
 }
 
 

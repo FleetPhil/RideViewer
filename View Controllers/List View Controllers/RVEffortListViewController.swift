@@ -34,6 +34,11 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        guard ride != nil else {
+            appLog.error("No ride set for effort table")
+            return
+        }
 
 		switch ride {
 		case is RVActivity:

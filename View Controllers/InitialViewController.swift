@@ -44,21 +44,15 @@ class InitialViewController: UIViewController {
 					// Alamofire executes completion handler on the main queue so need to stay on main queue context here
 					let context = CoreDataManager.sharedManager().viewContext
 					
-					StravaManager.sharedInstance.getAthleteActivities(page: 1, context: context, progressHandler: { totalActivities, retrievedActivities, finished in
+					StravaManager.sharedInstance.getAthleteActivities(page: 1, context: context, progressHandler: { processedActivities, totalActivities, finished in
 						if finished {
-							// Invalidate flags that indicate all efforts have been retrieved for each segment. We don't know what segments are included on the new activities
-							// so need to invalidate all to be safe
-							self.unsetAllEffortsFlags()
-							
-							StravaManager.sharedInstance.getStarredSegments(page: 1, context: context, completionHandler: { segments in
-								appLog.debug("\(segments.count) segments - getting efforts and streams")
-								self.effortsForSegments(segments, progressHandler: { total, processed, finished in
-									appLog.verbose("Total Segments: \(total), Processed: \(processed), Finished: \(finished)")
-									if finished {
-										context.saveContext()
-									}
-								})
-							})
+							// If new activities have been retrieved invalidate flags that indicate all efforts have been retrieved for each segment.
+                            // We don't know what segments are included on the new activities so need to invalidate all to be safe
+                            appLog.debug("\(totalActivities) new activities retrieved")
+                            if totalActivities > 0 {
+                                self.unsetAllEffortsFlags()
+                            }
+                            context.saveContext()
 						}
 					})
 				} else {
@@ -74,28 +68,6 @@ class InitialViewController: UIViewController {
 			segments.forEach({ $0.allEfforts = false })
 		}
 	}
-	
-	
-	func effortsForSegments(_ segments : [RVSegment], progressHandler : @escaping ((_ totalActivities : Int, _ processedActivities : Int, _ finished : Bool)->Void)) {
-		var segmentsProcessedCount = 0
-		segments.forEach { segment in
-			if segment.allEfforts {
-				// Already have all efforts for this segment
-				segmentsProcessedCount += 1
-				progressHandler(segments.count, segmentsProcessedCount, segments.count == segmentsProcessedCount)
-			} else {
-				StravaManager.sharedInstance.effortsForSegment(segment, page: 1, context: segment.managedObjectContext!, completionHandler: { success in
-					if !success {
-						appLog.debug("Efforts failed for segment \(segment.name!)")
-					}
-					segmentsProcessedCount += 1
-					progressHandler(segments.count, segmentsProcessedCount, segments.count == segmentsProcessedCount)
-				})
-			}
-		}
-	}
-	
-	
 	
 	// MARK: Stats
 	
