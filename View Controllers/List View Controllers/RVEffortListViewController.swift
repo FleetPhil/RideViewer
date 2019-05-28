@@ -17,8 +17,8 @@ protocol RVEffortTableDelegate : class {
 class RVEffortListViewController: UIViewController, UITableViewDelegate {
 	
 	// Public interface
-	// Type of object - segment or activity - determines the data to be shown
-	var ride : NSManagedObject!
+	// Type of object - segment or activity - determines the data to be shown, or nil for all efforts
+	var ride : NSManagedObject?
 	weak var delegate : RVEffortTableDelegate?
 
 	// Outlet
@@ -35,18 +35,16 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        guard ride != nil else {
-            appLog.error("No ride set for effort table")
-            return
-        }
-
 		switch ride {
-		case is RVActivity:
+		case .some(is RVActivity):
 			effortTableViewType = .effortsForActivity
 			effortSortKey		= .sequence
-		case is RVSegment:
+		case .some(is RVSegment):
 			effortTableViewType = .effortsForSegment
 			effortSortKey		= .elapsedTime
+        case .none:
+            effortTableViewType = .allEfforts
+            effortSortKey       = .elapsedTime
 		default:
 			appLog.error("Unsupported ride type for effort table")
 		}
@@ -83,10 +81,11 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 			let activityPredicate = NSPredicate(format: "activity.id == %@", argumentArray: [(ride as! RVActivity).id])
 			dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [EffortFilter.predicateForFilters(self.effortFilters), activityPredicate])
 		case .effortsForSegment:
-			// Show all efforts
 			let segmentPredicate = NSPredicate(format: "segment.id == %@", argumentArray: [(ride as! RVSegment).id])
 			let effortPredicate = EffortFilter.predicateForFilters(self.effortFilters)
 			dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [segmentPredicate, effortPredicate])
+        case .allEfforts:
+            dataManager.filterPredicate = EffortFilter.predicateForFilters(self.effortFilters)
 		}
 		_ = dataManager.fetchObjects()
 	}

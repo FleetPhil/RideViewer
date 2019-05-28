@@ -155,6 +155,30 @@ public class RVSegment: NSManagedObject, RouteViewCompatible {
 // Extensions to return Strava data
 extension RVSegment {
     /**
+     Get detailed segment
+     
+     Calls completion handler with nil if data not available
+     
+     - Parameters:
+     - completionHandler: function called with the returned streams
+     - Returns: none
+     */
+    func detailedSegment(completionHandler : (@escaping (RVSegment?)->Void)) {
+        if self.resourceState == .detailed {
+            completionHandler(self)
+            return
+        }
+        
+        StravaManager.sharedInstance.getSegmentDetails(self, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] success in
+            if success {
+                completionHandler(self)
+            } else {
+                completionHandler(nil)
+            }
+        })
+    }
+    
+    /**
      Get streams for this segment
      
      Calls completion handler with nil data not available

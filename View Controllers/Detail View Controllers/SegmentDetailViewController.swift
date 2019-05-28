@@ -34,7 +34,9 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
         super.viewDidLoad()
         
         if segment != nil {
-            updateView()
+            segment.detailedSegment(completionHandler: { [weak self] segment in
+                self?.updateView()
+            })
         }
     }
     
@@ -48,35 +50,21 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
 		// Update map
         if segment.map != nil {
 			self.mapView.addRoute(segment, type: .highlightSegment)
-		} else {
-            // Get segment details including route
-            StravaManager.sharedInstance.getSegmentDetails(segment, context: CoreDataManager.sharedManager().viewContext, completionHandler: { [weak self] success in
-                guard self != nil else { return }
-                if success {
-                    self!.mapView!.addRoute(self!.segment, type: .highlightSegment)
-				} else {		// If route not found will zoom to start/end annotations
-					self?.mapView.addRoute(self!.segment, type: .highlightSegment)
-				}
-            })
         }
         
         // Get all efforts for this segment - any updates will be automatically applied to the effort table
-        self.segment.efforts(completionHandler: ({ [weak self] efforts in
+        segment.efforts(completionHandler: ({ [weak self] efforts in
             if self != nil {
                 appLog.verbose("\(efforts?.count ?? -1) efforts retrieved for segment \(self!.segment.name!)")
             }
         }))
-		
-		// Get the route altitude profile
-        routeViewController.setPrimaryProfile(streamOwner: segment, profileType: .altitude, seriesType: .distance)
-        appLog.verbose("Getting streams")
-        StravaManager.sharedInstance.streamsForSegment(segment, context: segment.managedObjectContext!, completionHandler: { [weak self] success in
-            if success, let streams = self?.segment.streams {
-                appLog.verbose("Streams call result: success = \(success), \(streams.count) streams")
-            } else {
-                appLog.verbose("Get streams failed for activity")
+        
+        // Get the altitude profile
+        segment.streams(completionHandler: { [weak self] streams in
+            // Get the route altitude profile
+            if self != nil {
+                self!.routeViewController.setPrimaryProfile(streamOwner: self!.segment, profileType: .altitude, seriesType: .distance)
             }
-            _ = self?.routeViewController.setPrimaryProfile(streamOwner: self!.segment, profileType: .altitude, seriesType: .distance)
         })
     }
 	
@@ -84,9 +72,9 @@ class SegmentDetailViewController: UIViewController, RVEffortTableDelegate {
 	
 	// MARK: - Navigation
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-		if let destination = segue.destination as? SegmentAnalysisViewController {
+		if let destination = segue.destination as? EffortAnalysisViewController  {
 			destination.segment = segment
-			destination.highlightEffort = selectedEffort
+            destination.selectedEffort = selectedEffort
 			return
 		}
 		

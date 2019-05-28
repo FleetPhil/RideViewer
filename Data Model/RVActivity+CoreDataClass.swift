@@ -201,7 +201,7 @@ extension RVActivity {
             completionHandler(self)
             return
         }
-        StravaManager.sharedInstance.updateActivity(self, context: self.managedObjectContext!, completionHandler: { [weak self] success in
+        StravaManager.sharedInstance.getDetailedActivity(self, context: self.managedObjectContext!, completionHandler: { [weak self] success in
             if success {
                 self?.managedObjectContext?.saveContext()
                 completionHandler(self)

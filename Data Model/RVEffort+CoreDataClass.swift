@@ -223,19 +223,20 @@ extension RVEffort {
 
 
 // Extension to support generic table view
-// Need to support 2 versions: efforts for activity and efforts for segment
+// Need to support 3 versions: efforts for activity, efforts for segment and all efforts
 // enum raw value is stored in the tag
 
 enum EffortTableViewType : Int {
 	case effortsForActivity = 1
 	case effortsForSegment = 2
+    case allEfforts = 3
 }
 
 extension RVEffort : TableViewCompatibleEntity {
 	func cellForTableView(tableView: UITableView, atIndexPath indexPath: IndexPath) -> TableViewCompatibleCell {
 		if let tableType = EffortTableViewType(rawValue: tableView.tag) {
 			switch tableType {
-			case .effortsForActivity:
+			case .effortsForActivity, .allEfforts:
 				return (tableView.dequeueReusableCell(withIdentifier: "ActivityEffortCell", for: indexPath) as! EffortListForActivityTableViewCell).configure(withModel: self)
 			case .effortsForSegment:
 				return (tableView.dequeueReusableCell(withIdentifier: "SegmentEffortCell", for: indexPath) as! EffortListForSegmentTableViewCell).configure(withModel: self)

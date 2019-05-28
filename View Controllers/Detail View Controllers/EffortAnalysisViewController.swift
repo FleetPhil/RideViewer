@@ -66,31 +66,26 @@ class EffortAnalysisViewController: UIViewController, RVEffortTableDelegate {
 
         // Get the effort data for this segment
         segment.efforts(completionHandler: ({ [weak self] (efforts) in
-            self?.updateView()
-            }))
-        
+            if let shortestEffort = self?.segment.shortestElapsedEffort() {
+                self?.updateView(shortestEffort: shortestEffort)
+            }
+        }))
     }
 
-    private func updateView() {
-        // Update the shortest elapsed for this segment and show details
-        guard let shortest = segment.shortestElapsedEffort() else {
-            appLog.error("No shortest effort for analysis")
-            return
-        }
-
-        topInfoLabel.text = EmojiConstants.Fastest + " " + shortest.activity.name
+    private func updateView(shortestEffort : RVEffort) {
+        topInfoLabel.text = EmojiConstants.Fastest + " " + shortestEffort.activity.name
         topInfoLabel.textColor = ViewProfileDisplayType.primary.displayColour
-        bottomInfoLabel.attributedText = shortest.effortDisplayText
+        bottomInfoLabel.attributedText = shortestEffort.effortDisplayText
 
         // Get stream data for the fastest ride on this segment and set as the primary - also sets the availbale streams in the segmented control
-        displayStreamsForEffort(shortest, displayType: .primary)
+        displayStreamsForEffort(shortestEffort, displayType: .primary)
         
         // Show secondary effort if selected
         
         
         if selectedEffort != nil  {
             effortTableViewController.highlightEffort(selectedEffort!)
-            if selectedEffort! != shortest {
+            if selectedEffort! != shortestEffort {
                 displayStreamsForEffort(selectedEffort!, displayType: .secondary)
            }
         }

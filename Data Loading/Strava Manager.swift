@@ -108,7 +108,7 @@ class StravaManager : TokenDelegate {
 	}
 	
 	// Get details for specified activity
-    func updateActivity(_ activity : RVActivity, context : NSManagedObjectContext, completionHandler : @escaping ((Bool)->Void)) {
+    func getDetailedActivity(_ activity : RVActivity, context : NSManagedObjectContext, completionHandler : @escaping ((Bool)->Void)) {
 		guard token != nil else {
             completionHandler(false)
             return
