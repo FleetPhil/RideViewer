@@ -38,7 +38,7 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate {
 
 		// Setup the data source
 		dataManager.tableView = self.tableView
-		self.filters = [.cycleRide, .longRide]
+		self.filters = savedFilters()
 		self.sortKey = .date
         setDataManager()
 
@@ -116,6 +116,7 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate {
 		popupController?.dismiss(animated: true, completion: nil)
 		if let returnedFilters = newFilters {			// nil means cancelled
 			self.filters = returnedFilters
+            saveFilters()
 			setDataManager()
 			tableView.reloadData()
 		}
@@ -135,6 +136,19 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate {
 			}
 		}
     }
+
+    private func saveFilters() {
+        UserDefaults.standard.set(self.filters.map({ $0.rawValue } ), forKey: "ActivityFilters")
+    }
+    
+    private func savedFilters()->[ActivityFilter] {
+        if let rawFilters = UserDefaults.standard.array(forKey: "ActivityFilters") as? [String] {
+            let filters = rawFilters.compactMap({ ActivityFilter(rawValue: $0) })
+            return filters
+        }
+        return ActivityFilter.allCases
+    }
+    
 }
 
 

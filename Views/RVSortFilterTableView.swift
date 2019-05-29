@@ -49,7 +49,7 @@ class RVSortFilterHeaderView : UIView {
 		filterButton.setTitle("Filter", for: .normal)
 		self.addSubview(filterButton)
 		
-		headerLabel = UILabel(frame: CGRect(x: self.bounds.midX - 20, y: 0, width: 40, height: self.bounds.maxY))
+		headerLabel = UILabel(frame: CGRect(x: self.bounds.midX - 30, y: 0, width: self.bounds.width - 104, height: self.bounds.maxY))
 		headerLabel.textColor = .white
 		self.addSubview(headerLabel)
 	}

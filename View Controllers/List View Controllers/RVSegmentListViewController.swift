@@ -36,7 +36,7 @@ class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 		// Setup the data source
 		dataManager.tableView = self.tableView
 		
-		self.filters = [.long, .flat, .ascending, .descending, .multipleEfforts]
+		self.filters = savedFilters()
 		self.sortKey = .distance
 		setDataManager()
 	}
@@ -94,6 +94,7 @@ class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 		
 		if let returnedFilters = newFilters {		// Will be nil if cancelled
 			self.filters = returnedFilters
+            saveFilters()
 			setDataManager()
 			tableView.reloadData()
 		}
@@ -107,6 +108,18 @@ class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 			tableView.reloadData()
 		}
 	}
+    
+    private func saveFilters() {
+        UserDefaults.standard.set(self.filters.map({ $0.rawValue } ), forKey: "SegmentFilters")
+    }
+    
+    private func savedFilters()->[SegmentFilter] {
+        if let rawFilters = UserDefaults.standard.array(forKey: "SegmentFilters") as? [String] {
+            let filters = rawFilters.compactMap({ SegmentFilter(rawValue: $0) })
+            return filters
+        }
+        return SegmentFilter.allCases
+    }
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		performSegue(withIdentifier: "SegmentListToSegmentDetail", sender: self)

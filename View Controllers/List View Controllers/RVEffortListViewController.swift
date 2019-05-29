@@ -28,7 +28,7 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 	private var effortTableViewType : EffortTableViewType = .effortsForActivity
 	private(set) lazy var dataManager = DataManager<RVEffort>()
 	private var effortSortKey : EffortSort!
-	private var effortFilters : [EffortFilter] = EffortFilter.allCases
+	private var filters : [EffortFilter] = EffortFilter.allCases
 	
 	private var popupController : UIViewController?
 
@@ -53,6 +53,8 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 		tableView.dataSource    = dataManager
 		tableView.rowHeight 	= UITableView.automaticDimension
 		tableView.tag 			= effortTableViewType.rawValue
+        
+        self.filters = savedFilters()
 		
 		dataManager.tableView = tableView
 		setDataManager()
@@ -79,13 +81,13 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 		switch effortTableViewType {
 		case .effortsForActivity:
 			let activityPredicate = NSPredicate(format: "activity.id == %@", argumentArray: [(ride as! RVActivity).id])
-			dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [EffortFilter.predicateForFilters(self.effortFilters), activityPredicate])
+			dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [EffortFilter.predicateForFilters(self.filters), activityPredicate])
 		case .effortsForSegment:
 			let segmentPredicate = NSPredicate(format: "segment.id == %@", argumentArray: [(ride as! RVSegment).id])
-			let effortPredicate = EffortFilter.predicateForFilters(self.effortFilters)
+			let effortPredicate = EffortFilter.predicateForFilters(self.filters)
 			dataManager.filterPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [segmentPredicate, effortPredicate])
         case .allEfforts:
-            dataManager.filterPredicate = EffortFilter.predicateForFilters(self.effortFilters)
+            dataManager.filterPredicate = EffortFilter.predicateForFilters(self.filters)
 		}
 		_ = dataManager.fetchObjects()
 	}
@@ -116,7 +118,7 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 		let chooser = PopupupChooser<EffortFilter>()
 		chooser.title = "Include"
 		chooser.multipleSelection = true
-		chooser.selectedItems = self.effortFilters		// self.filters
+		chooser.selectedItems = self.filters
 		popupController = chooser.showSelectionPopup(items: EffortFilter.allCases, sourceView: sender, updateHandler: newFilters)
 		if popupController != nil {
 			present(popupController!, animated: true, completion: nil)
@@ -126,7 +128,8 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 	private func newFilters(_ newFilters : [EffortFilter]?)  {
 		popupController?.dismiss(animated: true, completion: nil)
 		if let selectedFilters = newFilters {
-			self.effortFilters = selectedFilters
+			self.filters = selectedFilters
+            saveFilters()
 			setDataManager()
 			tableView.reloadData()
 		}
@@ -140,6 +143,19 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 			tableView.reloadData()
 		}
 	}
+    
+    private func saveFilters() {
+        UserDefaults.standard.set(self.filters.map({ $0.rawValue } ), forKey: "EffortFilters")
+    }
+    
+    private func savedFilters()->[EffortFilter] {
+        if let rawFilters = UserDefaults.standard.array(forKey: "EffortFilters") as? [String] {
+            let filters = rawFilters.compactMap({ EffortFilter(rawValue: $0) })
+            return filters
+        }
+        return EffortFilter.allCases
+    }
+
 	
 	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 		let headerView = UIView()

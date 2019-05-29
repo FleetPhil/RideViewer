@@ -46,24 +46,15 @@ enum ActivitySort : String, PopupSelectable, CaseIterable {
     }
 }
 
-enum ActivityFilter : PopupSelectable, CaseIterable {
-	case cycleRide
-	case virtualRide
-	case walk
-	case other
-    case shortRide
-    case longRide
+enum ActivityFilter : String, PopupSelectable, CaseIterable {
+	case cycleRide          = "Cycle Rides"
+	case virtualRide        = "Virtual Rides"
+	case walk               = "Walks"
+	case other              = "Other Activities"
+    case shortRide          = "Short Rides"
+    case longRide           = "Long Rides"
 
-	var displayString: String {
-		switch self {
-		case .cycleRide:		return "Cycle Rides"
-		case .virtualRide:		return "Virtual Rides"
-		case .walk:				return "Walks"
-		case .other:			return "Other Activities"
-        case .longRide:            return "Long Rides"
-        case .shortRide:        return "Short Rides"
-		}
-	}
+    var displayString: String { return self.rawValue }
 	
 	var filterGroup: String {
 		switch self {

@@ -1417,6 +1417,11 @@
                         <viewLayoutGuide key="safeArea" id="PsI-VM-0mv"/>
                     </view>
                     <navigationItem key="navigationItem" id="gfi-n5-KjV">
+                        <barButtonItem key="leftBarButtonItem" title="Done" id="n3M-nx-r73">
+                            <connections>
+                                <action selector="doneButtonPressed:" destination="GMz-zr-4Ta" id="d3q-Dm-71x"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Detail" id="4iB-l7-axB">
                             <connections>
                                 <segue destination="3lA-4N-19T" kind="show" id="rif-QE-QcT"/>
@@ -1430,7 +1435,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z3Y-ad-lZo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2014" y="-1408"/>
+            <point key="canvasLocation" x="2014" y="-1419"/>
         </scene>
     </scenes>
     <resources>

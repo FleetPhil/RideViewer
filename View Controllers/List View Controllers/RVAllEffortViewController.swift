@@ -22,13 +22,16 @@ class RVAllEffortViewController: UIViewController, RVEffortTableDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        self.title             = "All Efforts"
+
         // Info button disabled as no effort selected
         infoButton.isEnabled = false
     }
     
-    func updateView() {
-        self.title             = "All Efforts"
+    
+    @IBAction func doneButtonPressed(_ sender: UIBarButtonItem) {
+        self.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     // MARK: - Navigation
