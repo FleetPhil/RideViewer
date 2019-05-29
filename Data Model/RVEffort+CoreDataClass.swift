@@ -65,20 +65,29 @@ enum EffortFilter : String, PopupSelectable, CaseIterable {
 	case descending			= "Descending"
 	case singleEffort		= "Single Effort"
 	case multipleEfforts	= "Multiple Effort"
+    case cycleRide          = "Cycle Ride"
+    case virtualRide        = "Virtual Ride"
+    case walk               = "Walk"
+    case other              = "Other Activities"
 	
 	var displayString: String { return self.rawValue }
 	
 	var filterGroup: String {
 		switch self {
-		case .short, .long: 					return "Segment Length"
-		case .flat, .ascending, .descending:	return "Profile"
-		case .multipleEfforts, .singleEffort: 	return "Number of Efforts"
+        case .cycleRide, .virtualRide, .walk, .other:       return "Activity Type"
+		case .short, .long: 					            return "Segment Length"
+		case .flat, .ascending, .descending:	            return "Profile"
+		case .multipleEfforts, .singleEffort: 	            return "Number of Efforts"
 		}
 	}
 	
 	func predicateForFilterOption() -> NSPredicate {
 		let longLimit = Settings.sharedInstance.segmentMinDistance
 		switch self {
+        case .cycleRide:        return NSPredicate(format: "activity.activityType = %@", argumentArray: [ActivityType.Ride.rawValue])
+        case .virtualRide:      return NSPredicate(format: "activity.activityType = %@", argumentArray: [ActivityType.VirtualRide.rawValue])
+        case .walk:             return NSPredicate(format: "activity.activityType = %@", argumentArray: [ActivityType.Walk.rawValue])
+        case .other:            return NSPredicate(format: "activity.activityType = %@", argumentArray: [ActivityType.Workout.rawValue])
 		case .short:			return NSPredicate(format: "distance < %f", argumentArray: [longLimit])
 		case .long:				return NSPredicate(format: "distance >= %f", argumentArray: [longLimit])
 		case .flat:				return NSPredicate(format: "segment.averageGrade = 0", argumentArray: nil)

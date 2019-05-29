@@ -9,6 +9,7 @@
 import Foundation
 import StravaSwift
 import CoreData
+import SwiftyJSON
 
 
 class StravaManager : TokenDelegate {
@@ -23,7 +24,7 @@ class StravaManager : TokenDelegate {
 	static let sharedInstance = StravaManager()
 	var strava : StravaClient!
 	
-	private var token: OAuthToken!
+    private var token: OAuthToken!
 	private var newActivityCount = 0
 	private var lastActivity : Date? = nil
 	
@@ -44,15 +45,16 @@ class StravaManager : TokenDelegate {
 	
 	func getToken(code : String, completion : @escaping (Bool) -> Void) {
 		do {
-			try strava.getAccessToken(code) { [weak self] returnedToken in
-				if let `self` = self, let validToken = returnedToken {
+			try strava.getAccessToken(code) { returnedToken in
+				if let validToken = returnedToken {
 					appLog.debug("Got token")
-					self.token = validToken
-					completion(true)
+                    self.token = validToken
+                    self.token.save()
+                    completion(true)
 				} else {
 					// Async
 					appLog.debug("Async return")
-					self?.token = nil
+					self.token = nil
 				}
 			}
 		} catch (let error) {
@@ -303,5 +305,22 @@ class StravaManager : TokenDelegate {
 		
 		return x
 	}
+}
+
+extension OAuthToken {
+
+    func save() {
+        UserDefaults.standard.set(self.accessToken, forKey: "StravaAccessToken")
+        UserDefaults.standard.set(self.refreshToken, forKey: "StravaRefreshToken")
+    }
+    
+    static func retrieve()->OAuthToken? {
+        if let accessToken = UserDefaults.standard.object(forKey: "StravaAccessToken") {
+            return OAuthToken(access: accessToken as? String, refresh: UserDefaults.standard.object(forKey: "StravaRefreshToken") as? String)
+        } else {
+            appLog.debug("Failed to retrieve token")
+            return nil
+        }
+    }
 }
 

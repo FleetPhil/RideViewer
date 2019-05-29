@@ -48,20 +48,20 @@ enum ActivitySort : String, PopupSelectable, CaseIterable {
 
 enum ActivityFilter : PopupSelectable, CaseIterable {
 	case cycleRide
-	case shortRide
-	case longRide
 	case virtualRide
 	case walk
 	case other
-	
+    case shortRide
+    case longRide
+
 	var displayString: String {
 		switch self {
 		case .cycleRide:		return "Cycle Rides"
 		case .virtualRide:		return "Virtual Rides"
-		case .longRide:			return "Long Rides"
-		case .shortRide:		return "Short Rides"
 		case .walk:				return "Walks"
 		case .other:			return "Other Activities"
+        case .longRide:            return "Long Rides"
+        case .shortRide:        return "Short Rides"
 		}
 	}
 	
@@ -77,11 +77,10 @@ enum ActivityFilter : PopupSelectable, CaseIterable {
 		switch self {
 		case .cycleRide:		return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Ride.rawValue])
 		case .virtualRide:		return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.VirtualRide.rawValue])
-		case .longRide:			return NSPredicate(format: "distance >= %f", 	argumentArray: [longRideLimit])
-		case .shortRide:		return NSPredicate(format: "distance < %f", 	argumentArray: [longRideLimit])
 		case .walk:				return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Walk.rawValue])
 		case .other:			return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Workout.rawValue])
-
+        case .longRide:            return NSPredicate(format: "distance >= %f",     argumentArray: [longRideLimit])
+        case .shortRide:        return NSPredicate(format: "distance < %f",     argumentArray: [longRideLimit])
 		}
 	}
 	
