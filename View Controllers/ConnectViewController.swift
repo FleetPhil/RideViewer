@@ -121,18 +121,25 @@ class ConnectViewController: UIViewController {
                 }
                 context.saveContext()
                 self.connectStatus(status: .getDetailed)
-                self.getDetailedActivities(context: context)
+                self.getDetailedActivities(context: context, completionHandler: { [weak self] success in
+                    if success {
+                        self?.connectStatus(status: .completed)
+                    } else {
+                        self?.connectStatus(status: .connectFail)
+                    }
+                })
             } else {                    // Not finished
                 
             }
         })
     }
     
-    private func getDetailedActivities(context: NSManagedObjectContext) {
+    private func getDetailedActivities(context: NSManagedObjectContext, completionHandler: @escaping (Bool)->Void) {
         guard let activities : [RVActivity] = context.fetchObjects() else {
-            appLog.error("Failed to retrieve activities")
+            completionHandler(false)
             return
         }
+
         let activityCount = Float(activities.count)
         var receivedCount : Float = 0.0
         progressView.isHidden = false
@@ -143,7 +150,8 @@ class ConnectViewController: UIViewController {
                 receivedCount += 1
                 self?.progressView.setProgress(receivedCount/activityCount, animated: false)
                 if receivedCount == activityCount {
-                    self?.connectStatus(status: .completed)
+                    completionHandler(true)
+                    return
                 }
             })
         })

@@ -47,7 +47,7 @@ class StravaManager : TokenDelegate {
 		do {
 			try strava.getAccessToken(code) { returnedToken in
 				if let validToken = returnedToken {
-					appLog.debug("Got token")
+                    appLog.debug("Got token: \(self.token.accessToken!), \(String(describing: self.token.refreshToken))")
                     self.token = validToken
                     self.token.save()
                     completion(true)
@@ -129,6 +129,7 @@ class StravaManager : TokenDelegate {
 			debugPrint(error)
 		})
 	}
+
 	
 	// TODO: only call completion handler when all data is retrieved
     func getStarredSegments (page : Int, context : NSManagedObjectContext, completionHandler : @escaping (([RVSegment])->Void)) {

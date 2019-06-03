@@ -54,7 +54,7 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 		// Get detailed activity information (also includes segment efforts)
         startDataRetrieval()
         activity.detailedActivity(completionHandler: { [weak self] detailedActivity in
-            appLog.debug("Returned \(detailedActivity == nil ? "nil" : "values") for activity \(self?.activity.name ?? "(nil self)")")
+            appLog.verbose("Returned \(detailedActivity == nil ? "nil" : "values") for activity \(self?.activity.name ?? "(nil self)")")
             if detailedActivity != nil {
                 self?.endDataRetrieval()
                 self?.updateView()

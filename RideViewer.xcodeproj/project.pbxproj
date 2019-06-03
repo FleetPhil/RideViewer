@@ -11,6 +11,7 @@
 		AD14035F229D92CE0001502F /* EffortList.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD14035E229D92CE0001502F /* EffortList.storyboard */; };
 		AD140361229D937C0001502F /* RouteProfile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD140360229D937C0001502F /* RouteProfile.storyboard */; };
 		AD140363229D97220001502F /* RVAllEffortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD140362229D97220001502F /* RVAllEffortViewController.swift */; };
+		AD2F742D229FD8B000AFA9DC /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2F742C229FD8B000AFA9DC /* Filter.swift */; };
 		AD31B336229E8AB700F41FE8 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD31B335229E8AB700F41FE8 /* InitialViewController.swift */; };
 		AD70F7FB2292DEE500E02FBA /* EffortAnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */; };
 		F4031DB62242A70500093B2E /* StreamOwner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4031DB52242A70500093B2E /* StreamOwner.swift */; };
@@ -69,6 +70,7 @@
 		AD14035E229D92CE0001502F /* EffortList.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = EffortList.storyboard; sourceTree = "<group>"; };
 		AD140360229D937C0001502F /* RouteProfile.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = RouteProfile.storyboard; sourceTree = "<group>"; };
 		AD140362229D97220001502F /* RVAllEffortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVAllEffortViewController.swift; sourceTree = "<group>"; };
+		AD2F742C229FD8B000AFA9DC /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
 		AD31B335229E8AB700F41FE8 /* InitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InitialViewController.swift; path = "View Controllers/InitialViewController.swift"; sourceTree = SOURCE_ROOT; };
 		AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EffortAnalysisViewController.swift; path = "Detail View Controllers/EffortAnalysisViewController.swift"; sourceTree = "<group>"; };
 		D272B46FE80E68DEE976D7CC /* Pods-RideViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.release.xcconfig"; sourceTree = "<group>"; };
@@ -294,6 +296,7 @@
 		F4DC5A1A21D4C7CC0017983E /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				AD2F742C229FD8B000AFA9DC /* Filter.swift */,
 				F4031DB52242A70500093B2E /* StreamOwner.swift */,
 				F47B5DCF22426ADD00A765EA /* Constants.swift */,
 				F42585A5224161CA00BCDA86 /* ViewProfileData.swift */,
@@ -445,6 +448,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD2F742D229FD8B000AFA9DC /* Filter.swift in Sources */,
 				F4DC5A1921D4C7B50017983E /* Distance Utilities.swift in Sources */,
 				F4F5195021FB79C3005D3752 /* RVStreamData+CoreDataClass.swift in Sources */,
 				F4ED1BE02208AEB600821D76 /* RVMapView.swift in Sources */,

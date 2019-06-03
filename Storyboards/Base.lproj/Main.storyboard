@@ -721,31 +721,43 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="rkJ-DV-RQz">
-                                <rect key="frame" x="153" y="334" width="69" height="144"/>
+                                <rect key="frame" x="122" y="270" width="131" height="272"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mae-xw-6o7">
-                                        <rect key="frame" x="0.0" y="0.0" width="69" height="30"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="131" height="48"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
                                         <state key="normal" title="Activities"/>
                                         <connections>
                                             <segue destination="O0Q-h3-lho" kind="show" id="358-Nr-HxQ"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8su-8o-nT9">
-                                        <rect key="frame" x="0.0" y="38" width="69" height="30"/>
+                                        <rect key="frame" x="0.0" y="56" width="131" height="48"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
                                         <state key="normal" title="Segments"/>
                                         <connections>
                                             <segue destination="SyO-sO-W7I" kind="show" id="aj8-w3-wbo"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mRt-wW-mZw" userLabel="Efforts">
-                                        <rect key="frame" x="0.0" y="76" width="69" height="30"/>
+                                        <rect key="frame" x="0.0" y="112" width="131" height="48"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
                                         <state key="normal" title="Efforts"/>
                                         <connections>
                                             <segue destination="rto-F5-7kt" kind="show" id="HP6-Pd-hMk"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OMZ-ak-X0Y" userLabel="Refresh">
+                                        <rect key="frame" x="0.0" y="168" width="131" height="48"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
+                                        <state key="normal" title="Refresh"/>
+                                        <connections>
+                                            <action selector="refreshButtonPressed:" destination="UG6-fD-U5w" eventType="touchUpInside" id="nok-tk-1EQ"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UBY-5Y-fHz">
-                                        <rect key="frame" x="0.0" y="114" width="69" height="30"/>
+                                        <rect key="frame" x="0.0" y="224" width="131" height="48"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
                                         <state key="normal" title="Settings"/>
                                         <connections>
                                             <segue destination="Xxb-JM-qhO" kind="show" id="w8K-mf-hcd"/>
