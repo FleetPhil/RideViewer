@@ -13,6 +13,4 @@ class InitialViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    @IBAction func refreshButtonPressed(_ sender: Any) {
-    }
 }

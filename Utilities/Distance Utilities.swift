@@ -45,14 +45,20 @@ extension Duration {
 		return Measurement(value: self, unit: UnitDuration.seconds)
 	}
 	var durationDisplayString : String {
-		let seconds = (self.durationMeasurement).converted(to: UnitDuration.seconds).value
-		let hours = Int(seconds / 3600)
-		return NSString(format: "%01u:%02u", hours, Int(seconds/60)-(hours*60)) as String
+		let minutes = Int(self.durationMeasurement.converted(to: UnitDuration.seconds).value / 60)
+		let hours = minutes / 60
+		return NSString(format: "%01u:%02u", hours, minutes - hours*60) as String
 	}
 	var shortDurationDisplayString : String {
-		let seconds = (self.durationMeasurement).converted(to: UnitDuration.seconds).value
-		let minutes = Int(seconds / 60)
-		return NSString(format: "%01u:%02u", minutes, Int(seconds)-Int(minutes*60)) as String
+		let seconds = Int(self.durationMeasurement.converted(to: UnitDuration.seconds).value)
+		var minutes = seconds / 60
+        if minutes > 60 {
+            let hours = minutes / 60
+            minutes -= hours * 60
+            return NSString(format: "%u:%02u:%02u", hours, minutes, seconds - (hours * 3600) - (minutes * 60)) as String
+        } else {
+            return NSString(format: "%01u:%02u", minutes, Int(seconds)-(minutes*60)) as String
+        }
 	}
 
 }
@@ -61,7 +67,7 @@ extension Speed {
 	var speedMeasurement : Measurement<UnitSpeed> {
 		return Measurement(value: self, unit: UnitSpeed.metersPerSecond)
 	}
-	func speedDisplayString(style : MeasurementFormatter.UnitStyle = .medium, fractionDigits : Int = 0) -> String {
+	func speedDisplayString(style : MeasurementFormatter.UnitStyle = .medium, fractionDigits : Int = 1) -> String {
 		return self.speedMeasurement.displayFormatter(unitStyle: style, fractionDigits: fractionDigits).string(from: self.speedMeasurement.converted(to: unitSpeed))
 	}
 }

@@ -13,6 +13,7 @@
 		AD140363229D97220001502F /* RVAllEffortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD140362229D97220001502F /* RVAllEffortViewController.swift */; };
 		AD2F742D229FD8B000AFA9DC /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2F742C229FD8B000AFA9DC /* Filter.swift */; };
 		AD31B336229E8AB700F41FE8 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD31B335229E8AB700F41FE8 /* InitialViewController.swift */; };
+		AD558A1322A53DC600F106F0 /* RefreshViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD558A1222A53DC600F106F0 /* RefreshViewController.swift */; };
 		AD70F7FB2292DEE500E02FBA /* EffortAnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */; };
 		F4031DB62242A70500093B2E /* StreamOwner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4031DB52242A70500093B2E /* StreamOwner.swift */; };
 		F4048CAA2236B88500502DA5 /* RVSortFilterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */; };
@@ -72,6 +73,7 @@
 		AD140362229D97220001502F /* RVAllEffortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVAllEffortViewController.swift; sourceTree = "<group>"; };
 		AD2F742C229FD8B000AFA9DC /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
 		AD31B335229E8AB700F41FE8 /* InitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InitialViewController.swift; path = "View Controllers/InitialViewController.swift"; sourceTree = SOURCE_ROOT; };
+		AD558A1222A53DC600F106F0 /* RefreshViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshViewController.swift; sourceTree = "<group>"; };
 		AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EffortAnalysisViewController.swift; path = "Detail View Controllers/EffortAnalysisViewController.swift"; sourceTree = "<group>"; };
 		D272B46FE80E68DEE976D7CC /* Pods-RideViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.release.xcconfig"; sourceTree = "<group>"; };
 		F4031DB52242A70500093B2E /* StreamOwner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOwner.swift; sourceTree = "<group>"; };
@@ -272,6 +274,7 @@
 		F42ECF0521CFD3130096F83B /* Detail View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				AD558A1222A53DC600F106F0 /* RefreshViewController.swift */,
 				AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */,
 				F42ECF0321CFD3090096F83B /* ActivityDetailViewController.swift */,
 				F49E07DB21E1244000A0D678 /* SegmentDetailViewController.swift */,
@@ -452,6 +455,7 @@
 				F4DC5A1921D4C7B50017983E /* Distance Utilities.swift in Sources */,
 				F4F5195021FB79C3005D3752 /* RVStreamData+CoreDataClass.swift in Sources */,
 				F4ED1BE02208AEB600821D76 /* RVMapView.swift in Sources */,
+				AD558A1322A53DC600F106F0 /* RefreshViewController.swift in Sources */,
 				F4611B9F21F3935C00EDFC13 /* General Utilities.swift in Sources */,
 				F42ECF0121CFD25E0096F83B /* RVActivityListViewController.swift in Sources */,
 				F42585A6224161CA00BCDA86 /* ViewProfileData.swift in Sources */,

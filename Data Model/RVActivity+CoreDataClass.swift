@@ -186,7 +186,7 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
 
 // Extension to return activity info from the database or Strava
 extension RVActivity {
-    func detailedActivity(completionHandler : (@escaping (_ activity : RVActivity?)->Void )) {
+    func detailedActivity(completionHandler : (@escaping (RVActivity?)->Void )) {
         if self.resourceState == .detailed {
             completionHandler(self)
             return

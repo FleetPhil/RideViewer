@@ -508,13 +508,13 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="359" height="50"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="750" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uA4-rP-iIy">
-                                                                <rect key="frame" x="0.0" y="0.0" width="359" height="20.333333333333332"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="359" height="21.666666666666668"/>
                                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="750" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YG5-53-RO0">
-                                                                <rect key="frame" x="0.0" y="28.333333333333329" width="359" height="21.666666666666671"/>
+                                                                <rect key="frame" x="0.0" y="29.666666666666671" width="359" height="20.333333333333329"/>
                                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
@@ -752,7 +752,7 @@
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
                                         <state key="normal" title="Refresh"/>
                                         <connections>
-                                            <action selector="refreshButtonPressed:" destination="UG6-fD-U5w" eventType="touchUpInside" id="nok-tk-1EQ"/>
+                                            <segue destination="Ybz-0a-o56" kind="show" id="IvY-gS-CTr"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UBY-5Y-fHz">
@@ -776,7 +776,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u8G-cM-ctO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-598" y="98"/>
+            <point key="canvasLocation" x="-666" y="33"/>
         </scene>
         <!--Connect View Controller-->
         <scene sceneID="i6y-qj-Ncc">
@@ -809,44 +809,78 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="b22-zR-KdX">
-                                <rect key="frame" x="56" y="651" width="263" height="27"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M5D-gq-CSf">
-                                        <rect key="frame" x="0.0" y="0.0" width="263" height="17"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="7zm-Rh-6UF">
-                                        <rect key="frame" x="0.0" y="25" width="263" height="2"/>
-                                    </progressView>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstItem="M5D-gq-CSf" firstAttribute="width" secondItem="7zm-Rh-6UF" secondAttribute="width" id="yfQ-o5-zrK"/>
-                                </constraints>
-                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="RDH-vN-35f" firstAttribute="centerX" secondItem="dEo-ft-dOM" secondAttribute="centerX" id="JYy-0Z-NGL"/>
-                            <constraint firstItem="g2v-Pr-Cja" firstAttribute="bottom" secondItem="b22-zR-KdX" secondAttribute="bottom" constant="100" id="RAy-GY-zjX"/>
                             <constraint firstItem="RDH-vN-35f" firstAttribute="centerY" secondItem="dEo-ft-dOM" secondAttribute="centerY" id="bD8-ko-Z6E"/>
-                            <constraint firstItem="b22-zR-KdX" firstAttribute="centerX" secondItem="dEo-ft-dOM" secondAttribute="centerX" id="gRQ-uD-0fi"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="g2v-Pr-Cja"/>
                     </view>
                     <connections>
                         <outlet property="connectButton" destination="ajF-Xs-t3j" id="dao-xG-2Xh"/>
-                        <outlet property="progressLabel" destination="M5D-gq-CSf" id="dBN-6z-ZkP"/>
-                        <outlet property="progressView" destination="7zm-Rh-6UF" id="vFC-Y4-fgR"/>
                         <outlet property="skipButton" destination="Ewc-pM-Rh1" id="ZO6-6x-du8"/>
                         <segue destination="UG6-fD-U5w" kind="show" identifier="ShowInitialViewController" id="eEo-4i-lvd"/>
+                        <segue destination="Ybz-0a-o56" kind="show" identifier="ConnectToRefresh" id="Ifx-i2-xaK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Seb-Qs-HM2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1442" y="88"/>
+            <point key="canvasLocation" x="-2439" y="-42"/>
+        </scene>
+        <!--Refresh View Controller-->
+        <scene sceneID="spT-8d-or7">
+            <objects>
+                <viewController id="Ybz-0a-o56" customClass="RefreshViewController" customModule="RideViewer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="24M-ep-Zx2">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="edh-bc-1n1">
+                                <rect key="frame" x="20" y="392.66666666666669" width="335" height="27"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Tt-U1-JV0">
+                                        <rect key="frame" x="0.0" y="0.0" width="335" height="17"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="bwI-YX-JRq">
+                                        <rect key="frame" x="0.0" y="25" width="335" height="2"/>
+                                    </progressView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="9Tt-U1-JV0" firstAttribute="width" secondItem="bwI-YX-JRq" secondAttribute="width" id="JzQ-2Z-yuT"/>
+                                    <constraint firstItem="bwI-YX-JRq" firstAttribute="centerX" secondItem="edh-bc-1n1" secondAttribute="centerX" id="ZI6-Dt-nTE"/>
+                                </constraints>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Kp-Dj-OrU">
+                                <rect key="frame" x="169" y="648" width="37" height="30"/>
+                                <state key="normal" title="Done"/>
+                                <connections>
+                                    <segue destination="UG6-fD-U5w" kind="show" id="IYc-po-1KO"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="edh-bc-1n1" firstAttribute="centerY" secondItem="24M-ep-Zx2" secondAttribute="centerY" id="KFg-uB-1bt"/>
+                            <constraint firstItem="UrC-QG-ZOB" firstAttribute="bottom" secondItem="1Kp-Dj-OrU" secondAttribute="bottom" constant="100" id="Tan-d9-3mp"/>
+                            <constraint firstItem="1Kp-Dj-OrU" firstAttribute="centerX" secondItem="24M-ep-Zx2" secondAttribute="centerX" id="cMO-Cn-VGQ"/>
+                            <constraint firstItem="UrC-QG-ZOB" firstAttribute="trailing" secondItem="edh-bc-1n1" secondAttribute="trailing" constant="20" id="dy6-h1-EAn"/>
+                            <constraint firstItem="edh-bc-1n1" firstAttribute="leading" secondItem="UrC-QG-ZOB" secondAttribute="leading" constant="20" id="o6d-sz-eoq"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="UrC-QG-ZOB"/>
+                    </view>
+                    <connections>
+                        <outlet property="doneButton" destination="1Kp-Dj-OrU" id="wWr-lM-8ki"/>
+                        <outlet property="progressLabel" destination="9Tt-U1-JV0" id="Nce-Jb-pF9"/>
+                        <outlet property="progressView" destination="bwI-YX-JRq" id="O6K-zV-Cel"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JGZ-xf-m2w" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1738" y="838"/>
         </scene>
         <!--Split View Controller-->
         <scene sceneID="rE6-Xf-Y5T">
@@ -1455,7 +1489,8 @@
         <image name="api_logo_pwrdBy_strava_stack_light" width="199" height="86"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="eEo-4i-lvd"/>
+        <segue reference="IvY-gS-CTr"/>
+        <segue reference="IYc-po-1KO"/>
         <segue reference="rif-QE-QcT"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -15,8 +15,6 @@ class ConnectViewController: UIViewController {
 	
 	@IBOutlet weak var connectButton: UIButton!
     @IBOutlet weak var skipButton: UIButton!
-    @IBOutlet weak var progressLabel: UILabel!
-    @IBOutlet weak var progressView: UIProgressView!
     
     enum ConnectStatus : String {
         case checkingStrava = "Checking Strava"
@@ -33,8 +31,7 @@ class ConnectViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
         
-        // Hide the progress indicator and connect button for now
-        progressView.isHidden = true
+        // Hide the connect button for now
         connectButton.isHidden = true
         skipButton.isHidden = true
 		
@@ -49,21 +46,16 @@ class ConnectViewController: UIViewController {
 	}
 	
 	override func viewDidAppear(_ animated: Bool) {
-        // Check to see if we have a valid authorisation token - if so go straight to the initial controller
-        connectStatus(status: .checkingStrava)
+        // Check to see if we have a valid authorisation token - if so go straight to the refresh controller
         
         if isValidStravaToken() {
             // We have a valid token so segue to the initial screen
-            connectStatus(status: .connected)
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                self.performSegue(withIdentifier: "ShowInitialViewController", sender: self)
-            }
+            self.performSegue(withIdentifier: "ConnectToRefresh", sender: self)
 
         } else {
             // No valid token - show the connect button
             connectButton.isHidden = false
             skipButton.isHidden = false
-            connectStatus(status: .noConnection)
         }
 	}
     
@@ -75,21 +67,8 @@ class ConnectViewController: UIViewController {
         // TODO: check if valid not expired
         return false
     }
-    
-    private func connectStatus(status: ConnectStatus) {
-        progressLabel.text  = status.rawValue
-        if status == .completed {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                self.progressLabel.isHidden = true
-                self.progressView.isHidden = true
-                self.performSegue(withIdentifier: "ShowInitialViewController", sender: self)
-            }
-        }
-    }
 	
 	@IBAction func connectPressed(_ sender: UIButton) {
-        progressLabel.isHidden = false
-        connectStatus(status: .getToken)
 		StravaManager.sharedInstance.authorise()
 	}
 	
@@ -97,72 +76,16 @@ class ConnectViewController: UIViewController {
 		guard let code = notification.object as? String else { return }
 		
 		do {
-            connectStatus(status: .auth)
 			let _ = StravaManager.sharedInstance.getToken(code: code) { [weak self] success in
 				if success {
-					self?.connectStatus(status: .getActivities)
-					// Alamofire executes completion handler on the main queue so need to stay on main queue context here
-					let context = CoreDataManager.sharedManager().viewContext
-                    self?.getActivities(context: context)
+                    // Segue to refresh controller
+                    self?.performSegue(withIdentifier: "ConnectToRefresh", sender: self)
 				} else {
-                    self?.connectStatus(status: .connectFail)
 				}
 			}
 		}
     }
     
-    private func getActivities(context: NSManagedObjectContext) {
-        StravaManager.sharedInstance.getAthleteActivities(page: 1, context: context, progressHandler: { processedActivities, totalActivities, finished in
-            if finished {
-                // If new activities have been retrieved invalidate flags that indicate all efforts have been retrieved for each segment.
-                // We don't know what segments are included on the new activities so need to invalidate all to be safe
-                if totalActivities > 0 {
-                    self.unsetAllEffortsFlags()
-                }
-                context.saveContext()
-                self.connectStatus(status: .getDetailed)
-                self.getDetailedActivities(context: context, completionHandler: { [weak self] success in
-                    if success {
-                        self?.connectStatus(status: .completed)
-                    } else {
-                        self?.connectStatus(status: .connectFail)
-                    }
-                })
-            } else {                    // Not finished
-                
-            }
-        })
-    }
-    
-    private func getDetailedActivities(context: NSManagedObjectContext, completionHandler: @escaping (Bool)->Void) {
-        guard let activities : [RVActivity] = context.fetchObjects() else {
-            completionHandler(false)
-            return
-        }
-
-        let activityCount = Float(activities.count)
-        var receivedCount : Float = 0.0
-        progressView.isHidden = false
-        progressView.setProgress(0.0, animated: false)
-        
-        activities.enumerated().forEach({ activity in
-            activity.element.detailedActivity(completionHandler: { [weak self] detailedActivity in
-                receivedCount += 1
-                self?.progressView.setProgress(receivedCount/activityCount, animated: false)
-                if receivedCount == activityCount {
-                    completionHandler(true)
-                    return
-                }
-            })
-        })
-    }
-	
-	private func unsetAllEffortsFlags() {
-		let predicate = NSPredicate(format: "allEfforts == %@", argumentArray: [NSNumber(value: true)])
-		if let segments : [RVSegment] = CoreDataManager.sharedManager().viewContext.fetchObjects(withPredicate: predicate, withSortDescriptor: nil) {
-			segments.forEach({ $0.allEfforts = false })
-		}
-	}
 	
 	// MARK: Stats
 	

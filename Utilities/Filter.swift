@@ -9,32 +9,36 @@
 import Foundation
 import StravaSwift
 
+
+
 enum Filter : String, PopupSelectable, CaseIterable {
     case cycleRide          = "Cycle Rides"
     case virtualRide        = "Virtual Rides"
     case walk               = "Walks"
     case other              = "Other Activities"
-    case shortRide          = "Short Rides"
-    case longRide           = "Long Rides"
+
+    case starred            = "Only Starred"
+
+    case short                = "Short"
+    case long                = "Long"
+
+    case flat                = "Flat"
+    case ascending            = "Ascending"
+    case descending            = "Descending"
+
+    case singleEffort        = "Single Effort"
+    case multipleEfforts    = "Multiple Effort"
     
     var displayString: String { return self.rawValue }
     
     var filterGroup: String {
         switch self {
         case .cycleRide, .virtualRide, .walk, .other:        return "Activity Type"
-        case .longRide, .shortRide:                          return "Ride Length"
-        }
-    }
-    
-    func predicateForFilterOption() -> NSPredicate {
-        let longRideLimit = Settings.sharedInstance.activityMinDistance
-        switch self {
-        case .cycleRide:        return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Ride.rawValue])
-        case .virtualRide:        return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.VirtualRide.rawValue])
-        case .walk:                return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Walk.rawValue])
-        case .other:            return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Workout.rawValue])
-        case .longRide:            return NSPredicate(format: "distance >= %f",     argumentArray: [longRideLimit])
-        case .shortRide:        return NSPredicate(format: "distance < %f",     argumentArray: [longRideLimit])
+        case .starred:                          return "Starred"
+        case .short, .long:                     return "Length"
+        case .flat, .ascending, .descending:    return "Profile"
+        case .multipleEfforts, .singleEffort:     return "Number of Efforts"
+
         }
     }
     
@@ -42,10 +46,15 @@ enum Filter : String, PopupSelectable, CaseIterable {
         var predicates : [NSCompoundPredicate] = []
         let filterGroups = Dictionary(grouping: filters, by: { $0.filterGroup })
         for group in filterGroups {
-            let subPred = group.value.map({ $0.predicateForFilterOption() })
+            let subPred = group.value.map({ $0.predicateForFilter() })
             let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subPred)
             predicates.append(groupPredicate)
         }
         return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
     }
 }
+
+
+
+
+

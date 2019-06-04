@@ -9,8 +9,31 @@
 import Foundation
 import StravaSwift
 import CoreData
-import SwiftyJSON
 
+enum StravaStatus {
+    case connected
+    case connectFailed
+    case stravaFailure(Error)
+    case getStats
+    case athleteStats(Int)              // Activity total
+    case newActivities(Int)             // Number of new activities retrieved
+    case updatingActivities(Int)        // Number retrieved
+    case updateComplete                 //
+    
+    var statusText : String {
+        switch self {
+        case .connected:                                return "Connected to Strava"
+        case .connectFailed:                            return "Strava connection failed"
+        case .stravaFailure(let error):                 return "Strava error: \(error.localizedDescription)"
+        case .getStats:                                 return "Getting athlete details"
+        case .athleteStats(let activityCount):          return "\(activityCount) total activities"
+        case .newActivities(let activityCount):         return "Got \(activityCount) new activities"
+        case .updatingActivities(let activityCount):    return "Updated \(activityCount) activities"
+        case .updateComplete:                           return "Update complete"
+        }
+    }
+    
+}
 
 class StravaManager : TokenDelegate {
 	func get() -> OAuthToken? {
@@ -25,8 +48,10 @@ class StravaManager : TokenDelegate {
 	var strava : StravaClient!
 	
     private var token: OAuthToken!
-	private var newActivityCount = 0
-	private var lastActivity : Date? = nil
+    private var athlete : Athlete?
+    private var athleteStats : AthleteStats?
+    
+	private var lastActivityDate : Date? = nil
 	
 	private init () {
 		let config = StravaConfig(clientId: StravaConstants.ClientID,
@@ -69,40 +94,78 @@ class StravaManager : TokenDelegate {
 	}
 	
 	// MARK: Strava Data Retrieval functions
-	
-	func getAthleteActivities(page : Int, context : NSManagedObjectContext, progressHandler : @escaping ((_ processedActivities : Int, _ totalActivities : Int, _ finished : Bool)->Void)) {
+    private func getAthlete(completionHandler : @escaping (Error?)->Void) {
+        try? StravaClient.sharedInstance.request(Router.athlete, result: { (athlete : Athlete?) in
+            self.athlete = athlete
+            self.getAthleteStats(completionHandler: { (success) in
+                completionHandler(nil)
+                })
+        }, failure: { (error: NSError) in
+            appLog.error(error)
+            completionHandler(error)
+        })
+    }
+    
+    // Get athlete stats
+    private func getAthleteStats(completionHandler : @escaping (Error?)->Void)  {
+        try? StravaClient.sharedInstance.request(Router.athletesStats(id: self.athlete!.id!, params: ["page": 1]), result: { (stats : AthleteStats?) in
+            appLog.debug("Got stats")
+            self.athleteStats = stats
+            completionHandler(nil)
+        }, failure: { (error: NSError) in
+            appLog.error(error)
+            completionHandler(error)
+        })
+    }
+    
+    // Update the connected athlete activities and get all activity details
+    func refreshAthlete(context: NSManagedObjectContext, progressHandler: @escaping ((StravaStatus)->Void)) {
+        guard haveToken else {
+            progressHandler(.connectFailed)
+            return
+        }
+        getAthlete(completionHandler: { (error) in
+            guard error == nil else {
+                progressHandler(.stravaFailure(error!))
+                return
+            }
+            // Have athlete stats
+            progressHandler(.athleteStats(self.athleteStats?.allRideTotals?.count ?? 0))
+            })
+    }
+    
+	// Get a page of activities
+	func getAthleteActivities(page : Int, context : NSManagedObjectContext, progressHandler : @escaping ((_ newActivity : RVActivity?, _ finished : Bool)->Void)) {
 		var params = ["per_page":StravaConstants.ItemsPerPage, "page":page]
 
 		if page == 1 {
 		// Get time of latest activity and save the date 
 			if let activities : [RVActivity] = context.fetchObjects() {
 				if activities.count > 0 {
-					self.lastActivity = activities.map({ $0.startDate as Date }).max()
+                    self.lastActivityDate = activities.map({ $0.startDate as Date }).max()
 				}
-				self.newActivityCount = 0
 			}
 		}
 		
-		if self.lastActivity != nil {
-			params["after"] = Int(self.lastActivity!.timeIntervalSince1970)
+        if self.lastActivityDate != nil {
+			params["after"] = Int(self.lastActivityDate!.timeIntervalSince1970)
 		}
 		
-		try? StravaClient.sharedInstance.request(Router.athleteActivities(params: params), result: { [weak self] (activities: [Activity]?) in
-			guard let `self` = self, let activities = activities else { return }
+		try? StravaClient.sharedInstance.request(Router.athleteActivities(params: params), result: { (activities: [Activity]?) in
+			guard let activities = activities else { return }
 			
 			appLog.debug("Retrieved \(activities.count) activities for page \(page)")
 			if activities.count > 0 {
 				activities.forEach {
-					let _ = RVActivity.create(activity: $0, context: context)
-					self.newActivityCount += 1
-					progressHandler(self.newActivityCount, activities.count, false)
+					let newActivity = RVActivity.create(activity: $0, context: context)
+					progressHandler(newActivity, false)
 				}
 				// Get next page
                 self.getAthleteActivities(page: page + 1, context: context, progressHandler: progressHandler)		// get next page
 			} else {
 				// No more activities to load
-				self.lastActivity = nil
-                progressHandler(self.newActivityCount, self.newActivityCount, true)
+				self.lastActivityDate = nil
+                progressHandler(nil, true)
 			}
 			}, failure: { (error: NSError) in
 				debugPrint(error)
@@ -122,13 +185,15 @@ class StravaManager : TokenDelegate {
                 return
             }
 			
-			appLog.verbose("Retrieved activity details for \(activity.name ?? "None?")")
+			appLog.verbose("Have detailed for \(activity.name ?? "None?")")
 			let _ = RVActivity.create(activity: activity, context: context)
 			completionHandler(true)
 		}, failure: { (error: NSError) in
 			debugPrint(error)
 		})
 	}
+    
+    
 
 	
 	// TODO: only call completion handler when all data is retrieved

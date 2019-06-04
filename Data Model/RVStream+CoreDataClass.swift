@@ -180,7 +180,7 @@ public class RVStream: NSManagedObject {
             })
         
         if dataPoints.count == 0 {
-            appLog.error("No data points for stream type \(self.type)")
+            appLog.error("No data points for \(self.type)")
         } else {
             appLog.verbose("Returning \(dataPoints.count) points, axis range \(dataPoints.first!.axisValue) to \(dataPoints.last!.axisValue), (\(dataPoints.last!.axisValue - dataPoints.first!.axisValue))")
         }
