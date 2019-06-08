@@ -12,7 +12,7 @@ import UIKit
 protocol PopupSelectable : Equatable {
 	var displayString : String { get }
     var sortDefaultAscending : Bool { get }
-	var filterGroup : String { get }
+	var popupGroup : String { get }
 }
 
 // Provide defaults
@@ -20,7 +20,7 @@ extension PopupSelectable {
 	var sortDefaultAscending : Bool {
 		return false
 	}
-	var filterGroup : String {
+	var popupGroup : String {
 		return ""
 	}
 }
@@ -43,19 +43,20 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
     public var title : String = "Title"
     public var multipleSelection : Bool = false
 	public var selectedItems : [T] = []
+    
+    init(title : String) {
+        self.title = title
+    }
 	
 	func showSelectionPopup(items : [T], sourceView : UIView, updateHandler : @escaping ([T]?) -> Void) -> UIViewController? {
 		// If selection is empty do nothing
 		if items.count == 0 {
 			return nil
 		}
-		
-		itemsForSelection = Dictionary(grouping: items, by: { $0.filterGroup })	// Section (aka group) : Items
-		var i = 0
-		for key in itemsForSelection.keys {
-			sectionNumbers[i] = key
-			i += 1
-		}
+
+        // Group the popup items and assign to the table sections
+        itemsForSelection = Dictionary(grouping: items, by: { $0.popupGroup })    // Section (aka group) : Items
+        itemsForSelection.enumerated().forEach({ sectionNumbers[$0.offset] = $0.element.key })
 		
 		handler = updateHandler
         self.sourceView = sourceView

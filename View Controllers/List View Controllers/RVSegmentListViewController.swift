@@ -70,8 +70,7 @@ class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 
 	@objc func sortButtonPressed(sender: UIView) {
 		// Popup the list of fields to select sort order
-		let chooser = PopupupChooser<SegmentSort>()
-		chooser.title = "Select sort order"
+        let chooser = PopupupChooser<SegmentSort>(title: "Select sort order")
 		popupController = chooser.showSelectionPopup(items: SegmentSort.allCases, sourceView: sender, updateHandler: newSortOrder)
 		if popupController != nil {
 			present(popupController!, animated: true, completion: nil)
@@ -79,8 +78,7 @@ class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 	}
 	
 	@objc func filterButtonPressed(sender: UIView) {
-		let chooser = PopupupChooser<SegmentFilter>()
-		chooser.title = "Include"
+        let chooser = PopupupChooser<SegmentFilter>(title: "Include")
 		chooser.multipleSelection = true
 		chooser.selectedItems = self.filters
 		popupController = chooser.showSelectionPopup(items: SegmentFilter.allCases, sourceView: sender, updateHandler: newFilters)

@@ -11,6 +11,7 @@ import Foundation
 import CoreData
 import StravaSwift
 import Charts
+import Accelerate
 
 // Stream data type
 enum RVStreamDataType : String {
@@ -57,7 +58,7 @@ enum RVStreamDataType : String {
     }
     
     static var effortStreamTypes : [RVStreamDataType] {
-        return [RVStreamDataType.speed, .heartRate, .power, .cadence, .gearRatio, .cumulativePower, .cumulativeHR]
+        return [RVStreamDataType.speed, .heartRate, .power, .cadence, .gearRatio, .cumulativePower, .cumulativeHR, .time]
     }
     
     func isValidStreamForObjectType(type : StreamOwner) -> Bool {
@@ -149,8 +150,13 @@ public class RVStream: NSManagedObject {
 		return self
 	}
     
+    // Helper methods
+    func isType(_ type : RVStreamDataType) -> Bool {
+        return self.type == type
+    }
+    
     /**
-     Return the set of y data points for this stream using the x axis stream in the parameter
+     Return the set of data points for this stream using the x axis stream in the parameter, scaled to unit increments on the x axis
      
      - Parameter axisStream: the x axis values corresponding to this stream (i.e distance or time)
     
@@ -158,19 +164,30 @@ public class RVStream: NSManagedObject {
      
     */
     func dataPointsWithAxis(_ axisStream : RVStream ) -> [DataPoint] {
-        appLog.verbose("axis: \(axisStream.dataPoints.first!) to \(axisStream.dataPoints.last!)")
-        
         // Only unpack the axis stream data points from JSON once (for performance reasons)
         let axisDataPoints = axisStream.dataPoints
         guard axisDataPoints.count > 0 else {
-            appLog.debug("No data points found")
+            appLog.debug("No data points")
             return []
         }
+
+        // Rebase the x axis to start at zero
+        let axisStartValue = axisDataPoints.first!
+        let transformedAxisStream = axisDataPoints.map({ $0 - axisStartValue })
         
-        let minAxisValue = axisStream.dataPoints[0]
-        let dataPoints = self.dataPoints
+        appLog.verbose("\(self.dataPoints.count) data points in stream type \(self.type), last axis value is \(Int(transformedAxisStream.last!)) ")
+
+        // Scale to unit increments on the x axis
+        var new_values = [Double](repeating: 0, count: Int(transformedAxisStream.last!))
+        let stride = vDSP_Stride(1)
+        vDSP_vgenpD(self.dataPoints, stride, transformedAxisStream, stride, &new_values, stride, vDSP_Length(new_values.count), vDSP_Length(self.dataPoints.count))
+
+        appLog.verbose("\(new_values.count) new data points from \(new_values.first!) to \(new_values.last!)")
+
+        // Convert to array of DataPoint
+        let dataPoints = new_values
             .enumerated()
-            .map({ DataPoint(dataValue: $0.element, axisValue: axisDataPoints[$0.offset] - minAxisValue) })
+            .map({ DataPoint(dataValue: $0.element, axisValue: Double($0.offset)) })
             .filter({
                 if (self.type == .power || self.type == .cadence) {         // Zero is valid value for Power and Cadence
                     return true

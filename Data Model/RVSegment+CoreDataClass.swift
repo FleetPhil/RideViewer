@@ -50,7 +50,7 @@ enum SegmentFilter : String, PopupSelectable, CaseIterable {
 	
 	var displayString: String { return self.rawValue }
 	
-	var filterGroup: String {
+	var popupGroup: String {
 		switch self {
         case .starred:                          return "Starred"
 		case .short, .long: 					return "Segment Length"
@@ -75,7 +75,7 @@ enum SegmentFilter : String, PopupSelectable, CaseIterable {
 	
 	static func predicateForFilters(_ filters : [SegmentFilter]) -> NSCompoundPredicate {
 		var predicates : [NSCompoundPredicate] = []
-		let filterGroups = Dictionary(grouping: filters, by: { $0.filterGroup })
+		let filterGroups = Dictionary(grouping: filters, by: { $0.popupGroup })
 		for group in filterGroups {
 			let subPred = group.value.map({ $0.predicateForFilterOption() })
 			let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subPred)

@@ -13,7 +13,11 @@ import UIKit
 import CoreData
 import Charts
 
-class RVRouteProfileViewController: UIViewController {
+protocol RouteProfileDelegate {
+    func profileTouch(at : Int )
+}
+
+class RVRouteProfileViewController: UIViewController, ChartViewDelegate {
 	// Model
 	
 	/// Struct with the data to be shown
@@ -22,6 +26,13 @@ class RVRouteProfileViewController: UIViewController {
 	
 	/// View that is managed by this controller
 	@IBOutlet weak var profileChartView: RVRouteProfileView!
+    
+    /// Delegate
+    var delegate : RouteProfileDelegate?
+    
+    override func viewDidLoad() {
+        profileChartView.delegate = self
+    }
 	
 	// Public interface
 	/**
@@ -49,16 +60,12 @@ class RVRouteProfileViewController: UIViewController {
             // Create the data set with the required stream
             let dataSet = ViewProfileDataSet(streamOwner: streamOwner,
                                              profileDataType: profileType,
-                                             profileDisplayType: .primary,
+                                             profileDisplayType: .primary,      // TODO: should be a parameter
                                              dataPoints: dataPoints)
             
             self.profileData    = ViewProfileData(primaryDataSet: dataSet, seriesType: seriesType)
             
-            // Calculate the number of data points to display, create the line chart data set and assign to the chart view
-            self.countOfPointsToDisplay = Int(self.profileChartView.bounds.width / DisplayConstants.ScreenPointsPerDataPoint)
-            let primarySet = self.chartDataSet(dataSet, displayDataPoints: self.countOfPointsToDisplay)
-            self.profileChartView.data = LineChartData(dataSets: [primarySet])
-            self.profileChartView.leftAxis.valueFormatter = profileType.chartValueFormatter
+            self.profileChartView.setProfileData(self.profileData!)
         })
 	}
 	
@@ -87,90 +94,49 @@ class RVRouteProfileViewController: UIViewController {
                 return
             }
 
-            let dataSet = ViewProfileDataSet(streamOwner: streamOwner, profileDataType: profileType, profileDisplayType: displayType, dataPoints: dataPoints)
-            self.profileData!.addDataSet(dataSet)
-            self.profileChartView.data?.addDataSet(self.chartDataSet(dataSet, displayDataPoints: self.countOfPointsToDisplay))
-            self.profileChartView.notifyDataSetChanged()
+            self.profileData!.addDataSet(ViewProfileDataSet(streamOwner: streamOwner, profileDataType: profileType, profileDisplayType: displayType, dataPoints: dataPoints))
+            
+            self.profileChartView.setProfileData(self.profileData!)
         })
 	}
 	
 	/**
-	Remove all secondary profiles
+	Remove secondary profile
 	*/
-	func removeSecondaryProfiles() {
-		if profileData != nil {
-			profileData!.removeDataSetsOfDisplayType(.secondary)
-		}
-        self.profileChartView.notifyDataSetChanged()
-	}
-	
-	/**
-	Highlight a range of values
-
-	- Parameters:
-		- range: range to be highlighted (in x axis units). nil to remove highlights
-	*/
-	func setHighLightRange(_ range : RouteIndexRange?) {
-		if range == nil {
-			profileChartView.xAxis.removeAllLimitLines()
-		} else {
-			let lowLimit = ChartLimitLine(limit: range!.from)
-			lowLimit.lineColor = DisplayConstants.LimitLineColour
-			profileChartView.xAxis.addLimitLine(lowLimit)
-
-			let highLimit = ChartLimitLine(limit: range!.to)
-			highLimit.lineColor = DisplayConstants.LimitLineColour
-			profileChartView.xAxis.addLimitLine(highLimit)
-			
-			profileChartView.notifyDataSetChanged()
-		}
-	}
-	
-	// Private functions
-	
-	// Create a Line Chart dataSet from the data points and display type
-	private func chartDataSet(_ dataSet : ViewProfileDataSet, displayDataPoints: Int) -> LineChartDataSet {
-		var scaleFactor = dataSet.dataPoints.count / displayDataPoints
-		if scaleFactor == 0 { scaleFactor = 1 }			// Cannot be zero
-		
-		var entries : [ChartDataEntry] = []
-		
-		for i in stride(from: 0, to: dataSet.dataPoints.count, by: scaleFactor) {
-			entries.append(ChartDataEntry(x: dataSet.dataPoints[i].axisValue, y: dataSet.dataPoints[i].dataValue))
-		}
-		
-		appLog.verbose("Plotting \(entries.count) points from \(dataSet.dataPoints.count)")
-		
-        let lineDataSet = LineChartDataSet(entries: entries, label: "")
-		lineDataSet.drawCirclesEnabled = false
-		lineDataSet.drawValuesEnabled = false
-		
-		switch dataSet.profileDisplayType {
-		case .primary:
-			lineDataSet.setColor(DisplayConstants.PrimaryProfileColour, alpha: 1.0)
-		case .secondary:
-			lineDataSet.setColor(DisplayConstants.SecondaryProfileColour, alpha: 1.0)
-		case .background:
-			// Setup the axis
-			profileChartView.rightAxis.enabled = true
-			profileChartView.rightAxis.drawGridLinesEnabled = false
-			profileChartView.rightAxis.valueFormatter = dataSet.profileDataType.chartValueFormatter
-			lineDataSet.axisDependency = .right
-			
-			let colorTop = UIColor(red: 255.0/255.0, green: 94.0/255.0, blue: 58.0/255.0, alpha: 1.0).cgColor
-			let colorBottom =  UIColor(red: 255.0/255.0, green: 149.0/255.0, blue: 0.0/255.0, alpha: 1.0).cgColor
-			
-			let gradientColors = [colorTop, colorBottom] as CFArray
-			let colorLocations:[CGFloat] = [0.0, 1.0]
-			let gradient = CGGradient.init(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: gradientColors, locations: colorLocations) // Gradient Object
-			lineDataSet.fill = Fill.fillWithLinearGradient(gradient!, angle: 90.0)
-			lineDataSet.drawFilledEnabled = true
-			lineDataSet.lineWidth = 0.0
-		}
-		
-		
-		return lineDataSet
-	}
+    func removeProfileForOwner(_ owner : StreamOwner) {
+        if profileData == nil { return }
+        profileData!.removeDataSetForOwner(owner)
+        profileChartView.setProfileData(profileData!)
+    }
+    
+    // Data access
+    var primaryDataSet : ViewProfileDataSet {
+        return profileData!.primaryDataSet          // Primary set must exist
+    }
+    
+    func dataSetOfType(_ type : RVStreamDataType, forStreamOwner : StreamOwner?) -> ViewProfileDataSet? {
+        if let owner = forStreamOwner {
+            return profileData?.profileDataSets.filter({ $0.profileDataType == type && $0.streamOwner == owner }).first
+        } else {
+            return  nil
+        }
+    }
+    
+    // Chart view delegate
+    func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+        appLog.verbose("Touch at \(entry.x),\(entry.y)")
+        
+        delegate?.profileTouch(at: Int(entry.x))
+    }
+    
+    private func matchingDataPoint(_ dataPoint : DataPoint) -> (ViewProfileDataSet, Int)? {
+        if let matchingPoint = profileData!.profileDataSets.map({ (dataSet) in (dataSet, dataSet.dataPoints.firstIndex { $0 == dataPoint })  })
+            .filter({ matching in matching.1 != nil }).first {
+            return (matchingPoint.0, matchingPoint.1!)
+        } else {
+            return nil
+        }
+    }
 }
 
 

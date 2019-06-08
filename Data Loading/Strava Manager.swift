@@ -11,6 +11,7 @@ import StravaSwift
 import CoreData
 
 enum StravaStatus {
+    case connecting
     case connected
     case connectFailed
     case stravaFailure(Error)
@@ -22,6 +23,7 @@ enum StravaStatus {
     
     var statusText : String {
         switch self {
+        case .connecting:                               return "Connecting to Strava"
         case .connected:                                return "Connected to Strava"
         case .connectFailed:                            return "Strava connection failed"
         case .stravaFailure(let error):                 return "Strava error: \(error.localizedDescription)"

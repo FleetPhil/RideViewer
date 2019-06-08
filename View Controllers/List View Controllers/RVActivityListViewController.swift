@@ -84,8 +84,7 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate {
 	
 	@objc func sortButtonPressed(sender: UIView) {
 		// Popup the list of fields to select sort order
-		let chooser = PopupupChooser<ActivitySort>()
-		chooser.title = "Select sort order"
+        let chooser = PopupupChooser<ActivitySort>(title: "Select sort order")
 		popupController = chooser.showSelectionPopup(items: ActivitySort.allCases, sourceView: sender, updateHandler: newSortOrder)
 		if popupController != nil {
 			present(popupController!, animated: true, completion: nil)
@@ -93,8 +92,7 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate {
 	}
 	
 	@objc func filterButtonPressed(sender: UIView) {
-		let chooser = PopupupChooser<ActivityFilter>()
-		chooser.title = "Include"
+        let chooser = PopupupChooser<ActivityFilter>(title: "Include")
 		chooser.multipleSelection = true
 		chooser.selectedItems = self.filters
 		popupController = chooser.showSelectionPopup(items: ActivityFilter.allCases, sourceView: sender, updateHandler: newFilters)

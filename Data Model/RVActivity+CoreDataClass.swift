@@ -56,7 +56,7 @@ enum ActivityFilter : String, PopupSelectable, CaseIterable {
 
     var displayString: String { return self.rawValue }
 	
-	var filterGroup: String {
+	var popupGroup: String {
 		switch self {
 		case .cycleRide, .virtualRide, .walk, .other:		return "Activity Type"
 		case .longRide, .shortRide:							return "Ride Length"
@@ -77,7 +77,7 @@ enum ActivityFilter : String, PopupSelectable, CaseIterable {
 	
 	static func predicateForFilters(_ filters : [ActivityFilter]) -> NSCompoundPredicate {
 		var predicates : [NSCompoundPredicate] = []
-		let filterGroups = Dictionary(grouping: filters, by: { $0.filterGroup })
+		let filterGroups = Dictionary(grouping: filters, by: { $0.popupGroup })
 		for group in filterGroups {
 			let subPred = group.value.map({ $0.predicateForFilterOption() })
 			let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subPred)

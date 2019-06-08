@@ -32,14 +32,6 @@ extension StreamOwner {
         return self.streams.map({ $0.type })
     }
     
-    func dataPoints(valueStreamType : RVStreamDataType, axisStreamType : RVStreamDataType) -> [DataPoint]? {
-        if let valueStream = self.streamOfType(valueStreamType), let axisStream = self.streamOfType(axisStreamType)  {
-            return valueStream.dataPointsWithAxis(axisStream)
-        } else {
-            return nil
-        }
-    }
-    
     /**
      Get stream data for this entity as an array of DataPoints
      
@@ -57,7 +49,7 @@ extension StreamOwner {
         appLog.verbose("Target: \(streamType.stringValue), streams are \(self.streams.map { $0.type })")
         
         guard streamType.isValidStreamForObjectType(type: self) else {
-            appLog.error("Invalid stream type \(streamType) for activity")
+            appLog.error("Invalid stream type \(streamType) for stream owner")
             completionHandler(nil)
             return
         }
@@ -68,11 +60,14 @@ extension StreamOwner {
                 completionHandler(nil)
                 return
             }
-            completionHandler(self.dataPoints(valueStreamType: streamType, axisStreamType: seriesType))
             
+            if let valueStream = self.streamOfType(streamType), let axisStream = self.streamOfType(seriesType)  {
+                completionHandler(valueStream.dataPointsWithAxis(axisStream))
+            } else {
+                completionHandler(nil)
+            }
         }))
     }
-
 }
 	
 extension RVActivity : StreamOwner {

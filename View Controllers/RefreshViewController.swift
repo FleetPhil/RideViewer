@@ -23,6 +23,8 @@ class RefreshViewController: UIViewController {
 
         self.doneButton.isEnabled = false
         self.progressView.isHidden = true
+        
+        self.progressLabel.text = StravaStatus.connecting.statusText
     }
     
     override func viewDidAppear(_ animated: Bool) {

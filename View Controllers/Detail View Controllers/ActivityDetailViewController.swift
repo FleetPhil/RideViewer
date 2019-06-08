@@ -40,7 +40,6 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 	var routeViewController: RVRouteProfileViewController!
 	
 	// MARK: Properties
-	private var popupController : UIViewController?
 	private var activityIndicator : UIActivityIndicatorView!
 	
 	override func viewDidLoad() {
@@ -159,14 +158,14 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 		mapView.addRoute(effort, type: .highlightSegment)
 		mapView.zoomToRoute(effort)
 		
-		routeViewController.setHighLightRange(effort.distanceRangeInActivity)
+		routeViewController.profileChartView.setHighLightRange(effort.distanceRangeInActivity)
 		
 		selectedEffort = effort
 		infoButton.isEnabled = true
 	}
 	
 	func didDeselectEffort(effort: RVEffort) {
-		routeViewController.setHighLightRange(nil)		// Deselects highlights
+		routeViewController.profileChartView.setHighLightRange(nil)		// Deselects highlights
 		selectedEffort = nil
 		
 		mapView.setTypeForRoute(effort, type: nil)

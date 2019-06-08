@@ -15,12 +15,14 @@ enum ViewProfileDisplayType {
 	case primary
 	case secondary
 	case background
+    case notShown
 	
 	var displayColour : UIColor {
 		switch self {
 		case .primary:		return UIColor.black
 		case .secondary:	return UIColor.green
 		case .background:	return UIColor.lightGray
+        case .notShown:     return UIColor.red
 		}
 	}
 }
@@ -48,8 +50,12 @@ struct DataPoint {
 			return nil
 		}
 	}
-    
-    
+}
+
+extension DataPoint : Equatable {
+    static func == (lhs : DataPoint, rhs : DataPoint) -> Bool {
+        return (lhs.axisValue == rhs.axisValue) && (lhs.dataValue == rhs.dataValue)
+    }
 }
 
 struct ViewProfileDataSet {
@@ -97,7 +103,15 @@ struct ViewProfileData {
 	mutating func removeDataSetsOfDisplayType(_ type : ViewProfileDisplayType) {
 		self.profileDataSets.removeAll(where: { $0.profileDisplayType == type })
 	}
-	
+    
+    mutating func removeDataSetForOwner(_ owner : StreamOwner) {
+        if let index = self.profileDataSets.firstIndex (where: { $0.streamOwner == owner }) {
+            self.profileDataSets.remove(at: index)
+        } else {
+            appLog.error("Can't remove dataSet for owner \(owner.description)")
+        }
+    }
+    
     var primaryDataSet : ViewProfileDataSet {
         return self.profileDataSets.first!
     }
