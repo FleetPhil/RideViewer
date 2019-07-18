@@ -30,6 +30,7 @@ class RVRouteProfileView : LineChartView {
 		self.xAxis.drawGridLinesEnabled = false
 		self.xAxis.valueFormatter = self
 		self.legend.enabled = false
+        self.noDataText = "Waiting for data..."
 
 	}
     

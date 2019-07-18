@@ -27,8 +27,7 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 	
 	// MARK: Model for effort table
 	private var effortTableViewController : RVEffortListViewController!
-	var tableDataIsComplete = false
-	
+    
 	@IBOutlet weak var mapView: RideMapView! {
 		didSet {
 			mapView.mapType = .standard
@@ -44,7 +43,7 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
+        		
 		guard let activity = activity else { return }
 		
 		// Info button disabled as no effort selected
@@ -101,7 +100,7 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 	
 	func updateView() {
 		self.title 			= activity.name
-		
+        
 		distance.text		= activity.distance.distanceDisplayString
 		startTime.text		= (activity.startDate as Date).displayString(displayType: .dateTime, timeZone: activity.timeZone.timeZone)
 		
@@ -118,13 +117,16 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 		}
 		powerText.append(NSAttributedString(string: ", Total: " + String(activity.kiloJoules.fixedFraction(digits: 0)) + "kJ", attributes : powerAttributes))
 		powerData.attributedText = powerText
-		
+        
 		// Map view
 		mapView!.addRoute(activity, type: .mainActivity)
 		mapView!.setMapRegion()
         
         // Set the altitude profile - will retrieve data from Strava if not on the database
-        self.routeViewController.setPrimaryProfile(streamOwner: self.activity, profileType: .altitude, seriesType: .distance)
+        DispatchQueue.main.async {
+            self.routeViewController.setPrimaryProfile(streamOwner: self.activity, profileType: .altitude, seriesType: .distance)
+        }
+        
 	}
 	
 	override func viewDidLayoutSubviews() {
@@ -171,5 +173,4 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 		mapView.setTypeForRoute(effort, type: nil)
 		infoButton.isEnabled = false
 	}
-	
 }

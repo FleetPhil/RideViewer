@@ -126,7 +126,7 @@ class RVRouteProfileViewController: UIViewController, ChartViewDelegate {
     func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
         appLog.verbose("Touch at \(entry.x),\(entry.y)")
         
-        delegate?.profileTouch(at: Int(entry.x))
+        delegate?.profileTouch(at: Int(entry.x / DisplayConstants.ProfileDistanceIncrement))
     }
     
     private func matchingDataPoint(_ dataPoint : DataPoint) -> (ViewProfileDataSet, Int)? {

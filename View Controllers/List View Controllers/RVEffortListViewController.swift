@@ -107,7 +107,7 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 	@objc private func sortButtonPressed(sender: UIView) {
 		// Popup the list of fields to select sort order
         let chooser = PopupupChooser<EffortSort>(title: "Sort order")
-		popupController	= chooser.showSelectionPopup(items: EffortSort.sortOptionsForActivity, sourceView: sender, updateHandler: newSortOrder)
+		popupController	= chooser.selectionPopup(items: EffortSort.sortOptionsForActivity, sourceView: sender, updateHandler: newSortOrder)
 		if popupController != nil {
 			present(popupController!, animated: true, completion: nil)
 		}
@@ -117,7 +117,7 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
         let chooser = PopupupChooser<EffortFilter>(title: "Include")
 		chooser.multipleSelection = true
 		chooser.selectedItems = self.filters
-		popupController = chooser.showSelectionPopup(items: EffortFilter.allCases, sourceView: sender, updateHandler: newFilters)
+		popupController = chooser.selectionPopup(items: EffortFilter.allCases, sourceView: sender, updateHandler: newFilters)
 		if popupController != nil {
 			present(popupController!, animated: true, completion: nil)
 		}

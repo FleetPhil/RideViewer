@@ -92,7 +92,8 @@ enum RVStreamDataType : String {
 			func powerFormatter(value : Double)->String { return value.fixedFraction(digits: 0) + "W" }
 			return AxisValueFormatter(numberFormatter: powerFormatter)
         case .gearRatio:
-            func gearFormatter(value : Double)->String { return (rearTeeth(gearRatio: value) ?? 0).fixedFraction(digits: 0) }
+//            func gearFormatter(value : Double)->String { return (rearTeeth(gearRatio: value) ?? 0).fixedFraction(digits: 0) }
+            func gearFormatter(value : Double)->String { return "\((rearTeeth(gearRatio: value) ?? 0))" }
             return AxisValueFormatter(numberFormatter: gearFormatter)
         case .cumulativePower:
             func energyFormatter(value : Double)->String { return (value / 1000).fixedFraction(digits: 0) + "kJ" }
@@ -104,10 +105,10 @@ enum RVStreamDataType : String {
 	}
     
     /// Return the implied number of rear teeth based on the small chainring and the speed/cadence parameter
-    private func rearTeeth(gearRatio : Double) -> Double? {
+    private func rearTeeth(gearRatio : Double) -> Int? {
         if gearRatio == 0 { return nil }
         let x = (Double(BikeConstants.InnerChainRing)*(Double(BikeConstants.Circumference)/1000.0))/(gearRatio*60.0)
-        return x
+        return Int(round(x))
     }
 }
 
@@ -141,7 +142,7 @@ public class RVStream: NSManagedObject {
 	}
 
 	// Instance methods
-	func update(seriesType: String?, originalSize: Int, data: [Double]) -> RVStream {
+	private func update(seriesType: String?, originalSize: Int, data: [Double]) -> RVStream {
 		self.seriesType		= seriesType
 		self.originalSize	= Int64(originalSize)
 		
@@ -150,10 +151,10 @@ public class RVStream: NSManagedObject {
 		return self
 	}
     
-    // Helper methods
-    func isType(_ type : RVStreamDataType) -> Bool {
-        return self.type == type
-    }
+//    // Helper methods
+//    func isType(_ type : RVStreamDataType) -> Bool {
+//        return self.type == type
+//    }
     
     /**
      Return the set of data points for this stream using the x axis stream in the parameter, scaled to unit increments on the x axis
@@ -165,7 +166,7 @@ public class RVStream: NSManagedObject {
     */
     func dataPointsWithAxis(_ axisStream : RVStream ) -> [DataPoint] {
         // Only unpack the axis stream data points from JSON once (for performance reasons)
-        let axisDataPoints = axisStream.dataPoints
+        let axisDataPoints = axisStream.dataPoints.map({ $0 / DisplayConstants.ProfileDistanceIncrement })           // Set data increment in metres. TODO: adjust for time
         guard axisDataPoints.count > 0 else {
             appLog.debug("No data points")
             return []
@@ -178,28 +179,24 @@ public class RVStream: NSManagedObject {
         appLog.verbose("\(self.dataPoints.count) data points in stream type \(self.type), last axis value is \(Int(transformedAxisStream.last!)) ")
 
         // Scale to unit increments on the x axis
-        var new_values = [Double](repeating: 0, count: Int(transformedAxisStream.last!))
-        let stride = vDSP_Stride(1)
-        vDSP_vgenpD(self.dataPoints, stride, transformedAxisStream, stride, &new_values, stride, vDSP_Length(new_values.count), vDSP_Length(self.dataPoints.count))
+        let strideIn = vDSP_Stride(1)
+        let strideOut = vDSP_Stride(1)
+        var newValues = [Double](repeating: 0, count: Int(round(transformedAxisStream.last!)))
+        vDSP_vgenpD(self.dataPoints, strideIn, transformedAxisStream, strideIn, &newValues, strideOut, vDSP_Length(newValues.count), vDSP_Length(self.dataPoints.count))
 
-        appLog.verbose("\(new_values.count) new data points from \(new_values.first!) to \(new_values.last!)")
-
-        // Convert to array of DataPoint
-        let dataPoints = new_values
-            .enumerated()
-            .map({ DataPoint(dataValue: $0.element, axisValue: Double($0.offset)) })
-            .filter({
-                if (self.type == .power || self.type == .cadence) {         // Zero is valid value for Power and Cadence
-                    return true
-                } else {
-                    return $0.dataValue != 0                                // But filter out other zero values
-                }
-            })
+        appLog.verbose("\(newValues.count) new data points from \(newValues.first!) to \(newValues.last!)")
         
+        let startTime = Date()
+        // Convert to array of DataPoint
+        let dataPoints = newValues
+            .filter({ (self.type == .power || self.type == .cadence) ? true : $0 != 0 })
+            .enumerated()
+            .map({ DataPoint(dataValue: $0.element, axisValue: Double($0.offset) * DisplayConstants.ProfileDistanceIncrement) })
+
         if dataPoints.count == 0 {
             appLog.error("No data points for \(self.type)")
         } else {
-            appLog.verbose("Returning \(dataPoints.count) points, axis range \(dataPoints.first!.axisValue) to \(dataPoints.last!.axisValue), (\(dataPoints.last!.axisValue - dataPoints.first!.axisValue))")
+            appLog.debug("Returning \(dataPoints.count) points, axis range to \(dataPoints.last!.axisValue) in \(Date().timeIntervalSince(startTime).fixedFraction(digits: 3))")
         }
         
         return dataPoints

@@ -19,8 +19,8 @@ enum ViewProfileDisplayType {
 	
 	var displayColour : UIColor {
 		switch self {
-		case .primary:		return UIColor.black
-		case .secondary:	return UIColor.green
+		case .primary:		return DisplayConstants.PrimaryProfileColour
+		case .secondary:	return DisplayConstants.SecondaryProfileColour
 		case .background:	return UIColor.lightGray
         case .notShown:     return UIColor.red
 		}

@@ -31,9 +31,10 @@ struct StravaStreamType {
 }
 
 struct DisplayConstants {
+    static let ProfileDistanceIncrement : Double = 10.0         // Number of metres per data point
 	static let ScreenPointsPerDataPoint : CGFloat = 2
 	static let LimitLineColour : UIColor = UIColor.red
-    static let PrimaryProfileColour = UIColor.black
+    static let PrimaryProfileColour = UIColor.purple
     static let SecondaryProfileColour = UIColor.blue
 }
 
@@ -43,5 +44,6 @@ struct BikeConstants {
 	static let OuterChainRing	= 50
 	
 }
+
 
 

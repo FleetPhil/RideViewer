@@ -48,7 +48,7 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
         self.title = title
     }
 	
-	func showSelectionPopup(items : [T], sourceView : UIView, updateHandler : @escaping ([T]?) -> Void) -> UIViewController? {
+	func selectionPopup(items : [T], sourceView : UIView, updateHandler : @escaping ([T]?) -> Void) -> UIViewController? {
 		// If selection is empty do nothing
 		if items.count == 0 {
 			return nil
@@ -80,8 +80,6 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
 		popoverContent.delegate = self
 
 		return navigationController
-
-//		self.sourceView.owningViewController()?.present(navigationController, animated: true, completion: nil)
 	}
 	
 	// MARK: Table view functions
@@ -95,8 +93,7 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
 	}
 	
 	func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-		let x = sectionNumbers[section]! != "" ? sectionNumbers[section]! : nil
-		return x
+		return sectionNumbers[section]! != "" ? sectionNumbers[section]! : nil
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

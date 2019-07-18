@@ -39,6 +39,7 @@ class RefreshViewController: UIViewController {
                 self.athleteActivityCount = Float(activityCount)
             }
             
+            
             // Get activity updates
             self.progressView.isHidden = false
             self.getActivities(context: CoreDataManager.sharedManager().viewContext) { (stravaStatus) in
@@ -68,12 +69,5 @@ class RefreshViewController: UIViewController {
                 }
             }
         })
-    }
-
-    private func unsetAllEffortsFlags() {
-        let predicate = NSPredicate(format: "allEfforts == %@", argumentArray: [NSNumber(value: true)])
-        if let segments : [RVSegment] = CoreDataManager.sharedManager().viewContext.fetchObjects(withPredicate: predicate, withSortDescriptor: nil) {
-            segments.forEach({ $0.allEfforts = false })
-        }
     }
 }
