@@ -8,12 +8,36 @@
 
 /* Begin PBXBuildFile section */
 		1F7F7563C601199D9C01D301 /* Pods_RideViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC620C6C93D11AF021E27DB /* Pods_RideViewer.framework */; };
+		AD0BF5CC231D731B008539DF /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5CB231D731B008539DF /* FilterViewController.swift */; };
+		AD0BF5E9231D74C7008539DF /* DatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5CF231D74C7008539DF /* DatePicker.swift */; };
+		AD0BF5EA231D74C7008539DF /* DatePickerPopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5D0231D74C7008539DF /* DatePickerPopoverViewController.swift */; };
+		AD0BF5EB231D74C7008539DF /* DatePicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD0BF5D1231D74C7008539DF /* DatePicker.storyboard */; };
+		AD0BF5EC231D74C7008539DF /* ValuePickerPopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5D3231D74C7008539DF /* ValuePickerPopoverViewController.swift */; };
+		AD0BF5ED231D74C7008539DF /* ValuePicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD0BF5D4231D74C7008539DF /* ValuePicker.storyboard */; };
+		AD0BF5EE231D74C7008539DF /* ValuePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5D5231D74C7008539DF /* ValuePicker.swift */; };
+		AD0BF5EF231D74C7008539DF /* BasePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5D7231D74C7008539DF /* BasePicker.swift */; };
+		AD0BF5F0231D74C7008539DF /* RangeSliderTrackLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5DA231D74C7008539DF /* RangeSliderTrackLayer.swift */; };
+		AD0BF5F1231D74C7008539DF /* RangeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5DB231D74C7008539DF /* RangeSlider.swift */; };
+		AD0BF5F2231D74C7008539DF /* RangeSliderThumbLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5DC231D74C7008539DF /* RangeSliderThumbLayer.swift */; };
+		AD0BF5F3231D74C7008539DF /* ValueSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5DE231D74C7008539DF /* ValueSlider.swift */; };
+		AD0BF5F4231D74C7008539DF /* BasePickerPopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5DF231D74C7008539DF /* BasePickerPopoverViewController.swift */; };
+		AD0BF5F5231D74C7008539DF /* BasePicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD0BF5E0231D74C7008539DF /* BasePicker.storyboard */; };
+		AD0BF5F6231D74C7008539DF /* StringPickerPopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5E2231D74C7008539DF /* StringPickerPopoverViewController.swift */; };
+		AD0BF5F7231D74C7008539DF /* StringPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5E3231D74C7008539DF /* StringPicker.swift */; };
+		AD0BF5F8231D74C7008539DF /* StringPicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD0BF5E4231D74C7008539DF /* StringPicker.storyboard */; };
+		AD0BF5F9231D74C7008539DF /* RangePicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD0BF5E6231D74C7008539DF /* RangePicker.storyboard */; };
+		AD0BF5FA231D74C7008539DF /* RangePickerPopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5E7231D74C7008539DF /* RangePickerPopoverViewController.swift */; };
+		AD0BF5FB231D74C7008539DF /* RangePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5E8231D74C7008539DF /* RangePicker.swift */; };
+		AD0BF5FD231D773D008539DF /* Filter.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD0BF5FC231D754F008539DF /* Filter.storyboard */; };
+		AD0BF600231D79D6008539DF /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0BF5FF231D79D6008539DF /* Filter.swift */; };
 		AD14035F229D92CE0001502F /* EffortList.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD14035E229D92CE0001502F /* EffortList.storyboard */; };
 		AD140361229D937C0001502F /* RouteProfile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD140360229D937C0001502F /* RouteProfile.storyboard */; };
 		AD140363229D97220001502F /* RVAllEffortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD140362229D97220001502F /* RVAllEffortViewController.swift */; };
 		AD31B336229E8AB700F41FE8 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD31B335229E8AB700F41FE8 /* InitialViewController.swift */; };
 		AD558A1322A53DC600F106F0 /* RefreshViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD558A1222A53DC600F106F0 /* RefreshViewController.swift */; };
 		AD70F7FB2292DEE500E02FBA /* EffortAnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */; };
+		AD85D6DB22E091F10034A52D /* PopupDatePickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85D6DA22E091F10034A52D /* PopupDatePickerCell.swift */; };
+		ADA9C6AB230B01970032CF6C /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA9C6AA230B01970032CF6C /* Collection.swift */; };
 		F4031DB62242A70500093B2E /* StreamOwner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4031DB52242A70500093B2E /* StreamOwner.swift */; };
 		F4048CAA2236B88500502DA5 /* RVSortFilterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */; };
 		F4048CB02236BCB700502DA5 /* RVEffortListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CAF2236BCB700502DA5 /* RVEffortListViewController.swift */; };
@@ -67,12 +91,36 @@
 /* Begin PBXFileReference section */
 		2DC620C6C93D11AF021E27DB /* Pods_RideViewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RideViewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		590E5ACF93A252F741663B7D /* Pods-RideViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.debug.xcconfig"; sourceTree = "<group>"; };
+		AD0BF5CB231D731B008539DF /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
+		AD0BF5CF231D74C7008539DF /* DatePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePicker.swift; sourceTree = "<group>"; };
+		AD0BF5D0231D74C7008539DF /* DatePickerPopoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerPopoverViewController.swift; sourceTree = "<group>"; };
+		AD0BF5D1231D74C7008539DF /* DatePicker.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = DatePicker.storyboard; sourceTree = "<group>"; };
+		AD0BF5D3231D74C7008539DF /* ValuePickerPopoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValuePickerPopoverViewController.swift; sourceTree = "<group>"; };
+		AD0BF5D4231D74C7008539DF /* ValuePicker.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ValuePicker.storyboard; sourceTree = "<group>"; };
+		AD0BF5D5231D74C7008539DF /* ValuePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValuePicker.swift; sourceTree = "<group>"; };
+		AD0BF5D7231D74C7008539DF /* BasePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasePicker.swift; sourceTree = "<group>"; };
+		AD0BF5DA231D74C7008539DF /* RangeSliderTrackLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangeSliderTrackLayer.swift; sourceTree = "<group>"; };
+		AD0BF5DB231D74C7008539DF /* RangeSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangeSlider.swift; sourceTree = "<group>"; };
+		AD0BF5DC231D74C7008539DF /* RangeSliderThumbLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangeSliderThumbLayer.swift; sourceTree = "<group>"; };
+		AD0BF5DE231D74C7008539DF /* ValueSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueSlider.swift; sourceTree = "<group>"; };
+		AD0BF5DF231D74C7008539DF /* BasePickerPopoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasePickerPopoverViewController.swift; sourceTree = "<group>"; };
+		AD0BF5E0231D74C7008539DF /* BasePicker.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = BasePicker.storyboard; sourceTree = "<group>"; };
+		AD0BF5E2231D74C7008539DF /* StringPickerPopoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringPickerPopoverViewController.swift; sourceTree = "<group>"; };
+		AD0BF5E3231D74C7008539DF /* StringPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringPicker.swift; sourceTree = "<group>"; };
+		AD0BF5E4231D74C7008539DF /* StringPicker.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = StringPicker.storyboard; sourceTree = "<group>"; };
+		AD0BF5E6231D74C7008539DF /* RangePicker.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = RangePicker.storyboard; sourceTree = "<group>"; };
+		AD0BF5E7231D74C7008539DF /* RangePickerPopoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangePickerPopoverViewController.swift; sourceTree = "<group>"; };
+		AD0BF5E8231D74C7008539DF /* RangePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangePicker.swift; sourceTree = "<group>"; };
+		AD0BF5FC231D754F008539DF /* Filter.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Filter.storyboard; path = /Users/westhill/Documents/Development/Strava/RideViewer/Storyboards/Filter.storyboard; sourceTree = "<absolute>"; };
+		AD0BF5FF231D79D6008539DF /* Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
 		AD14035E229D92CE0001502F /* EffortList.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = EffortList.storyboard; sourceTree = "<group>"; };
 		AD140360229D937C0001502F /* RouteProfile.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = RouteProfile.storyboard; sourceTree = "<group>"; };
 		AD140362229D97220001502F /* RVAllEffortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVAllEffortViewController.swift; sourceTree = "<group>"; };
 		AD31B335229E8AB700F41FE8 /* InitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InitialViewController.swift; path = "View Controllers/InitialViewController.swift"; sourceTree = SOURCE_ROOT; };
 		AD558A1222A53DC600F106F0 /* RefreshViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshViewController.swift; sourceTree = "<group>"; };
 		AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EffortAnalysisViewController.swift; path = "Detail View Controllers/EffortAnalysisViewController.swift"; sourceTree = "<group>"; };
+		AD85D6DA22E091F10034A52D /* PopupDatePickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupDatePickerCell.swift; sourceTree = "<group>"; };
+		ADA9C6AA230B01970032CF6C /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		D272B46FE80E68DEE976D7CC /* Pods-RideViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.release.xcconfig"; sourceTree = "<group>"; };
 		F4031DB52242A70500093B2E /* StreamOwner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOwner.swift; sourceTree = "<group>"; };
 		F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVSortFilterTableView.swift; sourceTree = "<group>"; };
@@ -155,6 +203,114 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		AD0BF5CD231D74C7008539DF /* Picker */ = {
+			isa = PBXGroup;
+			children = (
+				AD0BF5CE231D74C7008539DF /* Date Picker */,
+				AD0BF5D2231D74C7008539DF /* Value Picker */,
+				AD0BF5D6231D74C7008539DF /* Base Picker */,
+				AD0BF5E1231D74C7008539DF /* String Picker */,
+				AD0BF5E5231D74C7008539DF /* Range Picker */,
+			);
+			path = Picker;
+			sourceTree = "<group>";
+		};
+		AD0BF5CE231D74C7008539DF /* Date Picker */ = {
+			isa = PBXGroup;
+			children = (
+				AD0BF5CF231D74C7008539DF /* DatePicker.swift */,
+				AD0BF5D0231D74C7008539DF /* DatePickerPopoverViewController.swift */,
+				AD0BF5D1231D74C7008539DF /* DatePicker.storyboard */,
+			);
+			path = "Date Picker";
+			sourceTree = "<group>";
+		};
+		AD0BF5D2231D74C7008539DF /* Value Picker */ = {
+			isa = PBXGroup;
+			children = (
+				AD0BF5D3231D74C7008539DF /* ValuePickerPopoverViewController.swift */,
+				AD0BF5D4231D74C7008539DF /* ValuePicker.storyboard */,
+				AD0BF5D5231D74C7008539DF /* ValuePicker.swift */,
+			);
+			path = "Value Picker";
+			sourceTree = "<group>";
+		};
+		AD0BF5D6231D74C7008539DF /* Base Picker */ = {
+			isa = PBXGroup;
+			children = (
+				AD0BF5D7231D74C7008539DF /* BasePicker.swift */,
+				AD0BF5D8231D74C7008539DF /* Controls */,
+				AD0BF5DF231D74C7008539DF /* BasePickerPopoverViewController.swift */,
+				AD0BF5E0231D74C7008539DF /* BasePicker.storyboard */,
+			);
+			path = "Base Picker";
+			sourceTree = "<group>";
+		};
+		AD0BF5D8231D74C7008539DF /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				AD0BF5D9231D74C7008539DF /* RangeSlider */,
+				AD0BF5DD231D74C7008539DF /* ValueSlider */,
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
+		AD0BF5D9231D74C7008539DF /* RangeSlider */ = {
+			isa = PBXGroup;
+			children = (
+				AD0BF5DA231D74C7008539DF /* RangeSliderTrackLayer.swift */,
+				AD0BF5DB231D74C7008539DF /* RangeSlider.swift */,
+				AD0BF5DC231D74C7008539DF /* RangeSliderThumbLayer.swift */,
+			);
+			path = RangeSlider;
+			sourceTree = "<group>";
+		};
+		AD0BF5DD231D74C7008539DF /* ValueSlider */ = {
+			isa = PBXGroup;
+			children = (
+				AD0BF5DE231D74C7008539DF /* ValueSlider.swift */,
+			);
+			path = ValueSlider;
+			sourceTree = "<group>";
+		};
+		AD0BF5E1231D74C7008539DF /* String Picker */ = {
+			isa = PBXGroup;
+			children = (
+				AD0BF5E2231D74C7008539DF /* StringPickerPopoverViewController.swift */,
+				AD0BF5E3231D74C7008539DF /* StringPicker.swift */,
+				AD0BF5E4231D74C7008539DF /* StringPicker.storyboard */,
+			);
+			path = "String Picker";
+			sourceTree = "<group>";
+		};
+		AD0BF5E5231D74C7008539DF /* Range Picker */ = {
+			isa = PBXGroup;
+			children = (
+				AD0BF5E6231D74C7008539DF /* RangePicker.storyboard */,
+				AD0BF5E7231D74C7008539DF /* RangePickerPopoverViewController.swift */,
+				AD0BF5E8231D74C7008539DF /* RangePicker.swift */,
+			);
+			path = "Range Picker";
+			sourceTree = "<group>";
+		};
+		AD0BF5FE231D7991008539DF /* Filter */ = {
+			isa = PBXGroup;
+			children = (
+				AD0BF5FF231D79D6008539DF /* Filter.swift */,
+				AD0BF5CB231D731B008539DF /* FilterViewController.swift */,
+				AD0BF5FC231D754F008539DF /* Filter.storyboard */,
+			);
+			path = Filter;
+			sourceTree = "<group>";
+		};
+		ADA9C6A8230B015E0032CF6C /* Swift Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				ADA9C6AA230B01970032CF6C /* Collection.swift */,
+			);
+			path = "Swift Extensions";
+			sourceTree = "<group>";
+		};
 		F40CC8AD21D666F500EC3594 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -179,6 +335,9 @@
 		F42ECED721CF91130096F83B = {
 			isa = PBXGroup;
 			children = (
+				AD0BF5FE231D7991008539DF /* Filter */,
+				AD0BF5CD231D74C7008539DF /* Picker */,
+				ADA9C6A8230B015E0032CF6C /* Swift Extensions */,
 				F4DC5A1A21D4C7CC0017983E /* Utilities */,
 				F41C7A3221D12F0C003A5C31 /* Display Extensions */,
 				F40CC8AD21D666F500EC3594 /* Views */,
@@ -297,6 +456,7 @@
 		F4DC5A1A21D4C7CC0017983E /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				AD85D6DA22E091F10034A52D /* PopupDatePickerCell.swift */,
 				F4031DB52242A70500093B2E /* StreamOwner.swift */,
 				F47B5DCF22426ADD00A765EA /* Constants.swift */,
 				F42585A5224161CA00BCDA86 /* ViewProfileData.swift */,
@@ -380,13 +540,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD0BF5FD231D773D008539DF /* Filter.storyboard in Resources */,
+				AD0BF5EB231D74C7008539DF /* DatePicker.storyboard in Resources */,
 				F42ECEF121CF91150096F83B /* LaunchScreen.storyboard in Resources */,
+				AD0BF5F8231D74C7008539DF /* StringPicker.storyboard in Resources */,
 				F41C7A2D21D0E7E5003A5C31 /* Images.xcassets in Resources */,
+				AD0BF5F9231D74C7008539DF /* RangePicker.storyboard in Resources */,
 				AD14035F229D92CE0001502F /* EffortList.storyboard in Resources */,
 				F461168F21E0A4BF00E2693C /* PopupChooser.storyboard in Resources */,
+				AD0BF5ED231D74C7008539DF /* ValuePicker.storyboard in Resources */,
 				AD140361229D937C0001502F /* RouteProfile.storyboard in Resources */,
 				F42ECEEE21CF91150096F83B /* Assets.xcassets in Resources */,
 				F42ECEE921CF91130096F83B /* Main.storyboard in Resources */,
+				AD0BF5F5231D74C7008539DF /* BasePicker.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -452,16 +618,23 @@
 				F4F5195021FB79C3005D3752 /* RVStreamData+CoreDataClass.swift in Sources */,
 				F4ED1BE02208AEB600821D76 /* RVMapView.swift in Sources */,
 				AD558A1322A53DC600F106F0 /* RefreshViewController.swift in Sources */,
+				AD85D6DB22E091F10034A52D /* PopupDatePickerCell.swift in Sources */,
+				AD0BF5F6231D74C7008539DF /* StringPickerPopoverViewController.swift in Sources */,
 				F4611B9F21F3935C00EDFC13 /* General Utilities.swift in Sources */,
 				F42ECF0121CFD25E0096F83B /* RVActivityListViewController.swift in Sources */,
 				F42585A6224161CA00BCDA86 /* ViewProfileData.swift in Sources */,
 				F4F5195121FB79C3005D3752 /* RVStreamData+CoreDataProperties.swift in Sources */,
 				F4AAD80D21DD251C006ED5DD /* Settings.swift in Sources */,
+				AD0BF5EF231D74C7008539DF /* BasePicker.swift in Sources */,
+				AD0BF5EA231D74C7008539DF /* DatePickerPopoverViewController.swift in Sources */,
 				F42ECEEC21CF91130096F83B /* RideViewer.xcdatamodeld in Sources */,
 				F4F5195321FB79C4005D3752 /* RVStream+CoreDataProperties.swift in Sources */,
 				F4C113D321D6790B00188A30 /* RVEffort+CoreDataProperties.swift in Sources */,
+				AD0BF5F7231D74C7008539DF /* StringPicker.swift in Sources */,
 				F40CC8AC21D666EE00EC3594 /* Views.swift in Sources */,
+				AD0BF5F0231D74C7008539DF /* RangeSliderTrackLayer.swift in Sources */,
 				F4048CAA2236B88500502DA5 /* RVSortFilterTableView.swift in Sources */,
+				ADA9C6AB230B01970032CF6C /* Collection.swift in Sources */,
 				AD31B336229E8AB700F41FE8 /* InitialViewController.swift in Sources */,
 				AD140363229D97220001502F /* RVAllEffortViewController.swift in Sources */,
 				F42ECF0421CFD3090096F83B /* ActivityDetailViewController.swift in Sources */,
@@ -474,26 +647,37 @@
 				F47B5DD022426ADD00A765EA /* Constants.swift in Sources */,
 				F4C113D221D6790B00188A30 /* RVEffort+CoreDataClass.swift in Sources */,
 				F42ECEFE21CFA6790096F83B /* RVActivity+CoreDataClass.swift in Sources */,
+				AD0BF5F4231D74C7008539DF /* BasePickerPopoverViewController.swift in Sources */,
 				F41C7A2F21D0E820003A5C31 /* StravaConnectViewController.swift in Sources */,
 				F4FD52E52229AB850005CFC9 /* RVRouteProfileViewController.swift in Sources */,
+				AD0BF600231D79D6008539DF /* Filter.swift in Sources */,
 				F4C44BEB2271ADF9009139C3 /* Chart Utilities.swift in Sources */,
 				F4BDDFBD21DFD19300E4668B /* PopupChooser.swift in Sources */,
 				F475B72721D232BC0028F2AF /* StravaSwift Extensions.swift in Sources */,
 				F41C7A3121D12EFA003A5C31 /* Display Extensions.swift in Sources */,
 				F42ECF0B21CFE1A50096F83B /* MOC Extensions.swift in Sources */,
+				AD0BF5E9231D74C7008539DF /* DatePicker.swift in Sources */,
+				AD0BF5F2231D74C7008539DF /* RangeSliderThumbLayer.swift in Sources */,
 				F4C113D521D6790B00188A30 /* RVSegment+CoreDataProperties.swift in Sources */,
 				F4031DB62242A70500093B2E /* StreamOwner.swift in Sources */,
 				AD70F7FB2292DEE500E02FBA /* EffortAnalysisViewController.swift in Sources */,
+				AD0BF5EC231D74C7008539DF /* ValuePickerPopoverViewController.swift in Sources */,
 				F4ED1BE22208B02A00821D76 /* RVRouteProfileView.swift in Sources */,
 				FA3F242C21DA7AC80048A828 /* RVMap+CoreDataProperties.swift in Sources */,
+				AD0BF5EE231D74C7008539DF /* ValuePicker.swift in Sources */,
 				F47B92632232CF0000B83303 /* RVSplitViewController.swift in Sources */,
 				F42ECEFF21CFA6790096F83B /* RVActivity+CoreDataProperties.swift in Sources */,
 				F429A6F621D7ECF500A053DE /* RVSegmentListViewController.swift in Sources */,
+				AD0BF5FA231D74C7008539DF /* RangePickerPopoverViewController.swift in Sources */,
 				F4551A0722328386004F0767 /* MapKit extensions.swift in Sources */,
+				AD0BF5FB231D74C7008539DF /* RangePicker.swift in Sources */,
+				AD0BF5F3231D74C7008539DF /* ValueSlider.swift in Sources */,
+				AD0BF5CC231D731B008539DF /* FilterViewController.swift in Sources */,
 				F42ECF0921CFD5FF0096F83B /* DataManager.swift in Sources */,
 				F42ECEE421CF91130096F83B /* AppDelegate.swift in Sources */,
 				F42ECF1021CFEBC20096F83B /* Strava Manager.swift in Sources */,
 				F4048CB02236BCB700502DA5 /* RVEffortListViewController.swift in Sources */,
+				AD0BF5F1231D74C7008539DF /* RangeSlider.swift in Sources */,
 				F4213A9B221EB94700FE8844 /* ConnectViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

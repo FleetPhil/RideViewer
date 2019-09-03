@@ -28,7 +28,7 @@ enum ViewProfileDisplayType {
 }
 
 //     Range expressed in units on the primary axis
-public struct RouteIndexRange {
+public struct RouteIndexRange : Codable {
     var from: Double
     var to: Double
 }

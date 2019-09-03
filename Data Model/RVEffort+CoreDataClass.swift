@@ -13,7 +13,7 @@ import UIKit
 import StravaSwift
 import MapKit
 
-enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
+enum EffortSort : String, CaseIterable, Equatable {
 	case sequence		= "startIndex"
 	case distance 		= "distance"
 	case speed			= "averageSpeed"
@@ -23,19 +23,19 @@ enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
 	case maxHR			= "maxHeartRate"
 	case averageWatts 	= "averageWatts"
 	
-	var displayString : String {           // Text to use when choosing item
-		switch self {
-		case .sequence:			return "Sequence"
-		case .distance:			return "Distance"
-		case .speed:			return "Av. Speed"
-		case .movingTime:		return "Moving Time"
-		case .elapsedTime:		return "Elapsed Time"
-		case .date:				return "Date"
-		case .maxHR:			return "Max HR"
-		case .averageWatts:		return "Av. Power"
-		}
-	}
-
+    var selectionLabel: String {
+        switch self {
+        case .sequence:         return "Sequence"
+        case .distance:         return "Distance"
+        case .speed:            return "Av. Speed"
+        case .movingTime:       return "Moving Time"
+        case .elapsedTime:      return "Elapsed Time"
+        case .date:             return "Date"
+        case .maxHR:            return "Max HR"
+        case .averageWatts:     return "Av. Power"
+        }
+    }
+    
     var defaultAscending : Bool {
         switch self {
 		case .sequence:			return true
@@ -57,7 +57,7 @@ enum EffortSort : String, PopupSelectable, CaseIterable, Equatable {
 	}
 }
 
-enum EffortFilter : String, PopupSelectable, CaseIterable {
+enum EffortFilter : String, CaseIterable {
 	case short				= "Short"
 	case long				= "Long"
 	case flat				= "Flat"
@@ -71,8 +71,10 @@ enum EffortFilter : String, PopupSelectable, CaseIterable {
     case other              = "Other Activities"
 	
     // PopupSelectable protocol
-	var displayString: String { return self.rawValue }
-	
+    var selectionLabel: String {
+        return self.rawValue
+    }
+
 	var popupGroup: String {
 		switch self {
         case .cycleRide, .virtualRide, .walk, .other:       return "Activity Type"

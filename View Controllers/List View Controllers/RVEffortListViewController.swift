@@ -27,7 +27,7 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 	// Private properties
 	private var effortTableViewType : EffortTableViewType = .effortsForActivity
 	private(set) lazy var dataManager = DataManager<RVEffort>()
-	private var effortSortKey : EffortSort!
+	private var sortKey : EffortSort!
 	private var filters : [EffortFilter] = EffortFilter.allCases
 	
 	private var popupController : UIViewController?
@@ -38,13 +38,13 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 		switch ride {
 		case .some(is RVActivity):
 			effortTableViewType = .effortsForActivity
-			effortSortKey		= .sequence
+			sortKey		= .sequence
 		case .some(is RVSegment):
 			effortTableViewType = .effortsForSegment
-			effortSortKey		= .elapsedTime
+			sortKey		= .elapsedTime
         case .none:
             effortTableViewType = .allEfforts
-            effortSortKey       = .elapsedTime
+            sortKey       = .elapsedTime
 		default:
 			appLog.error("Unsupported ride type for effort table")
 		}
@@ -77,7 +77,7 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 	
 	// Private functions
 	private func setDataManager() {
-		dataManager.sortDescriptor = NSSortDescriptor(key: effortSortKey.rawValue, ascending: self.effortSortKey.defaultAscending)
+		dataManager.sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: self.sortKey.defaultAscending)
 		switch effortTableViewType {
 		case .effortsForActivity:
 			let activityPredicate = NSPredicate(format: "activity.id == %@", argumentArray: [(ride as! RVActivity).id])
@@ -105,22 +105,17 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 	}
 	
 	@objc private func sortButtonPressed(sender: UIView) {
-		// Popup the list of fields to select sort order
-        let chooser = PopupupChooser<EffortSort>(title: "Sort order")
-		popupController	= chooser.selectionPopup(items: EffortSort.sortOptionsForActivity, sourceView: sender, updateHandler: newSortOrder)
-		if popupController != nil {
-			present(popupController!, animated: true, completion: nil)
-		}
+        // Popup the list of fields to select sort order
+        let picker = StringPicker(title: "Sort", choices: EffortSort.allCases.map({ $0.selectionLabel }))
+            .setDoneButtonAction({ _, rowIndex, selectedString in
+                self.sortKey = EffortSort.allCases[rowIndex]
+                self.setDataManager()
+                self.tableView.reloadData()
+            })
+        picker.appear(originView: sender, baseViewController: self)
 	}
 	
 	@objc private func filterButtonPressed(sender: UIView) {
-        let chooser = PopupupChooser<EffortFilter>(title: "Include")
-		chooser.multipleSelection = true
-		chooser.selectedItems = self.filters
-		popupController = chooser.selectionPopup(items: EffortFilter.allCases, sourceView: sender, updateHandler: newFilters)
-		if popupController != nil {
-			present(popupController!, animated: true, completion: nil)
-		}
 	}
 	
 	private func newFilters(_ newFilters : [EffortFilter]?)  {
@@ -128,15 +123,6 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
 		if let selectedFilters = newFilters {
 			self.filters = selectedFilters
             saveFilters()
-			setDataManager()
-			tableView.reloadData()
-		}
-	}
-	
-	private func newSortOrder(newOrder : [EffortSort]?) {
-		popupController?.dismiss(animated: true, completion: nil)
-		if let newSort = newOrder?.first {
-			self.effortSortKey = newSort
 			setDataManager()
 			tableView.reloadData()
 		}
@@ -153,7 +139,6 @@ class RVEffortListViewController: UIViewController, UITableViewDelegate {
         }
         return EffortFilter.allCases
     }
-
 	
 	func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 		let headerView = UIView()

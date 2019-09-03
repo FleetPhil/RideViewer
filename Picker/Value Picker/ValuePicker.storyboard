@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fwn-Yr-UBn">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Value-->
+        <scene sceneID="b7a-dp-8Qk">
+            <objects>
+                <viewController id="8zD-14-VX8" customClass="ValuePickerPopoverViewController" customModule="PickerTest" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="1Qi-Fo-kg6">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Cgg-0I-mlz" customClass="ValueSlider" customModule="PickerTest" customModuleProvider="target">
+                                <rect key="frame" x="18" y="428" width="378" height="41"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="tzo-mX-NPL"/>
+                                </constraints>
+                            </slider>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="bvw-c2-iFG" firstAttribute="trailing" secondItem="Cgg-0I-mlz" secondAttribute="trailing" constant="20" id="22C-cN-Pwh"/>
+                            <constraint firstItem="Cgg-0I-mlz" firstAttribute="centerY" secondItem="1Qi-Fo-kg6" secondAttribute="centerY" id="5gC-v9-Mey"/>
+                            <constraint firstItem="Cgg-0I-mlz" firstAttribute="leading" secondItem="bvw-c2-iFG" secondAttribute="leading" constant="20" id="DsW-aq-kPG"/>
+                            <constraint firstItem="Cgg-0I-mlz" firstAttribute="centerX" secondItem="1Qi-Fo-kg6" secondAttribute="centerX" id="bO1-7p-FJP"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="bvw-c2-iFG"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Value" id="oN9-ae-fda">
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="Yla-4u-hgU">
+                            <connections>
+                                <action selector="tappedCancel:" destination="8zD-14-VX8" id="Hea-SZ-jUU"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Done" id="sce-2T-YXj">
+                            <connections>
+                                <action selector="tappedDone:" destination="8zD-14-VX8" id="9ub-Ve-VO3"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="cancelButton" destination="Yla-4u-hgU" id="YO8-Gf-66A"/>
+                        <outlet property="doneButton" destination="sce-2T-YXj" id="JUB-Sw-DLz"/>
+                        <outlet property="picker" destination="Cgg-0I-mlz" id="E7W-7j-gxL"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Sw2-aa-t3e" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="800.00000000000011" y="148.66071428571428"/>
+        </scene>
+        <!--Title-->
+        <scene sceneID="5fB-TM-1qM">
+            <objects>
+                <navigationController title="Title" automaticallyAdjustsScrollViewInsets="NO" id="fwn-Yr-UBn" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Aud-8d-0kZ">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="8zD-14-VX8" kind="relationship" relationship="rootViewController" id="3kk-8W-vRT"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ksV-lv-KLh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-110.14492753623189" y="148.66071428571428"/>
+        </scene>
+    </scenes>
+</document>

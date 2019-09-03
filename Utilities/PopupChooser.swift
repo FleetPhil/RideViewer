@@ -9,53 +9,93 @@
 import Foundation
 import UIKit
 
-protocol PopupSelectable : Equatable {
-	var displayString : String { get }
-    var sortDefaultAscending : Bool { get }
-	var popupGroup : String { get }
+enum PopupSelectionValue {
+    case typeBool(bool: Bool)
+    case typeRange(range: RouteIndexRange)
+    case typeDate(date: Date)
+    
 }
 
-// Provide defaults
-extension PopupSelectable {
-	var sortDefaultAscending : Bool {
-		return false
-	}
-	var popupGroup : String {
-		return ""
-	}
+enum PopupRetrievalCriteria {
+    case sortCriteria(NSSortDescriptor)
+    case filterCriteria(String)
 }
 
-extension String : PopupSelectable {
-	var displayString : String { return self }
+struct PopupItem {
+    var label: String
+    var group: String?
+    var value: PopupSelectionValue
+    var criteria : PopupRetrievalCriteria
+    
+    var filterPredicate : NSPredicate? {
+        switch self.criteria {
+        case .filterCriteria(let filterString):
+            switch self.value {
+            case .typeBool(let singleValue as Any), .typeDate(let singleValue as Any):
+                return NSPredicate(format: filterString, argumentArray: [singleValue])
+            case .typeRange(let rangeValue):
+                return NSPredicate(format: filterString, argumentArray: [rangeValue.from, rangeValue.to])
+            }
+       default:
+            appLog.error("Called with unexpected PopupItem")
+            return nil
+        }
+    }
+    
+    static func predicateForFilters(_ filters : [PopupItem]) -> NSCompoundPredicate {
+        let filterItems = filters.filter({ if case .filterCriteria = $0.criteria { return true } else { return false }})
+        let filterGroups = Dictionary(grouping: filterItems, by: { $0.group }).filter({ $0.key != nil })
+        let predicates = filterGroups.map({ NSCompoundPredicate(orPredicateWithSubpredicates: $0.value.map({ $0.filterPredicate ?? NSPredicate(value: false) })) })
+        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+    }
+    
+    var sortDescriptor : NSSortDescriptor? {
+        switch self.criteria {
+        case .sortCriteria(let descriptor):
+            return descriptor
+        default:
+            appLog.error("Called with unexpected PopupItem")
+            return nil
+        }
+    }
+    
+    static func sortDescriptorForItems(_ items : [PopupItem]) -> NSSortDescriptor? {
+        let sortItems = items.filter({ if case .sortCriteria = $0.criteria { return true } else { return false }})
+        let trueItem =  sortItems.filter({ if case .typeBool(let boolValue) = $0.value { return boolValue } else { return false }}).first
+        return trueItem?.sortDescriptor
+    }
 }
 
+// Private protocol
 fileprivate protocol PopupDelegate {
     func didSelectPaths(paths : [IndexPath])
     func didCancelSelection()
 }
 
-class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationControllerDelegate, UITableViewDataSource, PopupDelegate {
-	private var itemsForSelection : [String : [T]]!
+// Public interface
+class PopupupChooser: NSObject, UIPopoverPresentationControllerDelegate, UITableViewDataSource, PopupDelegate {
+    // Public interface
+    private var title : String = "Title"
+    private var multipleSelection : Bool = false
+    
+    // Private variables
+    private var itemsForSelection : [String : [PopupItem]]!
 	private var sectionNumbers : [Int : String] = [:]
-	private var handler : (([T]?) -> Void)!
+	private var handler : (([PopupItem]?) -> Void)!
     private var sourceView : UIView!
 
-    public var title : String = "Title"
-    public var multipleSelection : Bool = false
-	public var selectedItems : [T] = []
-    
     init(title : String) {
         self.title = title
     }
 	
-	func selectionPopup(items : [T], sourceView : UIView, updateHandler : @escaping ([T]?) -> Void) -> UIViewController? {
+    func selectionPopup(items : [PopupItem], multipleSelection: Bool, sourceView : UIView, updateHandler : @escaping ([PopupItem]?) -> Void) -> UIViewController? {
 		// If selection is empty do nothing
 		if items.count == 0 {
 			return nil
 		}
 
         // Group the popup items and assign to the table sections
-        itemsForSelection = Dictionary(grouping: items, by: { $0.popupGroup })    // Section (aka group) : Items
+        itemsForSelection = Dictionary(grouping: items, by: { $0.group ?? ""})    // Section (aka group) : Items
         itemsForSelection.enumerated().forEach({ sectionNumbers[$0.offset] = $0.element.key })
 		
 		handler = updateHandler
@@ -97,20 +137,33 @@ class PopupupChooser<T: PopupSelectable> : NSObject, UIPopoverPresentationContro
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCell(withIdentifier: "DataTypeSelectionCell", for: indexPath)
-		let cellValue = itemsForSelection[sectionNumbers[indexPath.section]!]![indexPath.row]
-		
-		cell.textLabel!.text = cellValue.displayString
-        cell.selectionStyle = .none
-		
-		if selectedItems.contains(cellValue) {
-            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
-            cell.accessoryType = .checkmark
-        } else {
-            cell.accessoryType = .none
-        }
+        // Get the item that needs to be shown in this row
+        let cellValue = itemsForSelection[sectionNumbers[indexPath.section]!]![indexPath.row]
+        
+        // Switch on the type of cell to be shown for this item
+        switch cellValue.value {
+        case .typeBool(let valueIsTrue):
+            let cell = tableView.dequeueReusableCell(withIdentifier: "BoolSelectionCell", for: indexPath) as! PopupBoolPickerCell
+            cell.setValueForItem(cellValue)
+            if valueIsTrue {
+                tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+                cell.accessoryType = .checkmark
+            } else {
+                cell.accessoryType = .none
+            }
+            return cell
+ 
+        case .typeDate:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "DateSelectionCell", for: indexPath) as! PopupDatePickerCell
+            cell.setValueForItem(cellValue)
+            return cell
+            
+        case .typeRange:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "RangeSelectionCell", for: indexPath) as! PopupRangePickerCell
+            cell.setValueForItem(cellValue)
+            return cell
 
-		return cell
+        }
 	}
 	
 	// MARK: return functions
@@ -134,28 +187,28 @@ class ItemSelectionViewController : UIViewController, UITableViewDelegate   {
 		}
 	}
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(editDone(sender:)))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(editCancel(sender:)))
+        
+        tableView.allowsMultipleSelection = multipleSelection
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if multipleSelection == false {         // If single item dismiss the view controller with this selection
+        
+        if multipleSelection == false {         //
             self.delegate.didSelectPaths(paths: [indexPath])
         } else {
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }
     }
     
-    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        tableView.cellForRow(at: indexPath)?.accessoryType = .none
-    }
+//    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+//        tableView.cellForRow(at: indexPath)?.accessoryType = .none
+//    }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        if multipleSelection {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(editDone(sender:)))
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(editCancel(sender:)))
-        }
-
-        tableView.allowsMultipleSelection = multipleSelection
-    }
     
     @objc func editDone(sender: UIBarButtonItem) {
         delegate.didSelectPaths(paths: tableView.indexPathsForSelectedRows ?? [])
@@ -163,6 +216,44 @@ class ItemSelectionViewController : UIViewController, UITableViewDelegate   {
     
     @objc func editCancel(sender: UIBarButtonItem) {
         delegate.didCancelSelection()
+    }
+}
+
+// Extension to support saving PopupSelectionValue to user defaults
+extension PopupSelectionValue: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case typeBool, typeDate, typeRange
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        switch self {
+        case .typeDate(let value): try container.encode(value, forKey: .typeDate)
+        case .typeBool(let value): try container.encode(value, forKey: .typeBool)
+        case .typeRange(let value): try container.encode(value, forKey: .typeRange)
+        }
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        if let value = try? container.decode(Bool.self, forKey: .typeBool) {
+            self = .typeBool(bool: value)
+            return
+        }
+        if let value = try? container.decode(Date.self, forKey: .typeDate) {
+            self = .typeDate(date: value)
+            return
+        }
+        if let value = try? container.decode(RouteIndexRange.self, forKey: .typeRange) {
+            self = .typeRange(range: value)
+            return
+        }
+        
+        appLog.error("Failed to decode PopupSelectionValue \(container)")
+        self = .typeBool(bool: false)
+        return
     }
 }
 

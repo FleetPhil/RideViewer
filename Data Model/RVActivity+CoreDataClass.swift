@@ -12,7 +12,7 @@ import CoreData
 import StravaSwift
 import CoreLocation
 
-enum ActivitySort : String, PopupSelectable, CaseIterable {
+enum ActivitySort : String, CaseIterable {
     case name		    = "name"
     case distance       = "distance"
     case date           = "startDate"
@@ -21,15 +21,15 @@ enum ActivitySort : String, PopupSelectable, CaseIterable {
     case kJ             = "kiloJoules"
     case averageSpeed   = "averageSpeed"
     
-    var displayString : String {           // Text to use when choosing item
+    var selectionLabel : String {
         switch self {
-        case .name: 			return "Name"
-        case .distance:			return "Distance"
-        case .date:				return "Date"
-        case .elapsedTime:		return "Elapsed Time"
-        case .elevationGain:	return "Elevation Gain"
-        case .kJ:				return "Energy"
-        case .averageSpeed:		return "Average Speed"
+        case .name:             return "Name"
+        case .distance:         return "Distance"
+        case .date:             return "Date"
+        case .elapsedTime:      return "Elapsed Time"
+        case .elevationGain:    return "Elevation Gain"
+        case .kJ:               return "Energy"
+        case .averageSpeed:     return "Average Speed"
         }
     }
     
@@ -46,46 +46,82 @@ enum ActivitySort : String, PopupSelectable, CaseIterable {
     }
 }
 
-enum ActivityFilter : String, PopupSelectable, CaseIterable {
-	case cycleRide          = "Cycle Rides"
-	case virtualRide        = "Virtual Rides"
-	case walk               = "Walks"
-	case other              = "Other Activities"
-    case shortRide          = "Short Rides"
-    case longRide           = "Long Rides"
-
-    var displayString: String { return self.rawValue }
-	
-	var popupGroup: String {
-		switch self {
-		case .cycleRide, .virtualRide, .walk, .other:		return "Activity Type"
-		case .longRide, .shortRide:							return "Ride Length"
-		}
-	}
-	
-	func predicateForFilterOption() -> NSPredicate {
-		let longRideLimit = Settings.sharedInstance.activityMinDistance
-		switch self {
-		case .cycleRide:		return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Ride.rawValue])
-		case .virtualRide:		return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.VirtualRide.rawValue])
-		case .walk:				return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Walk.rawValue])
-		case .other:			return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Workout.rawValue])
-        case .longRide:            return NSPredicate(format: "distance >= %f",     argumentArray: [longRideLimit])
-        case .shortRide:        return NSPredicate(format: "distance < %f",     argumentArray: [longRideLimit])
-		}
-	}
-	
-	static func predicateForFilters(_ filters : [ActivityFilter]) -> NSCompoundPredicate {
-		var predicates : [NSCompoundPredicate] = []
-		let filterGroups = Dictionary(grouping: filters, by: { $0.popupGroup })
-		for group in filterGroups {
-			let subPred = group.value.map({ $0.predicateForFilterOption() })
-			let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subPred)
-			predicates.append(groupPredicate)
-		}
-		return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-	}
-}
+//enum ActivityFilter  {
+//    case cycleRide(Bool)
+//    case virtualRide(Bool)
+//    case walk(Bool)
+//    case other(Bool)
+//    case shortRide(Bool)
+//    case longRide(Bool)
+//    case startDate(Date)
+//
+//    var selectionLabel: String {
+//        switch self {
+//        case .cycleRide:          return "Cycle Rides"
+//        case .virtualRide:        return "Virtual Rides"
+//        case .walk:               return "Walks"
+//        case .other:              return "Other Activities"
+//        case .shortRide:          return "Short Rides"
+//        case .longRide:           return "Long Rides"
+//        case .startDate:          return "Start Date"
+//        }
+//    }
+//
+//    var selectionValue: PopupSelectionValue {
+//        get {
+//            switch self {
+//            case .startDate(let date) :     return .typeDate(date: date)
+//            case .cycleRide(let bool),
+//                 .longRide(let bool),
+//                 .other(let bool),
+//                 .shortRide(let bool),
+//                 .virtualRide(let bool),
+//                 .walk(let bool): return .typeBool(bool: bool)
+//            }
+//        }
+//    }
+//
+//    // Initial filter defaults if they cannot be retrieved on the first run
+//    static var selectionDefaults : [ ActivityFilter ] {
+//        return [
+//            .cycleRide(true), .longRide(true), .other(false), .shortRide(false), .virtualRide(false), .walk(false),
+//            .startDate(Calendar.current.date(byAdding: .year, value: -1, to: Date())!)
+//        ]
+//    }
+//
+//    var popupGroup: String {
+//        switch self {
+//        case .cycleRide, .virtualRide, .walk, .other:        return "Activity Type"
+//        case .longRide, .shortRide:                            return "Ride Length"
+//        case .startDate:                                    return "Date"
+//        }
+//    }
+//
+//    func predicateForFilterOption() -> NSPredicate {
+//        let longRideLimit = Settings.sharedInstance.activityMinDistance
+//        switch self {
+//        case .cycleRide:        return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Ride.rawValue])
+//        case .virtualRide:        return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.VirtualRide.rawValue])
+//        case .walk:                return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Walk.rawValue])
+//        case .other:            return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Workout.rawValue])
+//        case .longRide:         return NSPredicate(format: "distance >= %f",     argumentArray: [longRideLimit])
+//        case .shortRide:        return NSPredicate(format: "distance < %f",     argumentArray: [longRideLimit])
+//        // TODO: Dummy
+//        case .startDate:        return NSPredicate(format: "", argumentArray: nil)
+//        }
+//    }
+//
+//    static func predicateForFilters(_ filters : [ActivityFilter]) -> NSCompoundPredicate {
+//        var predicates : [NSCompoundPredicate] = []
+//        let filterGroups = Dictionary(grouping: filters, by: { $0.popupGroup })
+//        for group in filterGroups {
+//            let subPred = group.value.map({ $0.predicateForFilterOption() })
+//            let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subPred)
+//            predicates.append(groupPredicate)
+//        }
+//        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+//    }
+//}
 
 @objc(RVActivity)
 public class RVActivity: NSManagedObject, RouteViewCompatible {
@@ -112,7 +148,7 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
     
     class func get(identifier: Int, inContext context: NSManagedObjectContext) -> RVActivity? {
         // Get the activity with the specified identifier
-		if let activity : RVActivity = context.fetchObject(withKeyValue: identifier, forKey: "id") {
+        if let activity : RVActivity = context.fetchObject(withKeyValue: identifier, forKey: "id") {
             return activity
         } else {			// Not found
             return nil
@@ -120,10 +156,10 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
     }
     
     func update(activity : Activity) -> RVActivity {
-		if activity.type == nil {
-			appLog.debug("Activity type is nil")
-		}
-		
+        if activity.type == nil {
+            appLog.debug("Activity type is nil")
+        }
+        
         self.id						= Int64(activity.id!)
         self.name					= activity.name ?? "No name"
         self.activityDescription	= activity.description
@@ -150,9 +186,9 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
         self.maxPower				= activity.maxPower ?? 0.0
         self.deviceWatts			= activity.deviceWatts ?? false
         self.trainer				= activity.trainer ?? false
-		self.hasHeartRate			= activity.hasHeartRate ?? false
-		self.averageHeartRate		= activity.averageHeartRate ?? 0.0
-		self.maxHeartRate			= activity.maxHeartRate ?? 0.0
+        self.hasHeartRate			= activity.hasHeartRate ?? false
+        self.averageHeartRate		= activity.averageHeartRate ?? 0.0
+        self.maxHeartRate			= activity.maxHeartRate ?? 0.0
         
         if let activityMap = activity.map {
             self.map					= RVMap.create(map: activityMap, context: self.managedObjectContext!)
@@ -161,7 +197,7 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
         }
         
         self.resourceState = self.resourceState.newState(returnedState: activity.resourceState)
-            
+        
         if let efforts = activity.segmentEfforts {			// Detailed activity has efforts
             for effort in efforts {
                 let _ = RVEffort.create(effort: effort, forActivity : self, context: self.managedObjectContext!)
@@ -181,7 +217,6 @@ public class RVActivity: NSManagedObject, RouteViewCompatible {
             return ""
         }
     }
-	
 }
 
 // Extension to return activity info from the database or Strava
@@ -243,23 +278,23 @@ extension RVActivity : TableViewCompatibleEntity {
 class ActivityListTableViewCell : UITableViewCell, TableViewCompatibleCell {
     
     @IBOutlet weak var nameLabel: UILabel!
-	@IBOutlet weak var featuresLabel: UILabel!
-	@IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var featuresLabel: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
     
     func configure(withModel: TableViewCompatibleEntity) -> TableViewCompatibleCell {
         if let activity = withModel as? RVActivity {
-			
+            
             nameLabel.text		= activity.name
             nameLabel.textColor	= activity.resourceState.resourceStateColour
-			
-			var features = activity.type.emoji
-			if activity.deviceWatts { features += EmojiConstants.Power }
-			if activity.hasHeartRate { features += EmojiConstants.HeartRate }
-			featuresLabel.text = features
-			
-			dateLabel.text		= (activity.startDate as Date).displayString(displayType: .dateTime, timeZone: activity.timeZone.timeZone)
+            
+            var features = activity.type.emoji
+            if activity.deviceWatts { features += EmojiConstants.Power }
+            if activity.hasHeartRate { features += EmojiConstants.HeartRate }
+            featuresLabel.text = features
+            
+            dateLabel.text		= (activity.startDate as Date).displayString(displayType: .dateTime, timeZone: activity.timeZone.timeZone)
             distanceLabel.text	= activity.distance.distanceDisplayString
             timeLabel.text		= activity.elapsedTime.durationDisplayString
             

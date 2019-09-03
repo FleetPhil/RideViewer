@@ -12,78 +12,107 @@ import CoreData
 import StravaSwift
 import CoreLocation
 
-enum SegmentSort : String, PopupSelectable, CaseIterable {
-	case name 		= "name"
-	case distance 	= "distance"
-	case grade 		= "averageGrade"
-	case effortCount = "effortCount"
-	
-	var displayString : String {           // Text to use when choosing item
-		switch self {
-		case .name:			return "Name"
-		case .distance:		return "Distance"
-		case .grade:		return "Av. Grade"
-		case .effortCount:	return "Rides"
-		}
-	}
+
+enum SegmentSort : String, CaseIterable {
+    case name           = "name"
+    case distance       = "distance"
+    case averageGrade   = "averageGrade"
+    case effortCount    = "effortCount"
     
-    var defaultAscending : Bool {           //
+    var selectionLabel : String {
         switch self {
-        case .name:            return true
-        case .distance:        return false
-        case .grade:           return false
-		case .effortCount:	   return false
+        case .name:             return "Name"
+        case .distance:         return "Distance"
+        case .averageGrade:     return "Av. Grade"
+        case .effortCount:      return "Rides"
         }
     }
-
+    
+    var defaultAscending : Bool {
+        switch self {
+        case .name:             return true
+        case .distance:         return false
+        case .averageGrade:     return false
+        case .effortCount:      return false
+        }
+    }
 }
 
-enum SegmentFilter : String, PopupSelectable, CaseIterable {
-    case starred            = "Only Starred"
-	case short				= "Short"
-	case long				= "Long"
-	case flat				= "Flat"
-	case ascending			= "Ascending"
-	case descending			= "Descending"
-	case singleEffort		= "Single Effort"
-	case multipleEfforts	= "Multiple Effort"
-	
-	var displayString: String { return self.rawValue }
-	
-	var popupGroup: String {
-		switch self {
-        case .starred:                          return "Starred"
-		case .short, .long: 					return "Segment Length"
-		case .flat, .ascending, .descending:	return "Profile"
-		case .multipleEfforts, .singleEffort: 	return "Number of Efforts"
-		}
-	}
-	
-	func predicateForFilterOption() -> NSPredicate {
-		let longLimit = Settings.sharedInstance.segmentMinDistance
-		switch self {
-        case .starred:          return NSPredicate(format: "starred == %@", NSNumber(value: true))
-		case .short:			return NSPredicate(format: "distance < %f", argumentArray: [longLimit])
-		case .long:				return NSPredicate(format: "distance >= %f", argumentArray: [longLimit])
-		case .flat:				return NSPredicate(format: "averageGrade = 0", argumentArray: nil)
-		case .ascending:		return NSPredicate(format: "averageGrade > 0", argumentArray: nil)
-		case .descending:		return NSPredicate(format: "averageGrade < 0", argumentArray: nil)
-		case .multipleEfforts:	return NSPredicate(format: "effortCount > 1", argumentArray: nil)
-		case .singleEffort:		return NSPredicate(format: "effortCount = 1", argumentArray: nil)
-		}
-	}
-	
-	static func predicateForFilters(_ filters : [SegmentFilter]) -> NSCompoundPredicate {
-		var predicates : [NSCompoundPredicate] = []
-		let filterGroups = Dictionary(grouping: filters, by: { $0.popupGroup })
-		for group in filterGroups {
-			let subPred = group.value.map({ $0.predicateForFilterOption() })
-			let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subPred)
-			predicates.append(groupPredicate)
-		}
-		return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-	}
-
+enum SegmentFilter  {
+    case cycleRide(Bool)
+    case virtualRide(Bool)
+    case walk(Bool)
+    case other(Bool)
+    case shortRide(Bool)
+    case longRide(Bool)
+    case startDate(Date)
+    
+    var selectionLabel: String {
+        switch self {
+        case .cycleRide:          return "Cycle Rides"
+        case .virtualRide:        return "Virtual Rides"
+        case .walk:               return "Walks"
+        case .other:              return "Other Activities"
+        case .shortRide:          return "Short Rides"
+        case .longRide:           return "Long Rides"
+        case .startDate:          return "Start Date"
+        }
+    }
+    
+    var selectionValue: PopupSelectionValue {
+        get {
+            switch self {
+            case .startDate(let date) :     return .typeDate(date: date)
+            case .cycleRide(let bool),
+                 .longRide(let bool),
+                 .other(let bool),
+                 .shortRide(let bool),
+                 .virtualRide(let bool),
+                 .walk(let bool): return .typeBool(bool: bool)
+            }
+        }
+    }
+    
+    // Initial filter defaults if they cannot be retrieved on the first run
+//    static var selectionDefaults : [ ActivityFilter ] {
+//        return [
+//            .cycleRide(true), .longRide(true), .other(false), .shortRide(false), .virtualRide(false), .walk(false),
+//            .startDate(Calendar.current.date(byAdding: .year, value: -1, to: Date())!)
+//        ]
+//    }
+    
+    var popupGroup: String {
+        switch self {
+        case .cycleRide, .virtualRide, .walk, .other:        return "Activity Type"
+        case .longRide, .shortRide:                            return "Ride Length"
+        case .startDate:                                    return "Date"
+        }
+    }
+    
+    func predicateForFilterOption() -> NSPredicate {
+        let longRideLimit = Settings.sharedInstance.activityMinDistance
+        switch self {
+        case .cycleRide:        return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Ride.rawValue])
+        case .virtualRide:        return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.VirtualRide.rawValue])
+        case .walk:                return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Walk.rawValue])
+        case .other:            return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Workout.rawValue])
+        case .longRide:         return NSPredicate(format: "distance >= %f",     argumentArray: [longRideLimit])
+        case .shortRide:        return NSPredicate(format: "distance < %f",     argumentArray: [longRideLimit])
+        // TODO: Dummy
+        case .startDate:        return NSPredicate(format: "", argumentArray: nil)
+        }
+    }
+    
+    static func predicateForFilters(_ filters : [SegmentFilter]) -> NSCompoundPredicate {
+        var predicates : [NSCompoundPredicate] = []
+        let filterGroups = Dictionary(grouping: filters, by: { $0.popupGroup })
+        for group in filterGroups {
+            let subPred = group.value.map({ $0.predicateForFilterOption() })
+            let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subPred)
+            predicates.append(groupPredicate)
+        }
+        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+    }
 }
 
 
@@ -266,5 +295,60 @@ class SegmentListTableViewCell : UITableViewCell, TableViewCompatibleCell {
         return self
 	}
 }
+
+extension RVSegment {
+    static var sortParams : [PopupItem] = [
+        PopupItem(label: "Name", group: nil, value: .typeBool(bool: true), criteria: .sortCriteria(NSSortDescriptor(key: "name", ascending: true))),
+        PopupItem(label: "Distance", group: nil, value: .typeBool(bool: false), criteria: .sortCriteria(NSSortDescriptor(key: "distance", ascending: false))),
+        PopupItem(label: "Av. Grade", group: nil, value: .typeBool(bool: false), criteria: .sortCriteria(NSSortDescriptor(key: "averageGrade", ascending: false))),
+        PopupItem(label: "Rides", group: nil, value: .typeBool(bool: false), criteria: .sortCriteria(NSSortDescriptor(key: "effortCount", ascending: false)))
+    ]
+    
+    static var filterParams : [PopupItem] = [
+        PopupItem(label: "Only Starred", group: "Starred", value: .typeBool(bool: false), criteria: .filterCriteria("starred == %@")),
+        PopupItem(label: "Flat", group: "Profile", value: .typeBool(bool: true), criteria: .filterCriteria("averageGrade = 0")),
+        PopupItem(label: "Ascending", group: "Profile", value: .typeBool(bool: true), criteria: .filterCriteria("starred == %@")),
+        PopupItem(label: "Descending", group: "Profile", value: .typeBool(bool: true), criteria: .filterCriteria("starred == %@"))
+
+    ]
+}
+
+//enum SegmentFilter : String, CaseIterable {
+//    case starred            = "Only Starred"
+//    case short                = "Short"
+//    case long                = "Long"
+//    case flat                = "Flat"
+//    case ascending            = "Ascending"
+//    case descending            = "Descending"
+//    case singleEffort        = "Single Effort"
+//    case multipleEfforts    = "Multiple Effort"
+//
+//    var selectionLabel: String {
+//        return self.rawValue
+//    }
+//
+//    var popupGroup: String {
+//        switch self {
+//        case .starred:                          return "Starred"
+//        case .short, .long:                     return "Segment Length"
+//        case .flat, .ascending, .descending:    return "Profile"
+//        case .multipleEfforts, .singleEffort:     return "Number of Efforts"
+//        }
+//    }
+//
+//    func predicateForFilterOption() -> NSPredicate {
+//        let longLimit = Settings.sharedInstance.segmentMinDistance
+//        switch self {
+//        case .starred:          return NSPredicate(format: "starred == %@", NSNumber(value: true))
+//        case .short:            return NSPredicate(format: "distance < %f", argumentArray: [longLimit])
+//        case .long:                return NSPredicate(format: "distance >= %f", argumentArray: [longLimit])
+//        case .flat:                return NSPredicate(format: "averageGrade = 0", argumentArray: nil)
+//        case .ascending:        return NSPredicate(format: "averageGrade > 0", argumentArray: nil)
+//        case .descending:        return NSPredicate(format: "averageGrade < 0", argumentArray: nil)
+//        case .multipleEfforts:    return NSPredicate(format: "effortCount > 1", argumentArray: nil)
+//        case .singleEffort:        return NSPredicate(format: "effortCount = 1", argumentArray: nil)
+//        }
+//    }
+
 
 

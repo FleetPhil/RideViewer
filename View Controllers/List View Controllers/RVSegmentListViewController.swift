@@ -19,8 +19,8 @@ class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 	var tableDataIsComplete = false
 	
 	// Properties
-	private var filters : [SegmentFilter]!
-	private var sortKey : SegmentSort!
+    private var filters : [SegmentFilter]!    // TODO: should retrieve not reset
+    private var sortKey : SegmentSort!
 	private var popupController : UIViewController?
 	
 	// MARK: Lifecycle
@@ -36,16 +36,15 @@ class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 		// Setup the data source
 		dataManager.tableView = self.tableView
 		
-		self.filters = savedFilters()
-		self.sortKey = .distance
+//		self.filters = savedFilters()
 		setDataManager()
 	}
 	
     func setDataManager() {
-		guard sortKey != nil, filters != nil else { return }
-		dataManager.filterPredicate = SegmentFilter.predicateForFilters(filters)
-		dataManager.sortDescriptor = NSSortDescriptor(key: sortKey.rawValue, ascending: self.sortKey.defaultAscending)
-		_ = dataManager.fetchObjects()
+        guard sortKey != nil, filters != nil else { return }
+        dataManager.filterPredicate = SegmentFilter.predicateForFilters(self.filters)
+        dataManager.sortDescriptor = NSSortDescriptor(key: self.sortKey.rawValue, ascending: self.sortKey.defaultAscending)
+        _ = dataManager.fetchObjects()
 	}
 	
 	@IBAction func doneButtonPressed(_ sender: UIBarButtonItem) {
@@ -69,54 +68,50 @@ class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 
 
 	@objc func sortButtonPressed(sender: UIView) {
-		// Popup the list of fields to select sort order
-        let chooser = PopupupChooser<SegmentSort>(title: "Select sort order")
-		popupController = chooser.selectionPopup(items: SegmentSort.allCases, sourceView: sender, updateHandler: newSortOrder)
-		if popupController != nil {
-			present(popupController!, animated: true, completion: nil)
-		}
+        // Popup the list of fields to select sort order
+        let picker = StringPicker(title: "Sort", choices: SegmentSort.allCases.map({ $0.selectionLabel }))
+            .setDoneButtonAction({ _, rowIndex, selectedString in
+                self.sortKey = SegmentSort.allCases[rowIndex]
+                self.setDataManager()
+                self.tableView.reloadData()
+            })
+        picker.appear(originView: sender, baseViewController: self)
 	}
 	
 	@objc func filterButtonPressed(sender: UIView) {
-        let chooser = PopupupChooser<SegmentFilter>(title: "Include")
-		chooser.multipleSelection = true
-		chooser.selectedItems = self.filters
-		popupController = chooser.selectionPopup(items: SegmentFilter.allCases, sourceView: sender, updateHandler: newFilters)
+        let chooser = PopupupChooser(title: "Include")
+        popupController = chooser.selectionPopup(items: RVSegment.filterParams, multipleSelection: true, sourceView: sender, updateHandler: newFilters)
 		if popupController != nil {
 			present(popupController!, animated: true, completion: nil)
 		}
 	}
 	
-	private func newFilters(_ newFilters : [SegmentFilter]?)  {
+	private func newFilters(_ newFilters : [PopupItem]?)  {
 		popupController?.dismiss(animated: true, completion: nil)
 		
 		if let returnedFilters = newFilters {		// Will be nil if cancelled
-			self.filters = returnedFilters
+//			self.filters = returnedFilters
             saveFilters()
 			setDataManager()
 			tableView.reloadData()
 		}
 	}
 	
-	private func newSortOrder(newOrder : [SegmentSort]?) {
+	private func newSortOrder(newOrder : [PopupItem]?) {
 		popupController?.dismiss(animated: true, completion: nil)
-		if let newSort = newOrder?.first {
-			self.sortKey = newSort
-			setDataManager()
-			tableView.reloadData()
-		}
+//        if let newSort = newOrder?.first {
+//            self.sortKey = newSort
+//            setDataManager()
+//            tableView.reloadData()
+//        }
 	}
     
     private func saveFilters() {
-        UserDefaults.standard.set(self.filters.map({ $0.rawValue } ), forKey: "SegmentFilters")
+        UserDefaults.standard.set(self.filters, forKey: "SegmentFilters")
     }
     
-    private func savedFilters()->[SegmentFilter] {
-        if let rawFilters = UserDefaults.standard.array(forKey: "SegmentFilters") as? [String] {
-            let filters = rawFilters.compactMap({ SegmentFilter(rawValue: $0) })
-            return filters
-        }
-        return SegmentFilter.allCases
+    private func savedFilters()->[PopupItem]? {
+        return UserDefaults.standard.array(forKey: "SegmentFilters") as? [PopupItem]
     }
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

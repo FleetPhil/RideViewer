@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fTA-D3-Odt">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Title-->
+        <scene sceneID="YOI-4p-tdr">
+            <objects>
+                <viewController id="4YW-NQ-WwN" customClass="RangePickerPopoverViewController" customModule="PickerTest" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="eLX-c2-Z7W">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kiy-aK-jkb" customClass="RangeSlider" customModule="PickerTest" customModuleProvider="target">
+                                <rect key="frame" x="20" y="428" width="374" height="40"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="E5H-AP-G36"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="qUt-v0-hXm" firstAttribute="trailing" secondItem="kiy-aK-jkb" secondAttribute="trailing" constant="20" id="8ni-96-WIc"/>
+                            <constraint firstItem="kiy-aK-jkb" firstAttribute="centerX" secondItem="eLX-c2-Z7W" secondAttribute="centerX" id="LO3-nR-anl"/>
+                            <constraint firstItem="kiy-aK-jkb" firstAttribute="centerY" secondItem="eLX-c2-Z7W" secondAttribute="centerY" id="xOh-D1-od4"/>
+                            <constraint firstItem="kiy-aK-jkb" firstAttribute="leading" secondItem="qUt-v0-hXm" secondAttribute="leading" constant="20" id="zP9-RR-9xz"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="qUt-v0-hXm"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Title" id="CMf-Bq-cfy" userLabel="Title">
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="XZc-Dq-nsz" userLabel="Cancel Button">
+                            <connections>
+                                <action selector="tappedCancel:" destination="4YW-NQ-WwN" id="XAu-MG-CPI"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Done" id="ZaL-t5-E7H" userLabel="Done Button">
+                            <connections>
+                                <action selector="tappedDone:" destination="4YW-NQ-WwN" id="2LM-kb-phX"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="cancelButton" destination="XZc-Dq-nsz" id="ouV-1i-cBB"/>
+                        <outlet property="doneButton" destination="ZaL-t5-E7H" id="lFc-os-0B0"/>
+                        <outlet property="picker" destination="kiy-aK-jkb" id="OC6-Kf-ztV"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ksM-Pr-jZp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1869.5652173913045" y="772.76785714285711"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="eQy-EN-PpB">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="fTA-D3-Odt" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="ZA1-8P-Fbh">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="4YW-NQ-WwN" kind="relationship" relationship="rootViewController" id="cLf-aF-Cdw"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ceu-JG-jSe" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="959.4202898550725" y="772.76785714285711"/>
+        </scene>
+    </scenes>
+</document>
