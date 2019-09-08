@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>name</key>
+		<string>ActivitySort</string>
+		<key>params</key>
+		<array>
+			<dict>
+				<key>rank</key>
+				<integer>0</integer>
+				<key>name</key>
+				<string>Name</string>
+				<key>property</key>
+				<string>name</string>
+				<key>defaultAscending</key>
+				<true/>
+			</dict>
+			<dict>
+				<key>rank</key>
+				<integer>1</integer>
+				<key>name</key>
+				<string>Distance</string>
+				<key>property</key>
+				<string>distance</string>
+				<key>defaultAscending</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>rank</key>
+				<integer>2</integer>
+				<key>name</key>
+				<string>Date</string>
+				<key>property</key>
+				<string>startDate</string>
+				<key>defaultAscending</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>rank</key>
+				<integer>3</integer>
+				<key>name</key>
+				<string>Total Time</string>
+				<key>property</key>
+				<string>elapsedTime</string>
+				<key>defaultAscending</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>rank</key>
+				<integer>4</integer>
+				<key>name</key>
+				<string>Moving Time</string>
+				<key>property</key>
+				<string>movingTime</string>
+				<key>defaultAscending</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>rank</key>
+				<integer>5</integer>
+				<key>name</key>
+				<string>Elevation Gain</string>
+				<key>property</key>
+				<string>elevationGain</string>
+				<key>defaultAscending</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>rank</key>
+				<integer>6</integer>
+				<key>name</key>
+				<string>Energy</string>
+				<key>property</key>
+				<string>kiloJoules</string>
+				<key>defaultAscending</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>rank</key>
+				<integer>7</integer>
+				<key>name</key>
+				<string>Average Speed</string>
+				<key>property</key>
+				<string>averageSpeed</string>
+				<key>defaultAscending</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+</array>
+</plist>

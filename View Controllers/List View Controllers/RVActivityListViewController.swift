@@ -21,7 +21,8 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate, Filte
     
     // Properties
     private var filters : [Filter]!
-    private var sortKey : ActivitySort!
+    private var sortParams : [SortDefinition.SortParam]!
+    private var sortKey : SortDefinition.SortParam!
     
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -36,7 +37,15 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate, Filte
         // Setup the data source
         dataManager.tableView = self.tableView
         self.filters = activityFilters()
-        self.sortKey = .date
+        
+        
+        self.sortParams  = SortDefinition.paramsForType(SettingsConstants.ActivitySortKey)
+        if sortParams != nil {
+            self.sortKey    = sortParams.first!
+        } else {
+            appLog.error("Failed to read sort params")
+        }
+        
         setDataManager()
         
         if let activities : [RVActivity] = CoreDataManager.sharedManager().viewContext.fetchObjects() {
@@ -56,7 +65,7 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate, Filte
     func setDataManager() {
         guard sortKey != nil, filters != nil else { return }
         dataManager.filterPredicate = Filter.predicateForFilters(self.filters)
-        dataManager.sortDescriptor = NSSortDescriptor(key: self.sortKey.rawValue, ascending: self.sortKey.defaultAscending)
+        dataManager.sortDescriptor = NSSortDescriptor(key: self.sortKey.property, ascending: self.sortKey.defaultAscending)
         _ = dataManager.fetchObjects()
     }
     
@@ -77,9 +86,9 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate, Filte
     
     @objc func sortButtonPressed(sender: UIView) {
         // Popup the list of fields to select sort order
-        let picker = StringPicker(title: "Sort", choices: ActivitySort.allCases.map({ $0.selectionLabel }))
+        let picker = StringPicker(title: "Sort", choices: self.sortParams.map({ $0.name }))
             .setDoneButtonAction({ _, rowIndex, selectedString in
-                self.sortKey = ActivitySort.allCases[rowIndex]
+                self.sortKey = self.sortParams[rowIndex]
                 self.setDataManager()
                 self.tableView.reloadData()
             })
@@ -122,6 +131,7 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate, Filte
     
 }
 
+
 // MARK: Filters
 extension RVActivityListViewController {
     func activityFilters() -> [Filter] {
@@ -131,4 +141,6 @@ extension RVActivityListViewController {
         return FilterDefinition.filtersforType(SettingsConstants.ActivityFilterKey, values: values, limits: limits) ?? []
     }
 }
+
+
 

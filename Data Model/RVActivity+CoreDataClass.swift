@@ -12,45 +12,6 @@ import CoreData
 import StravaSwift
 import CoreLocation
 
-// Raw value is property name
-enum ActivitySort : String, CaseIterable {
-    case name		    = "name"
-    case distance       = "distance"
-    case date           = "startDate"
-    case elapsedTime    = "elapsedTime"
-    case movingTime     = "movingTime"
-    case elevationGain  = "elevationGain"
-    case kJ             = "kiloJoules"
-    case averageSpeed   = "averageSpeed"
-    
-    var selectionLabel : String {
-        switch self {
-        case .name:             return "Name"
-        case .distance:         return "Distance"
-        case .date:             return "Date"
-        case .elapsedTime:      return "Elapsed Time"
-        case .movingTime:       return "Moving Time"
-        case .elevationGain:    return "Elevation Gain"
-        case .kJ:               return "Energy"
-        case .averageSpeed:     return "Average Speed"
-        }
-    }
-    
-    var defaultAscending : Bool {
-        switch self {
-        case .name:             return true
-        case .distance:         return false
-        case .date:             return false
-        case .elapsedTime:      return false
-        case .movingTime:       return false
-        case .elevationGain:    return false
-        case .kJ:               return false
-        case .averageSpeed:     return false
-        }
-    }
-}
-
-
 @objc(RVActivity)
 public class RVActivity: NSManagedObject, RouteViewCompatible {
     
@@ -208,15 +169,15 @@ extension RVActivity {
         if let activities : [RVActivity] = context.fetchObjects() {
             guard activities.count > 0 else { return nil }
             
-            limits.dateParams["From"] = activities.map({ $0.startDate as Date }).min()
-            limits.dateParams["To"] = activities.map({ $0.startDate as Date }).max()
+            limits.dateParams[FilterParamName.from.rawValue] = activities.map({ $0.startDate as Date }).min()
+            limits.dateParams[FilterParamName.to.rawValue] = activities.map({ $0.startDate as Date }).max()
             
-            limits.rangeParams["Moving"] = RouteIndexRange(from: activities.map({ $0.movingTime }).min()!, to: activities.map({ $0.movingTime }).max()!)
-            limits.rangeParams["Total"] = RouteIndexRange(from: activities.map({ $0.elapsedTime }).min()!, to: activities.map({ $0.elapsedTime }).max()!)
-            limits.rangeParams["Distance"] = RouteIndexRange(from: activities.map({ $0.distance }).min()!, to: activities.map({ $0.distance }).max()!)
-            limits.rangeParams["Elevation Gain"] = RouteIndexRange(from: activities.map({ $0.elevationGain }).min()!, to: activities.map({ $0.elevationGain }).max()!)
-            limits.rangeParams["Av. Power"] = RouteIndexRange(from: activities.map({ $0.averagePower }).min()!, to: activities.map({ $0.averagePower }).max()!)
-            limits.rangeParams["Total Energy"] = RouteIndexRange(from: activities.map({ $0.kiloJoules }).min()!, to: activities.map({ $0.kiloJoules }).max()!)
+            limits.rangeParams[FilterParamName.movingTime.rawValue] = RouteIndexRange(from: activities.map({ $0.movingTime }).min()!, to: activities.map({ $0.movingTime }).max()!)
+            limits.rangeParams[FilterParamName.totalTime.rawValue] = RouteIndexRange(from: activities.map({ $0.elapsedTime }).min()!, to: activities.map({ $0.elapsedTime }).max()!)
+            limits.rangeParams[FilterParamName.distance.rawValue] = RouteIndexRange(from: activities.map({ $0.distance }).min()!, to: activities.map({ $0.distance }).max()!)
+            limits.rangeParams[FilterParamName.elevationGain.rawValue] = RouteIndexRange(from: activities.map({ $0.elevationGain }).min()!, to: activities.map({ $0.elevationGain }).max()!)
+            limits.rangeParams[FilterParamName.averagePower.rawValue] = RouteIndexRange(from: activities.map({ $0.averagePower }).min()!, to: activities.map({ $0.averagePower }).max()!)
+            limits.rangeParams[FilterParamName.totalEnergy.rawValue] = RouteIndexRange(from: activities.map({ $0.kiloJoules }).min()!, to: activities.map({ $0.kiloJoules }).max()!)
 
             return limits
         }

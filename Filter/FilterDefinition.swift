@@ -21,6 +21,7 @@ enum FilterParamName : String, Codable {
 
 struct FilterParam : Codable {
     var name : FilterParamName
+    var rank    : Int               // Rank within group
     var group : String
     var property : String
     var comparison : FilterComparison?
@@ -45,7 +46,7 @@ struct FilterDefinition : Codable {
     
     static func read(from : String) throws -> [FilterDefinition]  {
         do {
-            let appPList = try PListFile<[FilterDefinition]>(.plist("Filter", Bundle.main))
+            let appPList = try PListFile<[FilterDefinition]>(.plist(from, Bundle.main))
             return appPList.data
         } catch let err {
             print("Failed to parse data: \(err)")
@@ -56,23 +57,30 @@ struct FilterDefinition : Codable {
     static func filtersforType(_ type : String, values: FilterValues, limits: FilterValues) -> [Filter]? {
         do {
             if let filterDefinition = (try FilterDefinition.read(from: "Filter")).filter({ $0.name == type }).first {
-                let y = filterDefinition.params.map { param in
+                return filterDefinition.sortedParams.map { param in
                     Filter(name: param.name.rawValue,
                            group: param.group, property: param.property,
                            comparison: param.comparison,
                            filterValue: valueForParam(param, values: values),
                            filterLimit: valueForParam(param, values: limits),
                            displayFormatter: param.filterParamDisplayString)
-                    
+                
                 }
-                let z = y.sorted(by: { filterDefinition.groups[$1.group]! > filterDefinition.groups[$0.group]! })
-                appLog.debug("Was: \(y.map { $0.group } ), Now: \(z.map { $0.group })")
-                return z
             }
         } catch {
             
         }
         return nil
+    }
+    
+    private var sortedParams :  [FilterParam] {
+        return self.params.sorted(by: { (lhs, rhs) -> Bool in
+            if lhs.group == rhs.group {
+                return rhs.rank > lhs.rank
+            } else {
+                return self.groups[rhs.group]! > self.groups[lhs.group]!
+            }
+            })
     }
     
     private static func valueForParam(_ param : FilterParam, values : FilterValues) -> FilterItemValue {
@@ -85,3 +93,4 @@ struct FilterDefinition : Codable {
     }
     
 }
+

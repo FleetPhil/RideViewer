@@ -17,6 +17,8 @@
 		<key>params</key>
 		<array>
 			<dict>
+				<key>rank</key>
+				<integer>1</integer>
 				<key>group</key>
 				<string>Time</string>
 				<key>name</key>
@@ -27,6 +29,8 @@
 				<string>rangeType</string>
 			</dict>
 			<dict>
+				<key>rank</key>
+				<integer>0</integer>
 				<key>group</key>
 				<string>Ride</string>
 				<key>name</key>
@@ -37,6 +41,8 @@
 				<string>rangeType</string>
 			</dict>
 			<dict>
+				<key>rank</key>
+				<integer>1</integer>
 				<key>group</key>
 				<string>Ride</string>
 				<key>name</key>
@@ -47,6 +53,8 @@
 				<string>rangeType</string>
 			</dict>
 			<dict>
+				<key>rank</key>
+				<integer>2</integer>
 				<key>group</key>
 				<string>Ride</string>
 				<key>name</key>
@@ -57,6 +65,8 @@
 				<string>rangeType</string>
 			</dict>
 			<dict>
+				<key>rank</key>
+				<integer>0</integer>
 				<key>comparison</key>
 				<string> &gt;= </string>
 				<key>group</key>
@@ -69,6 +79,8 @@
 				<string>dateType</string>
 			</dict>
 			<dict>
+				<key>rank</key>
+				<integer>1</integer>
 				<key>comparison</key>
 				<string> &lt;= </string>
 				<key>group</key>
@@ -81,6 +93,8 @@
 				<string>dateType</string>
 			</dict>
 			<dict>
+				<key>rank</key>
+				<integer>0</integer>
 				<key>group</key>
 				<string>Time</string>
 				<key>name</key>
@@ -91,6 +105,8 @@
 				<string>rangeType</string>
 			</dict>
 			<dict>
+				<key>rank</key>
+				<integer>3</integer>
 				<key>group</key>
 				<string>Ride</string>
 				<key>name</key>
