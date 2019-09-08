@@ -33,11 +33,16 @@
 		AD14035F229D92CE0001502F /* EffortList.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD14035E229D92CE0001502F /* EffortList.storyboard */; };
 		AD140361229D937C0001502F /* RouteProfile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD140360229D937C0001502F /* RouteProfile.storyboard */; };
 		AD140363229D97220001502F /* RVAllEffortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD140362229D97220001502F /* RVAllEffortViewController.swift */; };
+		AD1E69C823211A5B00BE288C /* PListFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1E69C723211A5B00BE288C /* PListFile.swift */; };
+		AD1E69CA2321259F00BE288C /* FilterDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1E69C92321259F00BE288C /* FilterDefinition.swift */; };
 		AD31B336229E8AB700F41FE8 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD31B335229E8AB700F41FE8 /* InitialViewController.swift */; };
 		AD558A1322A53DC600F106F0 /* RefreshViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD558A1222A53DC600F106F0 /* RefreshViewController.swift */; };
 		AD70F7FB2292DEE500E02FBA /* EffortAnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */; };
 		AD85D6DB22E091F10034A52D /* PopupDatePickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85D6DA22E091F10034A52D /* PopupDatePickerCell.swift */; };
+		AD884E072322D4FF00FAC59D /* Filter.plist in Resources */ = {isa = PBXBuildFile; fileRef = AD884E062322D4FF00FAC59D /* Filter.plist */; };
 		ADA9C6AB230B01970032CF6C /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA9C6AA230B01970032CF6C /* Collection.swift */; };
+		ADF736332324136900E204DE /* ArrayUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF736322324136900E204DE /* ArrayUtility.swift */; };
+		ADF73635232515B600E204DE /* View Contrroller Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF73634232515B600E204DE /* View Contrroller Extensions.swift */; };
 		F4031DB62242A70500093B2E /* StreamOwner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4031DB52242A70500093B2E /* StreamOwner.swift */; };
 		F4048CAA2236B88500502DA5 /* RVSortFilterTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */; };
 		F4048CB02236BCB700502DA5 /* RVEffortListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4048CAF2236BCB700502DA5 /* RVEffortListViewController.swift */; };
@@ -76,7 +81,7 @@
 		F4C113D421D6790B00188A30 /* RVSegment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C113D021D6790B00188A30 /* RVSegment+CoreDataClass.swift */; };
 		F4C113D521D6790B00188A30 /* RVSegment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C113D121D6790B00188A30 /* RVSegment+CoreDataProperties.swift */; };
 		F4C44BEB2271ADF9009139C3 /* Chart Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C44BEA2271ADF9009139C3 /* Chart Utilities.swift */; };
-		F4DC5A1921D4C7B50017983E /* Distance Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DC5A1821D4C7B50017983E /* Distance Utilities.swift */; };
+		F4DC5A1921D4C7B50017983E /* Ride Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DC5A1821D4C7B50017983E /* Ride Metrics.swift */; };
 		F4ED1BE02208AEB600821D76 /* RVMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4ED1BDF2208AEB600821D76 /* RVMapView.swift */; };
 		F4ED1BE22208B02A00821D76 /* RVRouteProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4ED1BE12208B02A00821D76 /* RVRouteProfileView.swift */; };
 		F4F5195021FB79C3005D3752 /* RVStreamData+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F5194C21FB79C3005D3752 /* RVStreamData+CoreDataClass.swift */; };
@@ -116,11 +121,16 @@
 		AD14035E229D92CE0001502F /* EffortList.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = EffortList.storyboard; sourceTree = "<group>"; };
 		AD140360229D937C0001502F /* RouteProfile.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = RouteProfile.storyboard; sourceTree = "<group>"; };
 		AD140362229D97220001502F /* RVAllEffortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVAllEffortViewController.swift; sourceTree = "<group>"; };
+		AD1E69C723211A5B00BE288C /* PListFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PListFile.swift; sourceTree = "<group>"; };
+		AD1E69C92321259F00BE288C /* FilterDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterDefinition.swift; sourceTree = "<group>"; };
 		AD31B335229E8AB700F41FE8 /* InitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InitialViewController.swift; path = "View Controllers/InitialViewController.swift"; sourceTree = SOURCE_ROOT; };
 		AD558A1222A53DC600F106F0 /* RefreshViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshViewController.swift; sourceTree = "<group>"; };
 		AD70F7FA2292DEE500E02FBA /* EffortAnalysisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EffortAnalysisViewController.swift; path = "Detail View Controllers/EffortAnalysisViewController.swift"; sourceTree = "<group>"; };
 		AD85D6DA22E091F10034A52D /* PopupDatePickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupDatePickerCell.swift; sourceTree = "<group>"; };
+		AD884E062322D4FF00FAC59D /* Filter.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Filter.plist; sourceTree = "<group>"; };
 		ADA9C6AA230B01970032CF6C /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
+		ADF736322324136900E204DE /* ArrayUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayUtility.swift; sourceTree = "<group>"; };
+		ADF73634232515B600E204DE /* View Contrroller Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View Contrroller Extensions.swift"; sourceTree = "<group>"; };
 		D272B46FE80E68DEE976D7CC /* Pods-RideViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RideViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-RideViewer/Pods-RideViewer.release.xcconfig"; sourceTree = "<group>"; };
 		F4031DB52242A70500093B2E /* StreamOwner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOwner.swift; sourceTree = "<group>"; };
 		F4048CA92236B88500502DA5 /* RVSortFilterTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVSortFilterTableView.swift; sourceTree = "<group>"; };
@@ -162,7 +172,7 @@
 		F4C113D021D6790B00188A30 /* RVSegment+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVSegment+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F4C113D121D6790B00188A30 /* RVSegment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVSegment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F4C44BEA2271ADF9009139C3 /* Chart Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chart Utilities.swift"; sourceTree = "<group>"; };
-		F4DC5A1821D4C7B50017983E /* Distance Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Distance Utilities.swift"; sourceTree = "<group>"; };
+		F4DC5A1821D4C7B50017983E /* Ride Metrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Ride Metrics.swift"; sourceTree = "<group>"; };
 		F4ED1BDF2208AEB600821D76 /* RVMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVMapView.swift; sourceTree = "<group>"; };
 		F4ED1BE12208B02A00821D76 /* RVRouteProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RVRouteProfileView.swift; sourceTree = "<group>"; };
 		F4F5194C21FB79C3005D3752 /* RVStreamData+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RVStreamData+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -299,6 +309,8 @@
 				AD0BF5FF231D79D6008539DF /* Filter.swift */,
 				AD0BF5CB231D731B008539DF /* FilterViewController.swift */,
 				AD0BF5FC231D754F008539DF /* Filter.storyboard */,
+				AD1E69C92321259F00BE288C /* FilterDefinition.swift */,
+				AD884E062322D4FF00FAC59D /* Filter.plist */,
 			);
 			path = Filter;
 			sourceTree = "<group>";
@@ -460,11 +472,13 @@
 				F4031DB52242A70500093B2E /* StreamOwner.swift */,
 				F47B5DCF22426ADD00A765EA /* Constants.swift */,
 				F42585A5224161CA00BCDA86 /* ViewProfileData.swift */,
-				F4DC5A1821D4C7B50017983E /* Distance Utilities.swift */,
+				F4DC5A1821D4C7B50017983E /* Ride Metrics.swift */,
 				F4AAD80C21DD251C006ED5DD /* Settings.swift */,
 				F4BDDFBC21DFD19300E4668B /* PopupChooser.swift */,
 				F4611B9E21F3935C00EDFC13 /* General Utilities.swift */,
 				F4C44BEA2271ADF9009139C3 /* Chart Utilities.swift */,
+				AD1E69C723211A5B00BE288C /* PListFile.swift */,
+				ADF736322324136900E204DE /* ArrayUtility.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -474,6 +488,7 @@
 			children = (
 				F47B92622232CF0000B83303 /* RVSplitViewController.swift */,
 				F4FD52E42229AB850005CFC9 /* RVRouteProfileViewController.swift */,
+				ADF73634232515B600E204DE /* View Contrroller Extensions.swift */,
 			);
 			name = "View Controllers";
 			path = "View Controllers/View Controllers";
@@ -550,6 +565,7 @@
 				F461168F21E0A4BF00E2693C /* PopupChooser.storyboard in Resources */,
 				AD0BF5ED231D74C7008539DF /* ValuePicker.storyboard in Resources */,
 				AD140361229D937C0001502F /* RouteProfile.storyboard in Resources */,
+				AD884E072322D4FF00FAC59D /* Filter.plist in Resources */,
 				F42ECEEE21CF91150096F83B /* Assets.xcassets in Resources */,
 				F42ECEE921CF91130096F83B /* Main.storyboard in Resources */,
 				AD0BF5F5231D74C7008539DF /* BasePicker.storyboard in Resources */,
@@ -614,7 +630,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F4DC5A1921D4C7B50017983E /* Distance Utilities.swift in Sources */,
+				F4DC5A1921D4C7B50017983E /* Ride Metrics.swift in Sources */,
 				F4F5195021FB79C3005D3752 /* RVStreamData+CoreDataClass.swift in Sources */,
 				F4ED1BE02208AEB600821D76 /* RVMapView.swift in Sources */,
 				AD558A1322A53DC600F106F0 /* RefreshViewController.swift in Sources */,
@@ -633,6 +649,7 @@
 				AD0BF5F7231D74C7008539DF /* StringPicker.swift in Sources */,
 				F40CC8AC21D666EE00EC3594 /* Views.swift in Sources */,
 				AD0BF5F0231D74C7008539DF /* RangeSliderTrackLayer.swift in Sources */,
+				ADF73635232515B600E204DE /* View Contrroller Extensions.swift in Sources */,
 				F4048CAA2236B88500502DA5 /* RVSortFilterTableView.swift in Sources */,
 				ADA9C6AB230B01970032CF6C /* Collection.swift in Sources */,
 				AD31B336229E8AB700F41FE8 /* InitialViewController.swift in Sources */,
@@ -645,6 +662,7 @@
 				F4C113D421D6790B00188A30 /* RVSegment+CoreDataClass.swift in Sources */,
 				F4AAD80B21DCF788006ED5DD /* SettingsTableViewController.swift in Sources */,
 				F47B5DD022426ADD00A765EA /* Constants.swift in Sources */,
+				AD1E69C823211A5B00BE288C /* PListFile.swift in Sources */,
 				F4C113D221D6790B00188A30 /* RVEffort+CoreDataClass.swift in Sources */,
 				F42ECEFE21CFA6790096F83B /* RVActivity+CoreDataClass.swift in Sources */,
 				AD0BF5F4231D74C7008539DF /* BasePickerPopoverViewController.swift in Sources */,
@@ -657,6 +675,7 @@
 				F41C7A3121D12EFA003A5C31 /* Display Extensions.swift in Sources */,
 				F42ECF0B21CFE1A50096F83B /* MOC Extensions.swift in Sources */,
 				AD0BF5E9231D74C7008539DF /* DatePicker.swift in Sources */,
+				AD1E69CA2321259F00BE288C /* FilterDefinition.swift in Sources */,
 				AD0BF5F2231D74C7008539DF /* RangeSliderThumbLayer.swift in Sources */,
 				F4C113D521D6790B00188A30 /* RVSegment+CoreDataProperties.swift in Sources */,
 				F4031DB62242A70500093B2E /* StreamOwner.swift in Sources */,
@@ -672,6 +691,7 @@
 				F4551A0722328386004F0767 /* MapKit extensions.swift in Sources */,
 				AD0BF5FB231D74C7008539DF /* RangePicker.swift in Sources */,
 				AD0BF5F3231D74C7008539DF /* ValueSlider.swift in Sources */,
+				ADF736332324136900E204DE /* ArrayUtility.swift in Sources */,
 				AD0BF5CC231D731B008539DF /* FilterViewController.swift in Sources */,
 				F42ECF0921CFD5FF0096F83B /* DataManager.swift in Sources */,
 				F42ECEE421CF91130096F83B /* AppDelegate.swift in Sources */,

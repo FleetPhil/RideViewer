@@ -1,5 +1,5 @@
 //
-//  Distance Utilities.swift
+//  Ride Metrics.swift
 //  FlightLog2
 //
 //  Created by Phil Diggens on 29/04/2017.
@@ -98,6 +98,19 @@ extension Double {
             return NSString(format: "%01u:%02u", minutes, Int(seconds)-(minutes*60)) as String
         }
     }
+    var powerDisplayString : String {
+        return self.fixedFraction(digits: 0) + "W"
+    }
+    
+    var energyDisplayString : String {
+        return self.fixedFraction(digits: 0) + "kJ"
+    }
+    
+    
+    
+    
 }
+
+
 
 

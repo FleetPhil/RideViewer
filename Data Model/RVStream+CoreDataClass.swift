@@ -77,7 +77,7 @@ enum RVStreamDataType : String {
 	var chartValueFormatter : AxisValueFormatter {
 		switch self {
 		case .speed:
-			func speedFormatter(value : Speed)->String { return value.speedDisplayString() }
+			func speedFormatter(value : Speed)->String { return value.speedDisplayString }
 			return AxisValueFormatter(numberFormatter: speedFormatter)
 		case .cadence, .cumulativeHR:
 			func zeroFractionFormatter(value : Double)->String { return value.fixedFraction(digits: 0) }

@@ -45,5 +45,15 @@ struct BikeConstants {
 	
 }
 
+struct SettingsConstants {
+    static let ActivityFilterKey    = "ActivityFilter"
+    static let SegmentFilterKey     = "SegmentFiltyer"
+    static let EffortFilterKey      = "EffortFilter"
+
+    static let ActivitySortKey      = "ActivitySort"
+    static let SegmentSortKey       = "SegmentSort"
+    static let EffortSortKey        = "EffortSort"
+}
+
 
 

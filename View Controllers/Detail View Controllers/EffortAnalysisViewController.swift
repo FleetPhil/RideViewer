@@ -108,13 +108,13 @@ class EffortAnalysisViewController: UIViewController, RVEffortTableDelegate, Rou
             return
         }
         var shortestTimeString = ((shortestTimeData[at].dataValue - shortestTimeData[0].dataValue) as Duration).shortDurationDisplayString
-        var shortestSpeedString = (profileViewController.primaryDataSet.dataPoints[at].dataValue as Speed).speedDisplayString()
+        var shortestSpeedString = (profileViewController.primaryDataSet.dataPoints[at].dataValue as Speed).speedDisplayString
 
         if let selectedTimeData = profileViewController.dataSetOfType(.time, forStreamOwner: selectedEffort)?.dataPoints {
             shortestTimeString += " (" + ((selectedTimeData[at].dataValue - selectedTimeData[0].dataValue) as Duration).shortDurationDisplayString + ")"
         }
         if let selectedSpeedData = profileViewController.dataSetOfType(.speed, forStreamOwner: selectedEffort)?.dataPoints {
-            shortestSpeedString += " (" + (selectedSpeedData[at].dataValue as Speed).speedDisplayString() + ")"
+            shortestSpeedString += " (" + (selectedSpeedData[at].dataValue as Speed).speedDisplayString + ")"
         }
         
         let labelString = "Time: \(shortestTimeString), Speed: \(shortestSpeedString)"

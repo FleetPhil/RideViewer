@@ -89,12 +89,12 @@ class RVSegmentListViewController: UIViewController, UITableViewDelegate {
 	private func newFilters(_ newFilters : [PopupItem]?)  {
 		popupController?.dismiss(animated: true, completion: nil)
 		
-		if let returnedFilters = newFilters {		// Will be nil if cancelled
-//			self.filters = returnedFilters
-            saveFilters()
-			setDataManager()
-			tableView.reloadData()
-		}
+//        if let returnedFilters = newFilters {        // Will be nil if cancelled
+//            self.filters = returnedFilters
+//            saveFilters()
+//            setDataManager()
+//            tableView.reloadData()
+//        }
 	}
 	
 	private func newSortOrder(newOrder : [PopupItem]?) {

@@ -30,6 +30,11 @@ class RefreshViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        // XXXX: Avoid Strava retrieve
+        self.doneButton.isEnabled = true
+        return
+        // END
+            
         progressLabel.text = StravaStatus.connected.statusText
         
         // Get athlete stats

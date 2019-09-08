@@ -263,7 +263,7 @@ extension RVEffort : TableViewCompatibleEntity {
 extension RVEffort {
 	var effortDisplayText : NSAttributedString {
 		let effortText = NSMutableAttributedString(string: "⏱ " + self.elapsedTime.shortDurationDisplayString)
-		effortText.append(NSAttributedString(string: "  ⏩ " + (self.distance / self.elapsedTime).speedDisplayString()))
+		effortText.append(NSAttributedString(string: "  ⏩ " + (self.distance / self.elapsedTime).speedDisplayString))
 		if self.activity.hasHeartRate {
 			effortText.append(NSAttributedString(string: " " + EmojiConstants.HeartRate + " " + self.maxHeartRate.fixedFraction(digits: 0)))
 		}

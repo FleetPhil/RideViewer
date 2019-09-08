@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>name</key>
+		<string>ActivityFilter</string>
+		<key>groups</key>
+		<dict>
+			<key>Time</key>
+			<integer>1</integer>
+			<key>Ride</key>
+			<integer>2</integer>
+			<key>Date</key>
+			<integer>0</integer>
+		</dict>
+		<key>params</key>
+		<array>
+			<dict>
+				<key>group</key>
+				<string>Time</string>
+				<key>name</key>
+				<string>Total</string>
+				<key>property</key>
+				<string>elapsedTime</string>
+				<key>type</key>
+				<string>rangeType</string>
+			</dict>
+			<dict>
+				<key>group</key>
+				<string>Ride</string>
+				<key>name</key>
+				<string>Distance</string>
+				<key>property</key>
+				<string>distance</string>
+				<key>type</key>
+				<string>rangeType</string>
+			</dict>
+			<dict>
+				<key>group</key>
+				<string>Ride</string>
+				<key>name</key>
+				<string>Elevation Gain</string>
+				<key>property</key>
+				<string>elevationGain</string>
+				<key>type</key>
+				<string>rangeType</string>
+			</dict>
+			<dict>
+				<key>group</key>
+				<string>Ride</string>
+				<key>name</key>
+				<string>Av. Power</string>
+				<key>property</key>
+				<string>averagePower</string>
+				<key>type</key>
+				<string>rangeType</string>
+			</dict>
+			<dict>
+				<key>comparison</key>
+				<string> &gt;= </string>
+				<key>group</key>
+				<string>Date</string>
+				<key>name</key>
+				<string>From</string>
+				<key>property</key>
+				<string>startDate</string>
+				<key>type</key>
+				<string>dateType</string>
+			</dict>
+			<dict>
+				<key>comparison</key>
+				<string> &lt;= </string>
+				<key>group</key>
+				<string>Date</string>
+				<key>name</key>
+				<string>To</string>
+				<key>property</key>
+				<string>startDate</string>
+				<key>type</key>
+				<string>dateType</string>
+			</dict>
+			<dict>
+				<key>group</key>
+				<string>Time</string>
+				<key>name</key>
+				<string>Moving</string>
+				<key>property</key>
+				<string>movingTime</string>
+				<key>type</key>
+				<string>rangeType</string>
+			</dict>
+			<dict>
+				<key>group</key>
+				<string>Ride</string>
+				<key>name</key>
+				<string>Total Energy</string>
+				<key>property</key>
+				<string>kiloJoules</string>
+				<key>type</key>
+				<string>rangeType</string>
+			</dict>
+		</array>
+	</dict>
+</array>
+</plist>

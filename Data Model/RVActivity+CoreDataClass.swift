@@ -12,11 +12,13 @@ import CoreData
 import StravaSwift
 import CoreLocation
 
+// Raw value is property name
 enum ActivitySort : String, CaseIterable {
     case name		    = "name"
     case distance       = "distance"
     case date           = "startDate"
     case elapsedTime    = "elapsedTime"
+    case movingTime     = "movingTime"
     case elevationGain  = "elevationGain"
     case kJ             = "kiloJoules"
     case averageSpeed   = "averageSpeed"
@@ -27,6 +29,7 @@ enum ActivitySort : String, CaseIterable {
         case .distance:         return "Distance"
         case .date:             return "Date"
         case .elapsedTime:      return "Elapsed Time"
+        case .movingTime:       return "Moving Time"
         case .elevationGain:    return "Elevation Gain"
         case .kJ:               return "Energy"
         case .averageSpeed:     return "Average Speed"
@@ -39,6 +42,7 @@ enum ActivitySort : String, CaseIterable {
         case .distance:         return false
         case .date:             return false
         case .elapsedTime:      return false
+        case .movingTime:       return false
         case .elevationGain:    return false
         case .kJ:               return false
         case .averageSpeed:     return false
@@ -46,82 +50,6 @@ enum ActivitySort : String, CaseIterable {
     }
 }
 
-//enum ActivityFilter  {
-//    case cycleRide(Bool)
-//    case virtualRide(Bool)
-//    case walk(Bool)
-//    case other(Bool)
-//    case shortRide(Bool)
-//    case longRide(Bool)
-//    case startDate(Date)
-//
-//    var selectionLabel: String {
-//        switch self {
-//        case .cycleRide:          return "Cycle Rides"
-//        case .virtualRide:        return "Virtual Rides"
-//        case .walk:               return "Walks"
-//        case .other:              return "Other Activities"
-//        case .shortRide:          return "Short Rides"
-//        case .longRide:           return "Long Rides"
-//        case .startDate:          return "Start Date"
-//        }
-//    }
-//
-//    var selectionValue: PopupSelectionValue {
-//        get {
-//            switch self {
-//            case .startDate(let date) :     return .typeDate(date: date)
-//            case .cycleRide(let bool),
-//                 .longRide(let bool),
-//                 .other(let bool),
-//                 .shortRide(let bool),
-//                 .virtualRide(let bool),
-//                 .walk(let bool): return .typeBool(bool: bool)
-//            }
-//        }
-//    }
-//
-//    // Initial filter defaults if they cannot be retrieved on the first run
-//    static var selectionDefaults : [ ActivityFilter ] {
-//        return [
-//            .cycleRide(true), .longRide(true), .other(false), .shortRide(false), .virtualRide(false), .walk(false),
-//            .startDate(Calendar.current.date(byAdding: .year, value: -1, to: Date())!)
-//        ]
-//    }
-//
-//    var popupGroup: String {
-//        switch self {
-//        case .cycleRide, .virtualRide, .walk, .other:        return "Activity Type"
-//        case .longRide, .shortRide:                            return "Ride Length"
-//        case .startDate:                                    return "Date"
-//        }
-//    }
-//
-//    func predicateForFilterOption() -> NSPredicate {
-//        let longRideLimit = Settings.sharedInstance.activityMinDistance
-//        switch self {
-//        case .cycleRide:        return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Ride.rawValue])
-//        case .virtualRide:        return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.VirtualRide.rawValue])
-//        case .walk:                return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Walk.rawValue])
-//        case .other:            return NSPredicate(format: "activityType = %@", argumentArray: [ActivityType.Workout.rawValue])
-//        case .longRide:         return NSPredicate(format: "distance >= %f",     argumentArray: [longRideLimit])
-//        case .shortRide:        return NSPredicate(format: "distance < %f",     argumentArray: [longRideLimit])
-//        // TODO: Dummy
-//        case .startDate:        return NSPredicate(format: "", argumentArray: nil)
-//        }
-//    }
-//
-//    static func predicateForFilters(_ filters : [ActivityFilter]) -> NSCompoundPredicate {
-//        var predicates : [NSCompoundPredicate] = []
-//        let filterGroups = Dictionary(grouping: filters, by: { $0.popupGroup })
-//        for group in filterGroups {
-//            let subPred = group.value.map({ $0.predicateForFilterOption() })
-//            let groupPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: subPred)
-//            predicates.append(groupPredicate)
-//        }
-//        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-//    }
-//}
 
 @objc(RVActivity)
 public class RVActivity: NSManagedObject, RouteViewCompatible {
@@ -272,7 +200,29 @@ extension RVActivity : TableViewCompatibleEntity {
     }
 }
 
+// Extension to provide extremes for filter
+extension RVActivity {
+    static func filterLimits(context : NSManagedObjectContext) -> FilterValues? {
+        var limits = FilterValues(dateParams: [:], rangeParams: [:])
+        
+        if let activities : [RVActivity] = context.fetchObjects() {
+            guard activities.count > 0 else { return nil }
+            
+            limits.dateParams["From"] = activities.map({ $0.startDate as Date }).min()
+            limits.dateParams["To"] = activities.map({ $0.startDate as Date }).max()
+            
+            limits.rangeParams["Moving"] = RouteIndexRange(from: activities.map({ $0.movingTime }).min()!, to: activities.map({ $0.movingTime }).max()!)
+            limits.rangeParams["Total"] = RouteIndexRange(from: activities.map({ $0.elapsedTime }).min()!, to: activities.map({ $0.elapsedTime }).max()!)
+            limits.rangeParams["Distance"] = RouteIndexRange(from: activities.map({ $0.distance }).min()!, to: activities.map({ $0.distance }).max()!)
+            limits.rangeParams["Elevation Gain"] = RouteIndexRange(from: activities.map({ $0.elevationGain }).min()!, to: activities.map({ $0.elevationGain }).max()!)
+            limits.rangeParams["Av. Power"] = RouteIndexRange(from: activities.map({ $0.averagePower }).min()!, to: activities.map({ $0.averagePower }).max()!)
+            limits.rangeParams["Total Energy"] = RouteIndexRange(from: activities.map({ $0.kiloJoules }).min()!, to: activities.map({ $0.kiloJoules }).max()!)
 
+            return limits
+        }
+        return nil
+    }
+}
 
 // Table cell
 class ActivityListTableViewCell : UITableViewCell, TableViewCompatibleCell {

@@ -106,7 +106,7 @@ class ActivityDetailViewController: UIViewController, RVEffortTableDelegate {
 		
 		timeData.text		= "🕘 " + activity.elapsedTime.durationDisplayString
 			+ " ⏱ " + activity.movingTime.durationDisplayString
-			+ " ⏩ " + (activity.distance / activity.movingTime).speedDisplayString()
+			+ " ⏩ " + (activity.distance / activity.movingTime).speedDisplayString
 		
 		elevationData.text	= "⬇️ " + activity.lowElevation.heightDisplayString + " ⬆️ " + activity.highElevation.heightDisplayString + " ↗️ " + activity.elevationGain.heightDisplayString
 		

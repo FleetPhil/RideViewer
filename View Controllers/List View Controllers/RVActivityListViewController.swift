@@ -10,7 +10,7 @@ import UIKit
 import StravaSwift
 import CoreData
 
-class RVActivityListViewController: UIViewController, UITableViewDelegate {
+class RVActivityListViewController: UIViewController, UITableViewDelegate, FilterDelegate {
     
     // MARK: Model
     private lazy var dataManager = DataManager<RVActivity>()
@@ -20,9 +20,8 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate {
     var tableDataIsComplete = true
     
     // Properties
-    private var filters : [ActivityFilter]!
+    private var filters : [Filter]!
     private var sortKey : ActivitySort!
-    private var popupController : UIViewController?
     
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -36,7 +35,7 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate {
         
         // Setup the data source
         dataManager.tableView = self.tableView
-        self.filters = [.cycleRide(true), .virtualRide(true)]
+        self.filters = activityFilters()
         self.sortKey = .date
         setDataManager()
         
@@ -56,7 +55,7 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate {
     
     func setDataManager() {
         guard sortKey != nil, filters != nil else { return }
-        dataManager.filterPredicate = ActivityFilter.predicateForFilters(self.filters)
+        dataManager.filterPredicate = Filter.predicateForFilters(self.filters)
         dataManager.sortDescriptor = NSSortDescriptor(key: self.sortKey.rawValue, ascending: self.sortKey.defaultAscending)
         _ = dataManager.fetchObjects()
     }
@@ -91,11 +90,10 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate {
         performSegue(withIdentifier: "ActivityListToFilter", sender: self)
     }
     
-    private func newFilters(_ newFilters : [Filter]?)  {
-        popupController?.dismiss(animated: true, completion: nil)
+    func newFilters(_ newFilters : [Filter]?)  {
         if let returnedFilters = newFilters {			// nil means cancelled
             self.filters = returnedFilters
-            //            saveFilters()
+            saveFilterValues(filterValues: valuesForFilters(self.filters), key: SettingsConstants.ActivityFilterKey)
             setDataManager()
             tableView.reloadData()
         }
@@ -114,68 +112,23 @@ class RVActivityListViewController: UIViewController, UITableViewDelegate {
                 destination.activity = nil
             }
         }
+        // Set current filters for update
+        if let destination = segue.destination.activeController as? FilterViewController {
+            destination.delegate = self
+            destination.filters = self.filters
+        }
+        
     }
     
 }
 
 // MARK: Filters
 extension RVActivityListViewController {
-    struct ActivityFilterValues : Codable {
-        var dateFrom: Date
-        var dateTo: Date
-        var movingTime: RouteIndexRange
-        var totalTime: RouteIndexRange
-        var distance: RouteIndexRange
-        var elevationGain: RouteIndexRange
-        var averagePower: RouteIndexRange
-        var totalEnergy: RouteIndexRange
-    }
-    
     func activityFilters() -> [Filter] {
-        let values = savedFilters()
+        guard let limits = RVActivity.filterLimits(context: CoreDataManager.sharedManager().viewContext) else { return [] }        // No data
+        let values = savedFilterValues(key: SettingsConstants.ActivityFilterKey) ?? limits
         
-        return [
-            Filter(name: "From", group: "Date", type: .date(("startDate",FilterComparison.greaterOrEqual, values.dateFrom))),
-            Filter(name: "To", group: "Date", type: .date(("startDate",FilterComparison.lessOrEqual, values.dateTo))),
-            Filter(name: "Moving", group: "Time", type: .range(("movingTime", values.movingTime))),
-            Filter(name: "Total", group: "Time", type: .range(("elapsedTime", values.totalTime))),
-            Filter(name: "Distance", group: "Ride", type: .range(("distance", values.distance))),
-            Filter(name: "Elevation Gain", group: "Ride", type: .range(("elevationGain", values.elevationGain))),
-            Filter(name: "Av. Power", group: "Ride", type: .range(("averagePower", values.averagePower))),
-            Filter(name: "Total Energy", group: "Ride", type: .range(("kiloJoules", values.totalEnergy)))
-        ]
+        return FilterDefinition.filtersforType(SettingsConstants.ActivityFilterKey, values: values, limits: limits) ?? []
     }
-    
-    private func saveFilters() {
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(self.filters) {
-            UserDefaults.standard.set(encoded, forKey: "ActivityFilters")
-        }
-    }
-    
-    private func savedFilters()->ActivityFilterValues {
-        if let savedFilters = UserDefaults.standard.object(forKey: "ActivityFilters") as? Data {
-            let decoder = JSONDecoder()
-            if let filters = try? decoder.decode(ActivityFilterValues.self, from: savedFilters) {
-                return filters
-            }
-        }
-        return RVActivity.filterDefaults()
-    }
-}
-
-extension UIViewController {
-    var activeController : UIViewController? {
-        if let controller = self as? UINavigationController {
-            return controller.topViewController
-        } else {
-            return self
-        }
-    }
-    
-    var detailViewController : UIViewController? {
-        return self.splitViewController?.viewControllers.last?.activeController
-    }
-    
 }
 
